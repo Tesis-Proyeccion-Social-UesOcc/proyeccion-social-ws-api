@@ -1,12 +1,13 @@
 package ues.occ.proyeccion.social.ws.app.dao;
 
 import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -25,23 +26,41 @@ public class Personal implements Serializable {
 	@Column(name = "apellido", nullable = false)
 	private String apellido;
 
-	@Column(name = " id_tipo_personal", nullable = false)
-	private Integer id_tipo_personal;
+	@ManyToOne()
+	@JoinColumn(name = "id_departamento", referencedColumnName = "id")
+	private Departamento departamento;
 
-	@Column(name = " id_departamento", nullable = false)
-	private Integer id_departamento;
+	@ManyToOne()
+	@JoinColumn(name = "id_tipo_personal", referencedColumnName = "id")
+	private TipoPersonal tipo_personal;
 
 	public Personal() {
 		super();
 	}
 
-	public Personal(Integer id, String nombre, String apellido, Integer id_tipo_personal, Integer id_departamento) {
+	public Personal(Integer id, String nombre, String apellido, Departamento departamento, TipoPersonal tipo_personal) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
 		this.apellido = apellido;
-		this.id_tipo_personal = id_tipo_personal;
-		this.id_departamento = id_departamento;
+		this.departamento = departamento;
+		this.tipo_personal = tipo_personal;
+	}
+
+	public Departamento getDepartamento() {
+		return departamento;
+	}
+
+	public void setDepartamento(Departamento departamento) {
+		this.departamento = departamento;
+	}
+
+	public TipoPersonal getTipo_personal() {
+		return tipo_personal;
+	}
+
+	public void setTipo_personal(TipoPersonal tipo_personal) {
+		this.tipo_personal = tipo_personal;
 	}
 
 	public Integer getId() {
@@ -68,26 +87,10 @@ public class Personal implements Serializable {
 		this.apellido = apellido;
 	}
 
-	public Integer getId_tipo_personal() {
-		return id_tipo_personal;
-	}
-
-	public void setId_tipo_personal(Integer id_tipo_personal) {
-		this.id_tipo_personal = id_tipo_personal;
-	}
-
-	public Integer getId_departamento() {
-		return id_departamento;
-	}
-
-	public void setId_departamento(Integer id_departamento) {
-		this.id_departamento = id_departamento;
-	}
-
 	@Override
 	public String toString() {
-		return "Personal [id=" + id + ", nombre=" + nombre + ", apellido=" + apellido + ", id_tipo_personal="
-				+ id_tipo_personal + ", id_departamento=" + id_departamento + "]";
+		return "Personal [id=" + id + ", nombre=" + nombre + ", apellido=" + apellido + ", departamento=" + departamento
+				+ ", tipo_personal=" + tipo_personal + "]";
 	}
 
 }
