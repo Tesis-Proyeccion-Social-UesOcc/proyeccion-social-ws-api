@@ -8,7 +8,7 @@ public interface DepartamentoService {
 
 	public abstract ResponseEntity<ServiceResponse> findAll();
 	
-	public abstract ResponseEntity<ServiceResponse> findById();
+	public abstract ResponseEntity<ServiceResponse> findById(int id);
 	
 	public abstract ResponseEntity<ServiceResponse> create();
 	

@@ -8,6 +8,9 @@ public class ServiceResponse implements Serializable{
 
 	public static final String codeOk = "00";
 	public static final String messageOk = "Request Successful";
+	public static final String messageNull = "Request Successful, Data not found";
+	
+	
 
 	public static final String codeFatal = "99";
 	public static final String messageFatal = "Request failed";
