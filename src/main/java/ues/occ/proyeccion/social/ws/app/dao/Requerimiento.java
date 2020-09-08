@@ -2,6 +2,7 @@ package ues.occ.proyeccion.social.ws.app.dao;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.persistence.*;
 
@@ -22,12 +23,6 @@ public class Requerimiento implements Serializable {
     @Column(name = "cantidad_copias", nullable = true)
     private Integer cantidad_copias;
 
-    @Column(name = "id_proceso", nullable = true)
-    private Integer id_proceso;
-
-    @Column(name = "id_documento", nullable = true)
-    private Integer id_documento;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_proceso")
     private Proceso proceso;
@@ -36,18 +31,20 @@ public class Requerimiento implements Serializable {
     @JoinColumn(name = "id_documento")
     private Documento documento;
 
+    @OneToMany(mappedBy = "requerimiento", fetch = FetchType.LAZY)
+    private Set<EstadoRequerimientoEstudiante> estadoRequerimientoEstudiantes;
+
     public Requerimiento() {
         super();
     }
 
-    public Requerimiento(Integer id, Integer original, Integer cantidad_copias, Integer id_proceso, Integer id_documento, Proceso proceso, Documento documento) {
+    public Requerimiento(Integer id, Integer original, Integer cantidad_copias, Proceso proceso, Documento documento, Set<EstadoRequerimientoEstudiante> estadoRequerimientoEstudiantes) {
         this.id = id;
         this.original = original;
         this.cantidad_copias = cantidad_copias;
-        this.id_proceso = id_proceso;
-        this.id_documento = id_documento;
         this.proceso = proceso;
         this.documento = documento;
+        this.estadoRequerimientoEstudiantes = estadoRequerimientoEstudiantes;
     }
 
     public Integer getId() {
@@ -74,22 +71,6 @@ public class Requerimiento implements Serializable {
         this.cantidad_copias = cantidad_copias;
     }
 
-    public Integer getId_proceso() {
-        return id_proceso;
-    }
-
-    public void setId_proceso(Integer id_proceso) {
-        this.id_proceso = id_proceso;
-    }
-
-    public Integer getId_documento() {
-        return id_documento;
-    }
-
-    public void setId_documento(Integer id_documento) {
-        this.id_documento = id_documento;
-    }
-
     public Proceso getProceso() {
         return proceso;
     }
@@ -106,6 +87,14 @@ public class Requerimiento implements Serializable {
         this.documento = documento;
     }
 
+    public Set<EstadoRequerimientoEstudiante> getEstadoRequerimientoEstudiantes() {
+        return estadoRequerimientoEstudiantes;
+    }
+
+    public void setEstadoRequerimientoEstudiantes(Set<EstadoRequerimientoEstudiante> estadoRequerimientoEstudiantes) {
+        this.estadoRequerimientoEstudiantes = estadoRequerimientoEstudiantes;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -114,14 +103,13 @@ public class Requerimiento implements Serializable {
         return Objects.equals(id, that.id) &&
                 Objects.equals(original, that.original) &&
                 Objects.equals(cantidad_copias, that.cantidad_copias) &&
-                Objects.equals(id_proceso, that.id_proceso) &&
-                Objects.equals(id_documento, that.id_documento) &&
                 Objects.equals(proceso, that.proceso) &&
-                Objects.equals(documento, that.documento);
+                Objects.equals(documento, that.documento) &&
+                Objects.equals(estadoRequerimientoEstudiantes, that.estadoRequerimientoEstudiantes);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, original, cantidad_copias, id_proceso, id_documento, proceso, documento);
+        return Objects.hash(id, original, cantidad_copias, proceso, documento, estadoRequerimientoEstudiantes);
     }
 }

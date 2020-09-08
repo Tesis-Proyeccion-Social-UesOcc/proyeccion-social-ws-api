@@ -1,11 +1,10 @@
 package ues.occ.proyeccion.social.ws.app.dao;
 
 import java.io.Serializable;
+import java.util.Objects;
+import java.util.Set;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "estudiante")
@@ -23,15 +22,19 @@ public class Estudiante implements Serializable {
 	@Column(name = "servicio_completo", nullable = true, length = 4)
 	private Integer servicio_completo;
 
+	@OneToMany(mappedBy = "estudiante", fetch = FetchType.LAZY)
+	private Set<EstadoRequerimientoEstudiante> estadoRequerimientoEstudiantes;
+
+
 	public Estudiante() {
 		super();
 	}
-	
-	public Estudiante(String carnet, Integer horas_progreso, Integer servicio_completo) {
-		super();
+
+	public Estudiante(String carnet, Integer horas_progreso, Integer servicio_completo, Set<EstadoRequerimientoEstudiante> estadoRequerimientoEstudiantes) {
 		this.carnet = carnet;
 		this.horas_progreso = horas_progreso;
 		this.servicio_completo = servicio_completo;
+		this.estadoRequerimientoEstudiantes = estadoRequerimientoEstudiantes;
 	}
 
 	public String getCarnet() {
@@ -58,12 +61,27 @@ public class Estudiante implements Serializable {
 		this.servicio_completo = servicio_completo;
 	}
 
-	@Override
-	public String toString() {
-		return "Estudiante [carnet=" + carnet + ", horas_progreso=" + horas_progreso + ", servicio_completo="
-				+ servicio_completo + "]";
+	public Set<EstadoRequerimientoEstudiante> getEstadoRequerimientoEstudiantes() {
+		return estadoRequerimientoEstudiantes;
 	}
-	
-	
-	
+
+	public void setEstadoRequerimientoEstudiantes(Set<EstadoRequerimientoEstudiante> estadoRequerimientoEstudiantes) {
+		this.estadoRequerimientoEstudiantes = estadoRequerimientoEstudiantes;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Estudiante that = (Estudiante) o;
+		return Objects.equals(carnet, that.carnet) &&
+				Objects.equals(horas_progreso, that.horas_progreso) &&
+				Objects.equals(servicio_completo, that.servicio_completo) &&
+				Objects.equals(estadoRequerimientoEstudiantes, that.estadoRequerimientoEstudiantes);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(carnet, horas_progreso, servicio_completo, estadoRequerimientoEstudiantes);
+	}
 }

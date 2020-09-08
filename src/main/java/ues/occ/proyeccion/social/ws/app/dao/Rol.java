@@ -1,13 +1,10 @@
 package ues.occ.proyeccion.social.ws.app.dao;
 
 import java.io.Serializable;
+import java.util.Objects;
+import java.util.Set;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "rol")
@@ -29,15 +26,18 @@ public class Rol implements Serializable {
 	@Column(name = "descripcion", nullable = false, length = 200)
 	private String descripcion;
 
+	@OneToMany(mappedBy = "rol", fetch = FetchType.LAZY)
+	private Set<Usuario> usuarios;
+
 	public Rol() {
 		super();
 	}
-	
-	public Rol(Integer id, String nombre, String descripcion) {
-		super();
+
+	public Rol(Integer id, String nombre, String descripcion, Set<Usuario> usuarios) {
 		Id = id;
 		this.nombre = nombre;
 		this.descripcion = descripcion;
+		this.usuarios = usuarios;
 	}
 
 	public Integer getId() {
@@ -64,10 +64,27 @@ public class Rol implements Serializable {
 		this.descripcion = descripcion;
 	}
 
-	@Override
-	public String toString() {
-		return "Rol [Id=" + Id + ", nombre=" + nombre + ", descripcion=" + descripcion + "]";
+	public Set<Usuario> getUsuarios() {
+		return usuarios;
 	}
-	
-	
+
+	public void setUsuarios(Set<Usuario> usuarios) {
+		this.usuarios = usuarios;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Rol rol = (Rol) o;
+		return Objects.equals(Id, rol.Id) &&
+				Objects.equals(nombre, rol.nombre) &&
+				Objects.equals(descripcion, rol.descripcion) &&
+				Objects.equals(usuarios, rol.usuarios);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(Id, nombre, descripcion, usuarios);
+	}
 }
