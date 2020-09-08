@@ -1,6 +1,7 @@
 package ues.occ.proyeccion.social.ws.app.dao;
 
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.Id;
@@ -22,15 +23,15 @@ public class TipoPersonal implements Serializable{
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
-	private Integer Id;
+	private Integer id;
 	
-	@Column(name = "nombre", nullable = false)
+	@Column(name = "nombre", nullable = false, length = 200)
 	private String nombre;
 	
-	@Column(name = "descripcion", nullable = false)
+	@Column(name = "descripcion", nullable = false, length = 1000)
 	private String descripcion;
 	
-	@OneToMany(targetEntity = Personal.class, mappedBy = "tipo_personal", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(targetEntity = Personal.class, mappedBy = "tipoPersonal", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<Personal> personal;
 	
 	public TipoPersonal() {
@@ -39,17 +40,17 @@ public class TipoPersonal implements Serializable{
 
 	public TipoPersonal(Integer id, String nombre, String descripcion) {
 		super();
-		Id = id;
+		this.id = id;
 		this.nombre = nombre;
 		this.descripcion = descripcion;
 	}
 
 	public Integer getId() {
-		return Id;
+		return id;
 	}
 
 	public void setId(Integer id) {
-		Id = id;
+		this.id = id;
 	}
 
 	public String getNombre() {
@@ -70,8 +71,22 @@ public class TipoPersonal implements Serializable{
 
 	@Override
 	public String toString() {
-		return "TipoPersonal [Id=" + Id + ", nombre=" + nombre + ", descripcion=" + descripcion + "]";
+		return "TipoPersonal [id=" + id + ", nombre=" + nombre + ", descripcion=" + descripcion + "]";
 	}
-	
-	
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		TipoPersonal that = (TipoPersonal) o;
+		return Objects.equals(id, that.id) &&
+				Objects.equals(nombre, that.nombre) &&
+				Objects.equals(descripcion, that.descripcion) &&
+				Objects.equals(personal, that.personal);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, nombre, descripcion, personal);
+	}
 }

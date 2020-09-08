@@ -1,14 +1,8 @@
 package ues.occ.proyeccion.social.ws.app.dao;
 
 import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import java.util.Set;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "personal")
@@ -20,77 +14,29 @@ public class Personal implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
-	@Column(name = "nombre", nullable = false)
+	@Column(name = "nombre", nullable = false, length = 100)
 	private String nombre;
 
-	@Column(name = "apellido", nullable = false)
+	@Column(name = "apellido", nullable = false, length = 200)
 	private String apellido;
 
-	@ManyToOne()
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "id_departamento", referencedColumnName = "id")
 	private Departamento departamento;
 
-	@ManyToOne()
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "id_tipo_personal", referencedColumnName = "id")
-	private TipoPersonal tipo_personal;
+	private TipoPersonal tipoPersonal;
+
+	@OneToMany(mappedBy = "tutor", fetch = FetchType.LAZY)
+	private Set<Proyecto> proyectos;
+
+	// TODO: 9/8/20 Add one-to-one between this and personal_encargado
+
 
 	public Personal() {
 		super();
 	}
 
-	public Personal(Integer id, String nombre, String apellido, Departamento departamento, TipoPersonal tipo_personal) {
-		super();
-		this.id = id;
-		this.nombre = nombre;
-		this.apellido = apellido;
-		this.departamento = departamento;
-		this.tipo_personal = tipo_personal;
-	}
-
-	public Departamento getDepartamento() {
-		return departamento;
-	}
-
-	public void setDepartamento(Departamento departamento) {
-		this.departamento = departamento;
-	}
-
-	public TipoPersonal getTipo_personal() {
-		return tipo_personal;
-	}
-
-	public void setTipo_personal(TipoPersonal tipo_personal) {
-		this.tipo_personal = tipo_personal;
-	}
-
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public String getNombre() {
-		return nombre;
-	}
-
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
-
-	public String getApellido() {
-		return apellido;
-	}
-
-	public void setApellido(String apellido) {
-		this.apellido = apellido;
-	}
-
-	@Override
-	public String toString() {
-		return "Personal [id=" + id + ", nombre=" + nombre + ", apellido=" + apellido + ", departamento=" + departamento
-				+ ", tipo_personal=" + tipo_personal + "]";
-	}
 
 }

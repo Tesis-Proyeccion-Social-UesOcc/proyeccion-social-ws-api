@@ -1,6 +1,7 @@
 package ues.occ.proyeccion.social.ws.app.dao;
 
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -24,7 +25,7 @@ public class Departamento implements Serializable{
 	@Column(name = "id")
 	private Integer id;
 	
-	@Column(name = "nombre", nullable = false)
+	@Column(name = "nombre", nullable = false, length = 200)
 	private String nombre;
 	
 	@OneToMany(targetEntity = Personal.class, mappedBy = "departamento", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -60,6 +61,19 @@ public class Departamento implements Serializable{
 	public String toString() {
 		return "Departamento [id=" + id + ", nombre=" + nombre + "]";
 	}
-	
-	
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Departamento that = (Departamento) o;
+		return Objects.equals(id, that.id) &&
+				Objects.equals(nombre, that.nombre) &&
+				Objects.equals(personal, that.personal);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, nombre, personal);
+	}
 }
