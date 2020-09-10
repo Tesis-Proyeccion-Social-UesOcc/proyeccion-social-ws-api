@@ -5,7 +5,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
-@Entity()
+@Entity
 @Table(name = "estado_requerimiento_estudiante")
 public class EstadoRequerimientoEstudiante implements Serializable {
 
@@ -14,12 +14,12 @@ public class EstadoRequerimientoEstudiante implements Serializable {
 
     @ManyToOne
     @MapsId("idRequerimiento")
-    @JoinColumn("id_requerimiento")
+    @JoinColumn(name = "id_requerimiento")
     private Requerimiento requerimiento;
 
     @ManyToOne
     @MapsId("idEstudiante")
-    @JoinColumn("id_estudiante")
+    @JoinColumn(name = "id_estudiante")
     private Estudiante estudiante;
 
     @Column(name = "entregado")

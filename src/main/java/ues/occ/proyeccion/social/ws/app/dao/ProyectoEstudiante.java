@@ -23,7 +23,7 @@ public class ProyectoEstudiante implements Serializable {
     private Estudiante estudiante;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn("id_proyecto")
+    @JoinColumn(name = "id_proyecto")
     private Proyecto proyecto;
 
     @ManyToOne(fetch = FetchType.LAZY)
