@@ -1,82 +1,103 @@
 package ues.occ.proyeccion.social.ws.app.dao;
 
 import java.io.Serializable;
+import java.util.Objects;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
-@Table(name = "proyecto_estudiante")
+@Table(name = "proyecto_estudiante"
+        , uniqueConstraints = @UniqueConstraint(
+        columnNames = {"carnet", "id_proyecto"}))
 public class ProyectoEstudiante implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
-	private Integer id;
-	
-	@Column(name = "carnet", nullable = false)
-	private String carnet;
-	
-	@Column(name = "id_proyecto", nullable = false)
-	private Integer id_proyecto;
-	
-	@Column(name = "id_status", nullable = false)
-	private Integer id_status;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Integer id;
 
-	public ProyectoEstudiante() {
-	}
-	
-	public ProyectoEstudiante(Integer id, String carnet, Integer id_proyecto, Integer id_status) {
-		super();
-		this.id = id;
-		this.carnet = carnet;
-		this.id_proyecto = id_proyecto;
-		this.id_status = id_status;
-	}
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "carnet")
+    private Estudiante estudiante;
 
-	public Integer getId() {
-		return id;
-	}
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn("id_proyecto")
+    private Proyecto proyecto;
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_status")
+    private Status status;
 
-	public String getCarnet() {
-		return carnet;
-	}
+    @OneToOne(mappedBy = "proyectoEstudiante", cascade = CascadeType.ALL)
+    private Certificado certificado;
 
-	public void setCarnet(String carnet) {
-		this.carnet = carnet;
-	}
+    public ProyectoEstudiante() {
+    }
 
-	public Integer getId_proyecto() {
-		return id_proyecto;
-	}
+    public ProyectoEstudiante(Integer id, Estudiante estudiante, Proyecto proyecto, Status status, Certificado certificado) {
+        this.id = id;
+        this.estudiante = estudiante;
+        this.proyecto = proyecto;
+        this.status = status;
+        this.certificado = certificado;
+    }
 
-	public void setId_proyecto(Integer id_proyecto) {
-		this.id_proyecto = id_proyecto;
-	}
+    public Integer getId() {
+        return id;
+    }
 
-	public Integer getId_status() {
-		return id_status;
-	}
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-	public void setId_status(Integer id_status) {
-		this.id_status = id_status;
-	}
+    public Estudiante getEstudiante() {
+        return estudiante;
+    }
 
-	@Override
-	public String toString() {
-		return "ProyectoEstudiante [id=" + id + ", carnet=" + carnet + ", id_proyecto=" + id_proyecto + ", id_status="
-				+ id_status + "]";
-	}
-	
-	
+    public void setEstudiante(Estudiante estudiante) {
+        this.estudiante = estudiante;
+    }
+
+    public Proyecto getProyecto() {
+        return proyecto;
+    }
+
+    public void setProyecto(Proyecto proyecto) {
+        this.proyecto = proyecto;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public Certificado getCertificado() {
+        return certificado;
+    }
+
+    public void setCertificado(Certificado certificado) {
+        this.certificado = certificado;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProyectoEstudiante that = (ProyectoEstudiante) o;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(estudiante, that.estudiante) &&
+                Objects.equals(proyecto, that.proyecto) &&
+                Objects.equals(status, that.status) &&
+                Objects.equals(certificado, that.certificado);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, estudiante, proyecto, status, certificado);
+    }
 }

@@ -34,11 +34,11 @@ public class Departamento implements Serializable{
 	public Departamento() {
 		super();
 	}
-	
-	public Departamento(Integer id, String nombre) {
-		super();
+
+	public Departamento(Integer id, String nombre, Set<Personal> personal) {
 		this.id = id;
 		this.nombre = nombre;
+		this.personal = personal;
 	}
 
 	public Integer getId() {
@@ -57,9 +57,12 @@ public class Departamento implements Serializable{
 		this.nombre = nombre;
 	}
 
-	@Override
-	public String toString() {
-		return "Departamento [id=" + id + ", nombre=" + nombre + "]";
+	public Set<Personal> getPersonal() {
+		return personal;
+	}
+
+	public void setPersonal(Set<Personal> personal) {
+		this.personal = personal;
 	}
 
 	@Override
