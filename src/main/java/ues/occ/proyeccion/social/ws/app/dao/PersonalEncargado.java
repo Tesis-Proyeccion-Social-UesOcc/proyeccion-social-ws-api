@@ -1,5 +1,7 @@
 package ues.occ.proyeccion.social.ws.app.dao;
 
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -11,8 +13,9 @@ public class PersonalEncargado implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 
+
 	@Id
-	@Column(name = "id")
+	@Column(name = "id", unique = true)
 	private Integer id;
 	
 	@Column(name = "horario", length = 45, nullable = false)
@@ -24,6 +27,7 @@ public class PersonalEncargado implements Serializable{
 	// Indica que la columna id de personal se usara como PK y FK
 	@OneToOne
 	@MapsId
+	@JoinColumn(name = "id")
 	private Personal personal;
 
 	public PersonalEncargado() {

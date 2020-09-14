@@ -1,5 +1,7 @@
 package ues.occ.proyeccion.social.ws.app.dao;
 
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
@@ -11,9 +13,9 @@ import javax.persistence.*;
 public class Certificado implements Serializable{
 
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
-	@Column(name = "id")
+	@Column(name = "id", unique = true, nullable = false)
 	private Integer id;
 	
 	@Column(name = "uri", nullable = false, length = 2048)
@@ -25,6 +27,7 @@ public class Certificado implements Serializable{
 	// Indica que la columna id de proyecto_estudiante se usara como PK y FK
 	@OneToOne
 	@MapsId
+	@JoinColumn(name = "id")
 	private ProyectoEstudiante proyectoEstudiante;
 
 	public Certificado() {

@@ -17,8 +17,8 @@ public class Requerimiento implements Serializable {
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "original", nullable = false, length = 4)
-    private Integer original;
+    @Column(name = "original", nullable = false)
+    private boolean original;
 
     @Column(name = "cantidad_copias", nullable = true)
     private Integer cantidad_copias;
@@ -38,7 +38,7 @@ public class Requerimiento implements Serializable {
         super();
     }
 
-    public Requerimiento(Integer id, Integer original, Integer cantidad_copias, Proceso proceso, Documento documento, Set<EstadoRequerimientoEstudiante> estadoRequerimientoEstudiantes) {
+    public Requerimiento(Integer id, boolean original, Integer cantidad_copias, Proceso proceso, Documento documento, Set<EstadoRequerimientoEstudiante> estadoRequerimientoEstudiantes) {
         this.id = id;
         this.original = original;
         this.cantidad_copias = cantidad_copias;
@@ -55,11 +55,11 @@ public class Requerimiento implements Serializable {
         this.id = id;
     }
 
-    public Integer getOriginal() {
+    public boolean isOriginal() {
         return original;
     }
 
-    public void setOriginal(Integer original) {
+    public void setOriginal(boolean original) {
         this.original = original;
     }
 
@@ -100,8 +100,8 @@ public class Requerimiento implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Requerimiento that = (Requerimiento) o;
-        return Objects.equals(id, that.id) &&
-                Objects.equals(original, that.original) &&
+        return original == that.original &&
+                Objects.equals(id, that.id) &&
                 Objects.equals(cantidad_copias, that.cantidad_copias) &&
                 Objects.equals(proceso, that.proceso) &&
                 Objects.equals(documento, that.documento) &&
