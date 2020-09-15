@@ -1,15 +1,12 @@
 	package ues.occ.proyeccion.social.ws.app.dao;
 
 import java.io.Serializable;
+import java.util.Objects;
+import java.util.Set;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
-@Entity
+	@Entity
 @Table(name = "status")
 public class Status implements Serializable {
 
@@ -26,46 +23,65 @@ public class Status implements Serializable {
 	@Column(name = "descripcion", nullable = false, length = 200)
 	private String descripcion;
 
+	@OneToMany(mappedBy = "status", fetch = FetchType.LAZY)
+	private Set<ProyectoEstudiante> proyectoEstudianteSet;
+
 	public Status() {
 		super();
 	}
-	
-	public Status(Integer id, String status, String descripcion) {
-		super();
-		Id = id;
-		this.status = status;
-		this.descripcion = descripcion;
-	}
 
-	public Integer getId() {
-		return Id;
-	}
+		public Status(Integer id, String status, String descripcion, Set<ProyectoEstudiante> proyectoEstudianteSet) {
+			Id = id;
+			this.status = status;
+			this.descripcion = descripcion;
+			this.proyectoEstudianteSet = proyectoEstudianteSet;
+		}
 
-	public void setId(Integer id) {
-		Id = id;
-	}
+		public Integer getId() {
+			return Id;
+		}
 
-	public String getStatus() {
-		return status;
-	}
+		public void setId(Integer id) {
+			Id = id;
+		}
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
+		public String getStatus() {
+			return status;
+		}
 
-	public String getDescripcion() {
-		return descripcion;
-	}
+		public void setStatus(String status) {
+			this.status = status;
+		}
 
-	public void setDescripcion(String descripcion) {
-		this.descripcion = descripcion;
-	}
+		public String getDescripcion() {
+			return descripcion;
+		}
 
-	@Override
-	public String toString() {
-		return "Status [Id=" + Id + ", status=" + status + ", descripcion=" + descripcion + "]";
+		public void setDescripcion(String descripcion) {
+			this.descripcion = descripcion;
+		}
+
+		public Set<ProyectoEstudiante> getProyectoEstudianteSet() {
+			return proyectoEstudianteSet;
+		}
+
+		public void setProyectoEstudianteSet(Set<ProyectoEstudiante> proyectoEstudianteSet) {
+			this.proyectoEstudianteSet = proyectoEstudianteSet;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+			Status status1 = (Status) o;
+			return Objects.equals(Id, status1.Id) &&
+					Objects.equals(status, status1.status) &&
+					Objects.equals(descripcion, status1.descripcion) &&
+					Objects.equals(proyectoEstudianteSet, status1.proyectoEstudianteSet);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(Id, status, descripcion, proyectoEstudianteSet);
+		}
 	}
-	
-	
-	
-}

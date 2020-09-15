@@ -1,13 +1,11 @@
 package ues.occ.proyeccion.social.ws.app.dao;
 
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import java.io.Serializable;
+import java.util.Objects;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "personal_encargado")
@@ -15,8 +13,9 @@ public class PersonalEncargado implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", unique = true)
 	private Integer id;
 	
 	@Column(name = "horario", length = 45, nullable = false)
@@ -25,15 +24,21 @@ public class PersonalEncargado implements Serializable{
 	@Column(name = "ubicacion", length = 200, nullable = false)
 	private String ubicacion;
 
+	// Indica que la columna id de personal se usara como PK y FK
+	@OneToOne
+	@MapsId
+	@JoinColumn(name = "id")
+	private Personal personal;
+
 	public PersonalEncargado() {
 		super();
 	}
-	
-	public PersonalEncargado(Integer id, String horario, String ubicacion) {
-		super();
+
+	public PersonalEncargado(Integer id, String horario, String ubicacion, Personal personal) {
 		this.id = id;
 		this.horario = horario;
 		this.ubicacion = ubicacion;
+		this.personal = personal;
 	}
 
 	public Integer getId() {
@@ -60,11 +65,27 @@ public class PersonalEncargado implements Serializable{
 		this.ubicacion = ubicacion;
 	}
 
-	@Override
-	public String toString() {
-		return "PersonalEncargado [id=" + id + ", horario=" + horario + ", ubicacion=" + ubicacion + "]";
+	public Personal getPersonal() {
+		return personal;
 	}
-	
-	
-	
+
+	public void setPersonal(Personal personal) {
+		this.personal = personal;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		PersonalEncargado that = (PersonalEncargado) o;
+		return Objects.equals(id, that.id) &&
+				Objects.equals(horario, that.horario) &&
+				Objects.equals(ubicacion, that.ubicacion) &&
+				Objects.equals(personal, that.personal);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, horario, ubicacion, personal);
+	}
 }
