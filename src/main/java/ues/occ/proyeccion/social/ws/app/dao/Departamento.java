@@ -1,6 +1,7 @@
 package ues.occ.proyeccion.social.ws.app.dao;
 
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -24,7 +25,7 @@ public class Departamento implements Serializable{
 	@Column(name = "id")
 	private Integer id;
 	
-	@Column(name = "nombre", nullable = false)
+	@Column(name = "nombre", nullable = false, length = 200)
 	private String nombre;
 	
 	@OneToMany(targetEntity = Personal.class, mappedBy = "departamento", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -33,11 +34,11 @@ public class Departamento implements Serializable{
 	public Departamento() {
 		super();
 	}
-	
-	public Departamento(Integer id, String nombre) {
-		super();
+
+	public Departamento(Integer id, String nombre, Set<Personal> personal) {
 		this.id = id;
 		this.nombre = nombre;
+		this.personal = personal;
 	}
 
 	public Integer getId() {
@@ -56,10 +57,26 @@ public class Departamento implements Serializable{
 		this.nombre = nombre;
 	}
 
-	@Override
-	public String toString() {
-		return "Departamento [id=" + id + ", nombre=" + nombre + "]";
+	public Set<Personal> getPersonal() {
+		return personal;
 	}
-	
-	
+
+	public void setPersonal(Set<Personal> personal) {
+		this.personal = personal;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Departamento that = (Departamento) o;
+		return Objects.equals(id, that.id) &&
+				Objects.equals(nombre, that.nombre) &&
+				Objects.equals(personal, that.personal);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, nombre, personal);
+	}
 }

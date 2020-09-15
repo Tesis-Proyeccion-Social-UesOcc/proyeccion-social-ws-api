@@ -1,13 +1,9 @@
 package ues.occ.proyeccion.social.ws.app.dao;
 
 import java.io.Serializable;
+import java.util.Objects;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "usuario")
@@ -33,23 +29,22 @@ public class Usuario implements Serializable{
 	
 	@Column(name = "password", nullable = false, length = 100)
 	private String password;
-	
-	@Column(name = "id_rol", nullable = false)
-	private Integer id_rol;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "id_rol")
+	private Rol rol;
 	
 	public Usuario() {
 		super();
 	}
-	
-	public Usuario(Integer id, String nombre, String apellido, String email, String password, Integer id_rol) {
-		super();
+
+	public Usuario(Integer id, String nombre, String apellido, String email, String password, Rol rol) {
 		this.id = id;
 		this.nombre = nombre;
 		this.apellido = apellido;
 		this.email = email;
 		this.password = password;
-		this.id_rol = id_rol;
+		this.rol = rol;
 	}
 
 	public Integer getId() {
@@ -92,18 +87,29 @@ public class Usuario implements Serializable{
 		this.password = password;
 	}
 
-	public Integer getId_rol() {
-		return id_rol;
+	public Rol getRol() {
+		return rol;
 	}
 
-	public void setId_rol(Integer id_rol) {
-		this.id_rol = id_rol;
+	public void setRol(Rol rol) {
+		this.rol = rol;
 	}
 
 	@Override
-	public String toString() {
-		return "Usuario [id=" + id + ", nombre=" + nombre + ", apellido=" + apellido + ", email=" + email
-				+ ", password=" + password + ", id_rol=" + id_rol + "]";
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Usuario usuario = (Usuario) o;
+		return Objects.equals(id, usuario.id) &&
+				Objects.equals(nombre, usuario.nombre) &&
+				Objects.equals(apellido, usuario.apellido) &&
+				Objects.equals(email, usuario.email) &&
+				Objects.equals(password, usuario.password) &&
+				Objects.equals(rol, usuario.rol);
 	}
-	
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, nombre, apellido, email, password, rol);
+	}
 }

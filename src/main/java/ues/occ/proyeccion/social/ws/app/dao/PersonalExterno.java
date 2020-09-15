@@ -1,13 +1,10 @@
 package ues.occ.proyeccion.social.ws.app.dao;
 
 import java.io.Serializable;
+import java.util.Objects;
+import java.util.Set;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "personal_externo")
@@ -19,17 +16,28 @@ public class PersonalExterno implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
-	@Column(name = "nombre", nullable = false)
+	@Column(name = "nombre", nullable = false, length = 50)
 	private String nombre;
+
+	@Column(name = "apellido", nullable = false, length = 100)
+	private String apellido;
+
+	@Column(name = "descripcion", nullable = false, length = 500)
+	private String descripcion;
+
+	@OneToMany(mappedBy = "encargadoExterno", fetch = FetchType.LAZY)
+	private Set<Proyecto> proyectos;
 	
 	public PersonalExterno() {
 		super();
 	}
 
-	public PersonalExterno(Integer id, String nombre) {
-		super();
+	public PersonalExterno(Integer id, String nombre, String apellido, String descripcion, Set<Proyecto> proyectos) {
 		this.id = id;
 		this.nombre = nombre;
+		this.apellido = apellido;
+		this.descripcion = descripcion;
+		this.proyectos = proyectos;
 	}
 
 	public Integer getId() {
@@ -48,9 +56,44 @@ public class PersonalExterno implements Serializable {
 		this.nombre = nombre;
 	}
 
-	@Override
-	public String toString() {
-		return "PersonalExterno [id=" + id + ", nombre=" + nombre + "]";
+	public String getApellido() {
+		return apellido;
 	}
-		
+
+	public void setApellido(String apellido) {
+		this.apellido = apellido;
+	}
+
+	public String getDescripcion() {
+		return descripcion;
+	}
+
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
+	}
+
+	public Set<Proyecto> getProyectos() {
+		return proyectos;
+	}
+
+	public void setProyectos(Set<Proyecto> proyectos) {
+		this.proyectos = proyectos;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		PersonalExterno that = (PersonalExterno) o;
+		return Objects.equals(id, that.id) &&
+				Objects.equals(nombre, that.nombre) &&
+				Objects.equals(apellido, that.apellido) &&
+				Objects.equals(descripcion, that.descripcion) &&
+				Objects.equals(proyectos, that.proyectos);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, nombre, apellido, descripcion, proyectos);
+	}
 }
