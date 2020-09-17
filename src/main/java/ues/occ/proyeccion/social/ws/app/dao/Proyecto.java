@@ -1,13 +1,10 @@
 package ues.occ.proyeccion.social.ws.app.dao;
 
 import java.io.Serializable;
+import java.util.Objects;
+import java.util.Set;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "proyecto")
@@ -25,29 +22,33 @@ public class Proyecto implements Serializable {
 	@Column(name = "duracion", nullable = false)
 	private Integer duracion;
 	
-	@Column(name = "interno", nullable = false, length = 4)
-	private Integer interno;
-	
-	@Column(name = "id_tutor", nullable = true)
-	private Integer id_tutor;
-	
-	@Column(name = "id_encargado_externo", nullable = true)
-	private Integer id_encargado_externo;
+	@Column(name = "interno", nullable = false)
+	private boolean interno;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "id_tutor")
+	private Personal tutor;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "id_encargado_externo")
+	private PersonalExterno encargadoExterno;
+
+	@OneToMany(mappedBy = "proyecto", fetch = FetchType.LAZY)
+	private Set<ProyectoEstudiante> proyectoEstudianteSet;
 
 	
 	public Proyecto() {
 		super();
 	}
-	
-	public Proyecto(Integer id, String nombre, Integer duracion, Integer interno, Integer id_tutor,
-			Integer id_encargado_externo) {
-		super();
+
+	public Proyecto(Integer id, String nombre, Integer duracion, boolean interno, Personal tutor, PersonalExterno encargadoExterno, Set<ProyectoEstudiante> proyectoEstudianteSet) {
 		this.id = id;
 		this.nombre = nombre;
 		this.duracion = duracion;
 		this.interno = interno;
-		this.id_tutor = id_tutor;
-		this.id_encargado_externo = id_encargado_externo;
+		this.tutor = tutor;
+		this.encargadoExterno = encargadoExterno;
+		this.proyectoEstudianteSet = proyectoEstudianteSet;
 	}
 
 	public Integer getId() {
@@ -74,34 +75,54 @@ public class Proyecto implements Serializable {
 		this.duracion = duracion;
 	}
 
-	public Integer getInterno() {
+	public boolean isInterno() {
 		return interno;
 	}
 
-	public void setInterno(Integer interno) {
+	public void setInterno(boolean interno) {
 		this.interno = interno;
 	}
 
-	public Integer getId_tutor() {
-		return id_tutor;
+	public Personal getTutor() {
+		return tutor;
 	}
 
-	public void setId_tutor(Integer id_tutor) {
-		this.id_tutor = id_tutor;
+	public void setTutor(Personal tutor) {
+		this.tutor = tutor;
 	}
 
-	public Integer getId_encargado_externo() {
-		return id_encargado_externo;
+	public PersonalExterno getEncargadoExterno() {
+		return encargadoExterno;
 	}
 
-	public void setId_encargado_externo(Integer id_encargado_externo) {
-		this.id_encargado_externo = id_encargado_externo;
+	public void setEncargadoExterno(PersonalExterno encargadoExterno) {
+		this.encargadoExterno = encargadoExterno;
+	}
+
+	public Set<ProyectoEstudiante> getProyectoEstudianteSet() {
+		return proyectoEstudianteSet;
+	}
+
+	public void setProyectoEstudianteSet(Set<ProyectoEstudiante> proyectoEstudianteSet) {
+		this.proyectoEstudianteSet = proyectoEstudianteSet;
 	}
 
 	@Override
-	public String toString() {
-		return "Proyecto [id=" + id + ", nombre=" + nombre + ", duracion=" + duracion + ", interno=" + interno
-				+ ", id_tutor=" + id_tutor + ", id_encargado_externo=" + id_encargado_externo + "]";
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Proyecto proyecto = (Proyecto) o;
+		return interno == proyecto.interno &&
+				Objects.equals(id, proyecto.id) &&
+				Objects.equals(nombre, proyecto.nombre) &&
+				Objects.equals(duracion, proyecto.duracion) &&
+				Objects.equals(tutor, proyecto.tutor) &&
+				Objects.equals(encargadoExterno, proyecto.encargadoExterno) &&
+				Objects.equals(proyectoEstudianteSet, proyecto.proyectoEstudianteSet);
 	}
-	
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, nombre, duracion, interno, tutor, encargadoExterno, proyectoEstudianteSet);
+	}
 }
