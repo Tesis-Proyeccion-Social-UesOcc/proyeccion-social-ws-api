@@ -1,6 +1,7 @@
 package ues.occ.proyeccion.social.ws.app.dao;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Objects;
 import java.util.Set;
 
@@ -36,12 +37,15 @@ public class Proyecto implements Serializable {
 	@OneToMany(mappedBy = "proyecto", fetch = FetchType.LAZY)
 	private Set<ProyectoEstudiante> proyectoEstudianteSet;
 
+	@Column(name = "fecha_creacion")
+	private Date fechaCreacion;
 	
 	public Proyecto() {
 		super();
 	}
 
-	public Proyecto(Integer id, String nombre, Integer duracion, boolean interno, Personal tutor, PersonalExterno encargadoExterno, Set<ProyectoEstudiante> proyectoEstudianteSet) {
+	public Proyecto(Integer id, String nombre, Integer duracion, boolean interno, Personal tutor, 
+			PersonalExterno encargadoExterno, Set<ProyectoEstudiante> proyectoEstudianteSet, Date fechaCreacion) {
 		this.id = id;
 		this.nombre = nombre;
 		this.duracion = duracion;
@@ -49,10 +53,19 @@ public class Proyecto implements Serializable {
 		this.tutor = tutor;
 		this.encargadoExterno = encargadoExterno;
 		this.proyectoEstudianteSet = proyectoEstudianteSet;
+		this.fechaCreacion = fechaCreacion;
 	}
 
 	public Integer getId() {
 		return id;
+	}
+
+	public Date getFechaCreacion() {
+		return fechaCreacion;
+	}
+
+	public void setFechaCreacion(Date fechaCreacion) {
+		this.fechaCreacion = fechaCreacion;
 	}
 
 	public void setId(Integer id) {

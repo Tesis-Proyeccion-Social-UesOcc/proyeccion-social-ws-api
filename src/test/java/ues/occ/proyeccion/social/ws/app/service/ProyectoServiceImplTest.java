@@ -28,7 +28,7 @@ class ProyectoServiceImplTest {
     void testFindById() {
         Optional<Proyecto> proyecto = Optional.of(
                 new Proyecto(
-                        5, "name", 250, true, null, null, null
+                        5, "name", 250, true, null, null, null,null
                 )
         );
         Mockito.when(this.proyectoRepository.findById(Mockito.anyInt()))
