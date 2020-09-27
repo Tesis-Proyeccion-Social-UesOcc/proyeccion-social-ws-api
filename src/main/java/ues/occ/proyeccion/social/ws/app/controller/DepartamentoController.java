@@ -11,7 +11,7 @@ import ues.occ.proyeccion.social.ws.app.dao.ServiceResponse;
 import ues.occ.proyeccion.social.ws.app.service.DepartamentoService;
 
 @RestController
-@RequestMapping(value = "departamento")
+@RequestMapping(value = "/departamento")
 public class DepartamentoController {
 
 	@Autowired
@@ -22,7 +22,7 @@ public class DepartamentoController {
 		return departamentoService.findAll();
 	}
 	
-	@GetMapping(value = "/findById={id}")
+	@GetMapping(value = "/{id}")
 	public ResponseEntity<ServiceResponse> findById(@PathVariable("id") int id){
 		return departamentoService.findById(id);
 	}
