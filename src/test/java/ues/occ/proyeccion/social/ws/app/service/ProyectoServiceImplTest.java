@@ -40,7 +40,7 @@ class ProyectoServiceImplTest {
     }
 
     @Test
-    void testFindUnexistent() {
+    void testFindNonexistent() {
         Mockito.when(this.proyectoRepository.findById(10))
                 .thenReturn(Optional.of(new Proyecto()));
         assertThrows(ResourceNotFoundException.class, () -> this.proyectoService.findById(1));
