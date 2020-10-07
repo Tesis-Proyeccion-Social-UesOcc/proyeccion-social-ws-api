@@ -1,8 +1,5 @@
 package ues.occ.proyeccion.social.ws.app.controller;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
 import ues.occ.proyeccion.social.ws.app.service.ProyectoService;
@@ -23,10 +20,23 @@ public class ProyectoController {
         return this.service.findById(projectId);
     }
 
-    @GetMapping(params = {"page", "size"})
+    @GetMapping(params = {"page", "size", "status", "pending"})
     public List<Proyecto> getRange(
-            @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) Integer status
     ) {
-        return this.service.findAll(page, size);
+        if (status == null) {
+            return this.service.findAll(page, size);
+        } else
+            return this.service.findAllByStatus(page, size, status);
+    }
+
+    @GetMapping("/pending")
+    public List<Proyecto> getPendingProjects(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+            ) {
+        return this.service.findAllPending(page, size);
     }
 }

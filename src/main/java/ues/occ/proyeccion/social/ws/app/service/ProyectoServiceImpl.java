@@ -16,7 +16,7 @@ public class ProyectoServiceImpl implements ProyectoService {
     private final ProyectoRepository proyectoRepository;
 
     public ProyectoServiceImpl(ProyectoRepository proyectoRepository) {
-        this.proyectoRepository = proyectoRepository;
+        this.proyectoRepository= proyectoRepository;
     }
 
     @Override
@@ -27,7 +27,7 @@ public class ProyectoServiceImpl implements ProyectoService {
 
     @Override
     public List<Proyecto> findAll(int page, int size) {
-        Pageable paging = PageRequest.of(page, size);
+        Pageable paging = this.getPageable(page, size);;
         Page<Proyecto> proyectoPage = proyectoRepository.findAll(paging);
         if(proyectoPage.hasContent()){
             return proyectoPage.getContent();
@@ -35,5 +35,34 @@ public class ProyectoServiceImpl implements ProyectoService {
         else{
             return Collections.EMPTY_LIST;
         }
+    }
+
+    @Override
+    public List<Proyecto> findAllByStatus(int page, int size, int statusId) {
+        Pageable paging = this.getPageable(page, size);
+        Page<Proyecto> proyectoPage = proyectoRepository.findByProyectoEstudiante_Status(statusId, paging);
+        if(proyectoPage.hasContent()){
+            return proyectoPage.getContent();
+        }
+        else{
+            return Collections.EMPTY_LIST;
+        }
+    }
+
+    @Override
+    public List<Proyecto> findAllPending(int page, int size) {
+        Pageable paging = this.getPageable(page, size);
+        Page<Proyecto> proyectoPage = proyectoRepository.findAllByProyectoEstudianteSet_Empty(paging);
+        if(proyectoPage.hasContent()){
+            return proyectoPage.getContent();
+        }
+        else{
+            return Collections.EMPTY_LIST;
+        }
+    }
+
+    private Pageable getPageable(int page, int size){
+        return PageRequest.of(page, size);
+
     }
 }

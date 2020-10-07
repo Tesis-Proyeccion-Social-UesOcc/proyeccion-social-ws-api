@@ -4,8 +4,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
@@ -43,15 +41,17 @@ class ProyectoControllerTest {
     @Test
     void getOne() throws Exception {
         Proyecto proyecto = new Proyecto();
-        String nombre = "My project";
+        String name = "project 64";
         proyecto.setId(12);
-        proyecto.setNombre(nombre);
+        proyecto.setNombre(name);
         Mockito.when(proyectoService.findById(Mockito.anyInt())).thenReturn(proyecto);
         mvc.perform(get("/proyectos/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.nombre", is(nombre)));
+//                .andExpect(jsonPath("$.estudiante.carnet", is(carnet)));
+                .andExpect(jsonPath("$.nombre", is(name)));
+
 
 
     }

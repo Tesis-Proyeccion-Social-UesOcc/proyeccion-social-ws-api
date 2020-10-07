@@ -26,16 +26,13 @@ class ProyectoServiceImplTest {
 
     @Test
     void testFindById() {
-        Optional<Proyecto> proyecto = Optional.of(
-                new Proyecto(
-                        5, "name", 250, true, null, null, null
-                )
-        );
+        Proyecto proyecto = new Proyecto();
+        proyecto.setId(5);
+        Optional<Proyecto> proyecto_ = Optional.of(proyecto);
         Mockito.when(this.proyectoRepository.findById(Mockito.anyInt()))
-                .thenReturn(proyecto);
+                .thenReturn(proyecto_);
         Proyecto resultObject = this.proyectoService.findById(1);
         assertNotNull(resultObject);
-        assertEquals(resultObject.getDuracion(), 250);
         assertEquals(resultObject.getId(), 5);
     }
 
