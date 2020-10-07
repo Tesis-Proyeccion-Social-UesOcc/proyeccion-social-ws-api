@@ -40,7 +40,7 @@ public class ProyectoServiceImpl implements ProyectoService {
     @Override
     public List<Proyecto> findAllByStatus(int page, int size, int statusId) {
         Pageable paging = this.getPageable(page, size);
-        Page<Proyecto> proyectoPage = proyectoRepository.findByProyectoEstudiante_Status(statusId, paging);
+        Page<Proyecto> proyectoPage = proyectoRepository.findAllByProyectoEstudianteSet_StatusId(statusId, paging);
         if(proyectoPage.hasContent()){
             return proyectoPage.getContent();
         }

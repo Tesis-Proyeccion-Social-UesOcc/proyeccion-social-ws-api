@@ -14,7 +14,7 @@ import java.util.List;
 // This repository extends CrudRepository
 @Repository
 public interface ProyectoRepository extends PagingAndSortingRepository<Proyecto, Integer> {
-    Page<Proyecto> findByProyectoEstudiante_Status(int statusId, Pageable pageable);
+    Page<Proyecto> findAllByProyectoEstudianteSet_StatusId(int statusId, Pageable pageable);
     // proyectos pendientes, es decir, no existen en proyecto_estudiante
     Page<Proyecto> findAllByProyectoEstudianteSet_Empty(Pageable pageable);
 }

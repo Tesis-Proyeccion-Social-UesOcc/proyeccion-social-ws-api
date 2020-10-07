@@ -1,7 +1,7 @@
 package ues.occ.proyeccion.social.ws.app.service;
 
+import org.springframework.stereotype.Service;
 import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
-import ues.occ.proyeccion.social.ws.app.dao.ProyectoEstudiante;
 
 import java.util.List;
 

@@ -20,7 +20,7 @@ public class ProyectoController {
         return this.service.findById(projectId);
     }
 
-    @GetMapping(params = {"page", "size", "status", "pending"})
+    @GetMapping(params = {"page", "size"})
     public List<Proyecto> getRange(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
