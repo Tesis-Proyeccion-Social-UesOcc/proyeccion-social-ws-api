@@ -11,7 +11,7 @@ import ues.occ.proyeccion.social.ws.app.dao.ServiceResponse;
 import ues.occ.proyeccion.social.ws.app.service.DepartamentoService;
 
 @RestController
-@RequestMapping(value = "/proyeccion-social/api/departamento")
+@RequestMapping(value = "departamento")
 public class DepartamentoController {
 
 	@Autowired
