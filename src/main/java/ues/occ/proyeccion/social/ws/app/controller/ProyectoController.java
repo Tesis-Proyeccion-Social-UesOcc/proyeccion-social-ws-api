@@ -3,6 +3,7 @@ package ues.occ.proyeccion.social.ws.app.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,5 +28,10 @@ public class ProyectoController {
 	@PostMapping
 	public ResponseEntity<ServiceResponse> create(@RequestBody Proyecto proyecto){
 		return proyectoService.create(proyecto);
+	}
+	
+	@GetMapping(value = "/findByStatus/{idStatus}")
+	public ResponseEntity<ServiceResponse> findProyectosByStatus(@PathVariable("idStatus") int idStatus){
+		return proyectoService.findProyectosByStatus(idStatus); 
 	}
 }

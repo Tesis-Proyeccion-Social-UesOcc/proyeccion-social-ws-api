@@ -11,4 +11,6 @@ public interface ProyectoService {
 	public abstract ResponseEntity<ServiceResponse> findAll();
 	
 	public abstract ResponseEntity<ServiceResponse> create(Proyecto proyectoO);
+
+	public abstract ResponseEntity<ServiceResponse> findProyectosByStatus(int idStatus);
 }

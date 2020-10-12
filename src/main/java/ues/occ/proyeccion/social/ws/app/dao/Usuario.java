@@ -31,7 +31,7 @@ public class Usuario implements Serializable{
 	private String password;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "id_rol")
+	@JoinColumn(name = "rol_id")
 	private Rol rol;
 	
 	public Usuario() {

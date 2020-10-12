@@ -48,4 +48,12 @@ public class ProyectoServiceImpl implements ProyectoService {
 
 		//return null;
 	}
+	
+	@Override
+	public ResponseEntity<ServiceResponse> findProyectosByStatus(int idStatus){
+		return new ResponseEntity<ServiceResponse>(
+				new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk, 
+						proyectoRepository.findProyectosByStatus(idStatus)),
+				HttpStatus.OK);
+	}
 }
