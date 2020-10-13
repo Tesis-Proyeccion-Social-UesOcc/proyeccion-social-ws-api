@@ -16,4 +16,9 @@ public class RestResponseExceptionCatcher extends ResponseEntityExceptionHandler
     public ResponseEntity<Object> objectNotFound(Exception exception, WebRequest webRequest) {
         return new ResponseEntity<>("Resource not found", new HttpHeaders(), HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler({IllegalArgumentException.class})
+    public ResponseEntity<Object> invalidParams(Exception exception, WebRequest webRequest){
+        return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    }
 }

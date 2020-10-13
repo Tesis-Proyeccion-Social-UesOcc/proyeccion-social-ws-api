@@ -57,7 +57,7 @@ public class ProyectoServiceImpl implements ProyectoService {
             return proyectoPage.getContent();
         }
         else{
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
     }
 

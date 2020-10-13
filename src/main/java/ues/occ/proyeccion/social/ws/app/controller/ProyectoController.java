@@ -22,7 +22,7 @@ public class ProyectoController {
 
     @GetMapping(params = {"page", "size"})
     public List<Proyecto> getRange(
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) Integer status
     ) {
