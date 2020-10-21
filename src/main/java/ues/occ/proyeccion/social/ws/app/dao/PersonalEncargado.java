@@ -1,7 +1,5 @@
 package ues.occ.proyeccion.social.ws.app.dao;
 
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -34,11 +32,10 @@ public class PersonalEncargado implements Serializable{
 		super();
 	}
 
-	public PersonalEncargado(Integer id, String horario, String ubicacion, Personal personal) {
+	public PersonalEncargado(Integer id, String horario, String ubicacion) {
 		this.id = id;
 		this.horario = horario;
 		this.ubicacion = ubicacion;
-		this.personal = personal;
 	}
 
 	public Integer getId() {
@@ -65,13 +62,6 @@ public class PersonalEncargado implements Serializable{
 		this.ubicacion = ubicacion;
 	}
 
-	public Personal getPersonal() {
-		return personal;
-	}
-
-	public void setPersonal(Personal personal) {
-		this.personal = personal;
-	}
 
 	@Override
 	public boolean equals(Object o) {
@@ -80,12 +70,11 @@ public class PersonalEncargado implements Serializable{
 		PersonalEncargado that = (PersonalEncargado) o;
 		return Objects.equals(id, that.id) &&
 				Objects.equals(horario, that.horario) &&
-				Objects.equals(ubicacion, that.ubicacion) &&
-				Objects.equals(personal, that.personal);
+				Objects.equals(ubicacion, that.ubicacion);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, horario, ubicacion, personal);
+		return Objects.hash(id, horario, ubicacion);
 	}
 }

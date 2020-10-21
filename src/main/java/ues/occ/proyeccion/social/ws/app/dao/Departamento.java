@@ -14,6 +14,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 @Table(name = "departamento")
 public class Departamento implements Serializable{
@@ -35,10 +37,9 @@ public class Departamento implements Serializable{
 		super();
 	}
 
-	public Departamento(Integer id, String nombre, Set<Personal> personal) {
+	public Departamento(Integer id, String nombre) {
 		this.id = id;
 		this.nombre = nombre;
-		this.personal = personal;
 	}
 
 	public Integer getId() {

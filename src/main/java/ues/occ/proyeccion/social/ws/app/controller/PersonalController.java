@@ -22,4 +22,10 @@ public class PersonalController {
 	public ResponseEntity<ServiceResponse> findByTipoPersonal(@PathVariable("idTipoPersonal")int idTipoPersonal){
 		return personalService.findByTipoPersonal(idTipoPersonal);
 	}
+	
+	@GetMapping
+	public ResponseEntity<ServiceResponse> findAll(){
+		return personalService.findAll();	
+	}
+	
 }

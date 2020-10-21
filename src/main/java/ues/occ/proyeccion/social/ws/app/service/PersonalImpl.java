@@ -23,13 +23,19 @@ public class PersonalImpl implements PersonalService {
 		// TODO Auto-generated method stub
 		try {
 			return new ResponseEntity<ServiceResponse>(new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk,
-					personalRepository.findByTipoPersonal(idTipoPersonal)), HttpStatus.OK);
+					personalRepository.findByTipoPersonalId(idTipoPersonal)), HttpStatus.OK);
 		} catch (Exception e) {
 			log.error("Problemas al buscar por tipo personal: "+e.getMessage());
 			return new ResponseEntity<ServiceResponse>(new ServiceResponse(ServiceResponse.codeFatal, ServiceResponse.messageFatal,
 					"Problemas al buscar por tipo personal: "+e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
+	}
+
+	@Override
+	public ResponseEntity<ServiceResponse> findAll() {
+		return new ResponseEntity<ServiceResponse>(new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk,
+				personalRepository.findAll()), HttpStatus.OK);
 	}
 
 }
