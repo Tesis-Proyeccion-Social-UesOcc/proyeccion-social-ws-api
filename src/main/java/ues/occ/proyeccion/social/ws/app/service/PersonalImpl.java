@@ -19,11 +19,11 @@ public class PersonalImpl implements PersonalService {
 	private PersonalRepository personalRepository;
 	
 	@Override
-	public ResponseEntity<ServiceResponse> findByTipoPersonal(int idTipoPersonal) {
+	public ResponseEntity<ServiceResponse> findByTipoPersonalId(int idTipoPersonal) {
 		// TODO Auto-generated method stub
 		try {
 			return new ResponseEntity<ServiceResponse>(new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk,
-					personalRepository.findByTipoPersonalId(idTipoPersonal)), HttpStatus.OK);
+					 personalRepository.findByTipoPersonalId(idTipoPersonal)), HttpStatus.OK);
 		} catch (Exception e) {
 			log.error("Problemas al buscar por tipo personal: "+e.getMessage());
 			return new ResponseEntity<ServiceResponse>(new ServiceResponse(ServiceResponse.codeFatal, ServiceResponse.messageFatal,
@@ -35,7 +35,32 @@ public class PersonalImpl implements PersonalService {
 	@Override
 	public ResponseEntity<ServiceResponse> findAll() {
 		return new ResponseEntity<ServiceResponse>(new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk,
-				personalRepository.findAll()), HttpStatus.OK);
+				 personalRepository.findAll()), HttpStatus.OK);
 	}
 
+	@Override
+	public ResponseEntity<ServiceResponse> findByDepartamentoId(int idDepartamento) {
+		try {
+			return new ResponseEntity<ServiceResponse>(new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk,
+					 personalRepository.findByDepartamentoId(idDepartamento)), HttpStatus.OK);
+		} catch (Exception e) {
+			log.error("Problemas al buscar por Departamento: "+e.getMessage());
+			return new ResponseEntity<ServiceResponse>(new ServiceResponse(ServiceResponse.codeFatal, ServiceResponse.messageFatal,
+					"Problemas al buscar por Departamento: "+e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@Override
+	public ResponseEntity<ServiceResponse> findByNombre(String nombre, String apellido) {
+		try {
+			return new ResponseEntity<ServiceResponse>(new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk,
+					 personalRepository.findByNombreOrApellidoContaining(nombre, apellido)), HttpStatus.OK);
+		} catch (Exception e) {
+			log.error("Problemas al buscar por nombre de personal: "+e.getMessage());
+			return new ResponseEntity<ServiceResponse>(new ServiceResponse(ServiceResponse.codeFatal, ServiceResponse.messageFatal,
+					"Problemas al buscar por nombre de personal: "+e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	
 }

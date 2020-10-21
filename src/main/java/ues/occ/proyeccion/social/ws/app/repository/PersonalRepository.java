@@ -11,4 +11,8 @@ import ues.occ.proyeccion.social.ws.app.dao.Personal;
 public interface PersonalRepository extends CrudRepository<Personal, Integer> {
 
 	public List<Personal> findByTipoPersonalId(int idTipoPersonal);
+	
+	public List<Personal> findByDepartamentoId(int idDepartamento);
+	
+	public List<Personal> findByNombreOrApellidoContaining(String nombre, String Apellido);
 }
