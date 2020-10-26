@@ -5,6 +5,8 @@ import ues.occ.proyeccion.social.ws.app.dao.Estudiante;
 import ues.occ.proyeccion.social.ws.app.service.EstudianteService;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/estudiantes")
@@ -18,14 +20,28 @@ public class EstudianteController {
     @GetMapping(params = {"page", "size"})
     public List<Estudiante> findAll(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "si") Optional<String> isComplete
     ) {
-        List list = this.estudianteService.findAll(page, size);
+        List list =
+                isComplete.map(this::isComplete)
+                .map(bool -> this.estudianteService.findAllByServicio(page, size, bool))
+                .stream().collect(Collectors.toList());
         return list;
     }
 
+    private boolean isComplete(String isCompleteString) {
+        if ("si".equals(isCompleteString)) {
+            return true;
+        } else if ("no".equals(isCompleteString)) {
+            return false;
+        } else {
+            throw new IllegalArgumentException("Invalid parameters, valid are: si or no");
+        }
+    }
+
     @GetMapping("/{carnet}")
-    public Estudiante getOne(@PathVariable String carnet){
+    public Estudiante getOne(@PathVariable String carnet) {
         return this.estudianteService.findByCarnet(carnet);
     }
 }

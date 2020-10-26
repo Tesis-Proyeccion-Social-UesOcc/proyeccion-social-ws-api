@@ -5,6 +5,6 @@ import ues.occ.proyeccion.social.ws.app.dao.Estudiante;
 import java.util.List;
 
 public interface EstudianteService {
-    List<Estudiante> findAll(int page, int size);
+    List<Estudiante> findAllByServicio(int page, int size, boolean isComplete);
     Estudiante findByCarnet(String carnet);
 }

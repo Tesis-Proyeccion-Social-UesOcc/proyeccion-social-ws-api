@@ -21,9 +21,9 @@ public class EstudianteServiceImpl implements EstudianteService {
     }
 
     @Override
-    public List<Estudiante> findAll(int page, int size) {
+    public List<Estudiante> findAllByServicio(int page, int size, boolean isComplete) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Estudiante> estudiantePage = this.estudianteRepository.findAll(pageable);
+        Page<Estudiante> estudiantePage = this.estudianteRepository.findAllByServicio_completo(pageable, isComplete);
         if (estudiantePage.hasContent()) {
             return estudiantePage.getContent();
         } else
