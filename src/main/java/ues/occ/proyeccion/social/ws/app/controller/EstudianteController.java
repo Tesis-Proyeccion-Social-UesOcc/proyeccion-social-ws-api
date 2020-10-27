@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.*;
 import ues.occ.proyeccion.social.ws.app.dao.Estudiante;
 import ues.occ.proyeccion.social.ws.app.service.EstudianteService;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -17,16 +18,15 @@ public class EstudianteController {
         this.estudianteService = estudianteService;
     }
 
-    @GetMapping(params = {"page", "size"})
+    @GetMapping
     public List<Estudiante> findAll(
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "si") Optional<String> isComplete
     ) {
-        List list =
-                isComplete.map(this::isComplete)
-                .map(bool -> this.estudianteService.findAllByServicio(page, size, bool))
-                .stream().collect(Collectors.toList());
+        List list = isComplete.map(this::isComplete)
+                    .map(bool -> this.estudianteService.findAllByServicio(page, size, bool))
+                .orElse(Collections.emptyList());
         return list;
     }
 
