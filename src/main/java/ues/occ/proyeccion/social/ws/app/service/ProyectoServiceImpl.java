@@ -9,6 +9,7 @@ import ues.occ.proyeccion.social.ws.app.repository.ProyectoRepository;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 @Service
 public class ProyectoServiceImpl implements ProyectoService {
@@ -41,28 +42,33 @@ public class ProyectoServiceImpl implements ProyectoService {
     public List<Proyecto> findAllByStatus(int page, int size, int statusId) {
         Pageable paging = this.getPageable(page, size);
         Page<Proyecto> proyectoPage = proyectoRepository.findAllByProyectoEstudianteSet_StatusId(statusId, paging);
-        if(proyectoPage.hasContent()){
-            return proyectoPage.getContent();
-        }
-        else{
-            return Collections.EMPTY_LIST;
-        }
+        return this.getData(proyectoPage);
     }
 
     @Override
     public List<Proyecto> findAllPending(int page, int size) {
         Pageable paging = this.getPageable(page, size);
         Page<Proyecto> proyectoPage = proyectoRepository.findAllByProyectoEstudianteSet_Empty(paging);
-        if(proyectoPage.hasContent()){
-            return proyectoPage.getContent();
-        }
-        else{
-            return Collections.emptyList();
-        }
+        return this.getData(proyectoPage);
+    }
+
+    @Override
+    public List<Proyecto> findProyectosByEstudiante(int page, int size, String carnet) {
+        Pageable paging = this.getPageable(page, size);
+        Page<Proyecto> proyectoPage = proyectoRepository.findAllByProyectoEstudianteSet_Carnet(carnet, paging);
+        return this.getData(proyectoPage);
     }
 
     private Pageable getPageable(int page, int size){
         return PageRequest.of(page, size);
+    }
 
+    private List<Proyecto> getData(Page<Proyecto> proyectos){
+        if(proyectos.hasContent()){
+            return proyectos.getContent();
+        }
+        else{
+            return Collections.emptyList();
+        }
     }
 }

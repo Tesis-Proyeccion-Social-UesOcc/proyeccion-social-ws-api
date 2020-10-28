@@ -44,4 +44,12 @@ public class EstudianteController {
     public Estudiante getOne(@PathVariable String carnet) {
         return this.estudianteService.findByCarnet(carnet);
     }
+
+    @PostMapping("/{carnet}/proyectos")
+    public List<Estudiante> proyectosByEstudiante(
+            @PathVariable String carnet,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size){
+        return null;
+    }
 }

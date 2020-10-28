@@ -17,4 +17,6 @@ public interface ProyectoRepository extends PagingAndSortingRepository<Proyecto,
     Page<Proyecto> findAllByProyectoEstudianteSet_StatusId(int statusId, Pageable pageable);
     // proyectos pendientes, es decir, no existen en proyecto_estudiante
     Page<Proyecto> findAllByProyectoEstudianteSet_Empty(Pageable pageable);
+
+    Page<Proyecto> findAllByProyectoEstudianteSet_Carnet(String carnet, Pageable pageable);
 }

@@ -10,4 +10,5 @@ public interface ProyectoService {
     List<Proyecto> findAll(int page, int size);
     List<Proyecto> findAllByStatus(int page, int size, int statusId);
     List<Proyecto> findAllPending(int page, int size);
+    List<Proyecto> findProyectosByEstudiante(int page, int size, String carnet);
 }
