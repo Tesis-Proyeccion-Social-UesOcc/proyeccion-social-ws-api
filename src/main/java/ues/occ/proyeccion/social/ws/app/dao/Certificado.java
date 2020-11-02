@@ -1,12 +1,17 @@
 package ues.occ.proyeccion.social.ws.app.dao;
 
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.MapsId;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "certificado")
@@ -22,22 +27,20 @@ public class Certificado implements Serializable{
 	private String uri;
 	
 	@Column(name = "fecha_expedicion", nullable = false)
-	private Date fecha_expedicion;
+	private Date fechaExpedicion;
 
 	// Indica que la columna id de proyecto_estudiante se usara como PK y FK
-	@OneToOne
-	@MapsId
-	@JoinColumn(name = "id")
+	
+	@OneToOne(mappedBy = "certificado")
 	private ProyectoEstudiante proyectoEstudiante;
 
 	public Certificado() {
 	}
 
-	public Certificado(Integer id, String uri, Date fecha_expedicion, ProyectoEstudiante proyectoEstudiante) {
+	public Certificado(Integer id, String uri, Date fechaExpedicion) {
 		this.id = id;
 		this.uri = uri;
-		this.fecha_expedicion = fecha_expedicion;
-		this.proyectoEstudiante = proyectoEstudiante;
+		this.fechaExpedicion = fechaExpedicion;
 	}
 
 	public Integer getId() {
@@ -56,12 +59,12 @@ public class Certificado implements Serializable{
 		this.uri = uri;
 	}
 
-	public Date getFecha_expedicion() {
-		return fecha_expedicion;
+	public Date getFechaExpedicion() {
+		return fechaExpedicion;
 	}
 
-	public void setFecha_expedicion(Date fecha_expedicion) {
-		this.fecha_expedicion = fecha_expedicion;
+	public void setFechaExpedicion(Date fecha_expedicion) {
+		this.fechaExpedicion = fecha_expedicion;
 	}
 
 	public ProyectoEstudiante getProyectoEstudiante() {
@@ -73,18 +76,10 @@ public class Certificado implements Serializable{
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		Certificado that = (Certificado) o;
-		return Objects.equals(id, that.id) &&
-				Objects.equals(uri, that.uri) &&
-				Objects.equals(fecha_expedicion, that.fecha_expedicion) &&
-				Objects.equals(proyectoEstudiante, that.proyectoEstudiante);
+	public String toString() {
+		return "Certificado [id=" + id + ", uri=" + uri + ", fecha_expedicion=" + fechaExpedicion
+				+ ", proyectoEstudiante=" + proyectoEstudiante + "]";
 	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(id, uri, fecha_expedicion, proyectoEstudiante);
-	}
+	
+	
 }
