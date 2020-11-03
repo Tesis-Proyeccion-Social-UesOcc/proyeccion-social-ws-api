@@ -7,18 +7,24 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import ues.occ.proyeccion.social.ws.app.service.ResourceNotFoundException;
+import ues.occ.proyeccion.social.ws.app.exceptions.InternalErrorException;
+import ues.occ.proyeccion.social.ws.app.exceptions.ResourceNotFoundException;
 
 @ControllerAdvice
 public class RestResponseExceptionCatcher extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({ResourceNotFoundException.class})
     public ResponseEntity<Object> objectNotFound(Exception exception, WebRequest webRequest) {
-        return new ResponseEntity<>("Resource not found", new HttpHeaders(), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), HttpStatus.OK);
     }
 
     @ExceptionHandler({IllegalArgumentException.class})
     public ResponseEntity<Object> invalidParams(Exception exception, WebRequest webRequest){
         return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({InternalErrorException.class})
+    public ResponseEntity<Object> internal(Exception exception, WebRequest webRequest){
+        return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

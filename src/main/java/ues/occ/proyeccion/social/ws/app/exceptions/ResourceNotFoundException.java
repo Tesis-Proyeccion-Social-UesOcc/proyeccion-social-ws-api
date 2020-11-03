@@ -1,4 +1,4 @@
-package ues.occ.proyeccion.social.ws.app.service;
+package ues.occ.proyeccion.social.ws.app.exceptions;
 
 public class ResourceNotFoundException extends RuntimeException {
     public ResourceNotFoundException() {

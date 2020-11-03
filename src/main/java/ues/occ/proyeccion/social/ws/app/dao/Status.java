@@ -30,11 +30,15 @@ public class Status implements Serializable {
 		super();
 	}
 
-		public Status(Integer id, String status, String descripcion, Set<ProyectoEstudiante> proyectoEstudianteSet) {
+		public Status(Integer id, String status, String descripcion) {
 			Id = id;
 			this.status = status;
 			this.descripcion = descripcion;
-			this.proyectoEstudianteSet = proyectoEstudianteSet;
+		}
+
+		public Status(Integer id, String descripcion) {
+			Id = id;
+			this.descripcion = descripcion;
 		}
 
 		public Integer getId() {

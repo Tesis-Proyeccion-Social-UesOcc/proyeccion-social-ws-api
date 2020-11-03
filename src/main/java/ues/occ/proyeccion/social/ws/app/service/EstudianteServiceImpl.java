@@ -5,6 +5,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ues.occ.proyeccion.social.ws.app.dao.Estudiante;
+import ues.occ.proyeccion.social.ws.app.exceptions.ResourceNotFoundException;
 import ues.occ.proyeccion.social.ws.app.repository.EstudianteRepository;
 
 import java.util.Collections;
@@ -37,6 +38,6 @@ public class EstudianteServiceImpl implements EstudianteService {
             throw new IllegalArgumentException("Invalid student ID");
         }
         Optional<Estudiante> estudiante = this.estudianteRepository.findByCarnetIgnoreCase(carnet);
-        return estudiante.orElseThrow(ResourceNotFoundException::new);
+        return estudiante.orElseThrow(() -> new ResourceNotFoundException("Student with the given ID does not exists"));
     }
 }

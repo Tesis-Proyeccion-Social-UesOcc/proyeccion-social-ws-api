@@ -1,8 +1,12 @@
 package ues.occ.proyeccion.social.ws.app.controller;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ues.occ.proyeccion.social.ws.app.dao.Estudiante;
+import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
 import ues.occ.proyeccion.social.ws.app.service.EstudianteService;
+import ues.occ.proyeccion.social.ws.app.service.ProyectoService;
 
 import java.util.Collections;
 import java.util.List;
@@ -13,9 +17,11 @@ import java.util.stream.Collectors;
 @RequestMapping("/estudiantes")
 public class EstudianteController {
     private EstudianteService estudianteService;
+    private ProyectoService proyectoService;
 
-    public EstudianteController(EstudianteService estudianteService) {
+    public EstudianteController(EstudianteService estudianteService, ProyectoService proyectoService) {
         this.estudianteService = estudianteService;
+        this.proyectoService = proyectoService;
     }
 
     @GetMapping
@@ -46,10 +52,15 @@ public class EstudianteController {
     }
 
     @PostMapping("/{carnet}/proyectos")
-    public List<Estudiante> proyectosByEstudiante(
+    public Proyecto proyectosByEstudiante(
+            @RequestBody Proyecto proyecto,
             @PathVariable String carnet,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size){
-        return null;
+
+        return this.proyectoService.save(
+                this.estudianteService.findByCarnet(carnet),
+                proyecto
+        );
     }
 }
