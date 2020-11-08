@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ues.occ.proyeccion.social.ws.app.dao.Estudiante;
 import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
+import ues.occ.proyeccion.social.ws.app.model.ProyectoDTO;
 import ues.occ.proyeccion.social.ws.app.service.EstudianteService;
 import ues.occ.proyeccion.social.ws.app.service.ProyectoService;
 
@@ -52,15 +53,15 @@ public class EstudianteController {
     }
 
     @PostMapping("/{carnet}/proyectos")
-    public Proyecto proyectosByEstudiante(
-            @RequestBody Proyecto proyecto,
+    public ProyectoDTO proyectosByEstudiante(
+            @RequestBody ProyectoDTO proyectoDTO,
             @PathVariable String carnet,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size){
 
         return this.proyectoService.save(
                 this.estudianteService.findByCarnet(carnet),
-                proyecto
+                proyectoDTO
         );
     }
 }

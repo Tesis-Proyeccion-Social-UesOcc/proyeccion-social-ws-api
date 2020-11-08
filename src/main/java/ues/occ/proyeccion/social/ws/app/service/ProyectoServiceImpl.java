@@ -10,6 +10,8 @@ import ues.occ.proyeccion.social.ws.app.dao.ProyectoEstudiante;
 import ues.occ.proyeccion.social.ws.app.dao.Status;
 import ues.occ.proyeccion.social.ws.app.exceptions.InternalErrorException;
 import ues.occ.proyeccion.social.ws.app.exceptions.ResourceNotFoundException;
+import ues.occ.proyeccion.social.ws.app.mappers.ProyectoMapper;
+import ues.occ.proyeccion.social.ws.app.model.ProyectoDTO;
 import ues.occ.proyeccion.social.ws.app.repository.ProyectoEstudianteRepository;
 import ues.occ.proyeccion.social.ws.app.repository.ProyectoRepository;
 import ues.occ.proyeccion.social.ws.app.repository.StatusRepository;
@@ -24,11 +26,13 @@ public class ProyectoServiceImpl implements ProyectoService {
     private final ProyectoRepository proyectoRepository;
     private final ProyectoEstudianteRepository proyectoEstudianteRepository;
     private final StatusRepository statusRepository;
+    private final ProyectoMapper proyectoMapper;
 
-    public ProyectoServiceImpl(ProyectoRepository proyectoRepository, ProyectoEstudianteRepository proyectoEstudianteRepository, StatusRepository statusRepository) {
+    public ProyectoServiceImpl(ProyectoRepository proyectoRepository, ProyectoEstudianteRepository proyectoEstudianteRepository, StatusRepository statusRepository, ProyectoMapper proyectoMapper) {
         this.proyectoRepository = proyectoRepository;
         this.proyectoEstudianteRepository = proyectoEstudianteRepository;
         this.statusRepository = statusRepository;
+        this.proyectoMapper = proyectoMapper;
     }
 
     @Override
@@ -84,15 +88,17 @@ public class ProyectoServiceImpl implements ProyectoService {
     }
 
     @Override
-    public Proyecto save(Estudiante estudiante, Proyecto proyecto) {
+    public ProyectoDTO save(Estudiante estudiante, ProyectoDTO proyecto) {
         try {
-            Proyecto savedProyecto = this.proyectoRepository.save(proyecto);
+
+            Proyecto proyectoToSave = this.proyectoMapper.proyectoDTOToProyecto(proyecto);
+            Proyecto savedProyecto = this.proyectoRepository.save(proyectoToSave);
             Optional<Status> status = this.statusRepository.findById(1);
             ProyectoEstudiante proyectoEstudiante = new ProyectoEstudiante(
-                estudiante, proyecto, status.orElse(new Status(1, "Existing plain status"))
+                estudiante, savedProyecto, status.orElse(new Status(1, "Existing plain status"))
             );
             this.proyectoEstudianteRepository.save(proyectoEstudiante);
-            return savedProyecto;
+            return this.proyectoMapper.proyectoToProyectoDTO(savedProyecto);
         }
         catch (Exception e){
             e.printStackTrace();
