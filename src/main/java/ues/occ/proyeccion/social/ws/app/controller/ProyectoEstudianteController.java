@@ -23,4 +23,6 @@ public class ProyectoEstudianteController {
 	public ResponseEntity<ServiceResponse> crearCertificado(@RequestBody Certificado certificado){
 		return certificadoServiceImpl.crearCertificado(certificado);
 	}
+	
+	
 }

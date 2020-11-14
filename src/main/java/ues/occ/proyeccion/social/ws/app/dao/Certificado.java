@@ -1,17 +1,13 @@
 package ues.occ.proyeccion.social.ws.app.dao;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.Objects;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 @Entity
 @Table(name = "certificado")
@@ -27,7 +23,7 @@ public class Certificado implements Serializable{
 	private String uri;
 	
 	@Column(name = "fecha_expedicion", nullable = false)
-	private Date fechaExpedicion;
+	private LocalDateTime fechaExpedicion;
 
 	// Indica que la columna id de proyecto_estudiante se usara como PK y FK
 	
@@ -37,7 +33,7 @@ public class Certificado implements Serializable{
 	public Certificado() {
 	}
 
-	public Certificado(Integer id, String uri, Date fechaExpedicion) {
+	public Certificado(Integer id, String uri, LocalDateTime fechaExpedicion) {
 		this.id = id;
 		this.uri = uri;
 		this.fechaExpedicion = fechaExpedicion;
@@ -59,11 +55,11 @@ public class Certificado implements Serializable{
 		this.uri = uri;
 	}
 
-	public Date getFechaExpedicion() {
+	public LocalDateTime getFechaExpedicion() {
 		return fechaExpedicion;
 	}
 
-	public void setFechaExpedicion(Date fecha_expedicion) {
+	public void setFechaExpedicion(LocalDateTime fecha_expedicion) {
 		this.fechaExpedicion = fecha_expedicion;
 	}
 

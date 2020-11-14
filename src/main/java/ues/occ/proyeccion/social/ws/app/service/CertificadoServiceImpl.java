@@ -1,5 +1,6 @@
 package ues.occ.proyeccion.social.ws.app.service;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import org.slf4j.Logger;
@@ -25,7 +26,7 @@ private static final Logger log = LoggerFactory.getLogger(CertificadoServiceImpl
 	public ResponseEntity<ServiceResponse> crearCertificado(Certificado certificado) {
 		log.info("certificado "+certificado.toString());
 		try {
-			certificado.setFechaExpedicion(new Date());
+			certificado.setFechaExpedicion(LocalDateTime.now());
 			log.info("Se creo un certificado "+certificado.toString());
 			
 			Certificado result = certificadoRepository.save(certificado);
