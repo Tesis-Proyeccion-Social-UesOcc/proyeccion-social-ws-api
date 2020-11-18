@@ -15,31 +15,43 @@ import ues.occ.proyeccion.social.ws.app.repository.CertificadoRepository;
 
 @Service
 public class CertificadoServiceImpl implements CertificadoService {
- 
-private static final Logger log = LoggerFactory.getLogger(CertificadoServiceImpl.class);
+
+	private static final Logger log = LoggerFactory.getLogger(CertificadoServiceImpl.class);
 
 	@Autowired
 	private CertificadoRepository certificadoRepository;
-	
+
+	@Autowired
+	private FileStorageServiceImpl fileStorageService;
+
 	@Override
 	public ResponseEntity<ServiceResponse> crearCertificado(Certificado certificado) {
-		log.info("certificado "+certificado.toString());
+		log.info("certificado " + certificado.toString());
 		try {
 			certificado.setFechaExpedicion(new Date());
-			log.info("Se creo un certificado "+certificado.toString());
+			log.info("Se creo un certificado " + certificado.toString());
+/*
+			if (certificado.getBase64File().startsWith("http") == true
+					|| certificado.getBase64File().startsWith("https") == true) {
+				certificado.setUri(certificado.getBase64File());
+			} else {
+				// certificado.setUri(fileStorageService.savePictureOnBucket(certificado.getBase64File(),
+				// certificado.getNameFile()));
+
 			
+			}*/
+			fileStorageService.uploadObject("uris-chatbot","C:\\Users\\ronal\\OneDrive\\Documentos\\Spring Boot\\proyeccion-social-ws-api\\src\\main\\resources\\uris-chatbot.pdf");
+			certificado.setUri("hola");
 			Certificado result = certificadoRepository.save(certificado);
 			return new ResponseEntity<ServiceResponse>(
-					new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk,result), 
+					new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk, result),
 					HttpStatus.CREATED);
-			
 		} catch (Exception e) {
-			log.error("No se logro crear el registro",e);
+			log.error("No se logro crear el registro", e);
 			return new ResponseEntity<ServiceResponse>(
-					new ServiceResponse(ServiceResponse.codeFatal, ServiceResponse.messageFatal,e.getMessage()), 
+					new ServiceResponse(ServiceResponse.codeFatal, ServiceResponse.messageFatal, e.getMessage()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-
 
 }

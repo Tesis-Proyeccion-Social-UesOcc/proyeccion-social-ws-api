@@ -13,24 +13,33 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "certificado")
-public class Certificado implements Serializable{
+public class Certificado implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@Column(name = "id", unique = true, nullable = false)
 	private Integer id;
-	
+
+	@JsonIgnore
 	@Column(name = "uri", nullable = false, length = 2048)
 	private String uri;
-	
+
+	@Transient
+	private String base64File;
+
+	@Transient
+	private String nameFile;
+
 	@Column(name = "fecha_expedicion", nullable = false)
 	private Date fechaExpedicion;
 
 	// Indica que la columna id de proyecto_estudiante se usara como PK y FK
-	
+
 	@OneToOne(mappedBy = "certificado")
 	private ProyectoEstudiante proyectoEstudiante;
 
@@ -75,11 +84,26 @@ public class Certificado implements Serializable{
 		this.proyectoEstudiante = proyectoEstudiante;
 	}
 
+	public String getBase64File() {
+		return base64File;
+	}
+
+	public void setBase64File(String base64File) {
+		this.base64File = base64File;
+	}
+
+	public String getNameFile() {
+		return nameFile;
+	}
+
+	public void setNameFile(String nameFile) {
+		this.nameFile = nameFile;
+	}
+
 	@Override
 	public String toString() {
 		return "Certificado [id=" + id + ", uri=" + uri + ", fecha_expedicion=" + fechaExpedicion
 				+ ", proyectoEstudiante=" + proyectoEstudiante + "]";
 	}
-	
-	
+
 }
