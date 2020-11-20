@@ -37,10 +37,10 @@ public class EstadoRequerimientoEstudiante implements Serializable {
     public EstadoRequerimientoEstudiante() {
     }
 
-    public EstadoRequerimientoEstudiante(EstadoRequerimientoEstudiantePK id, Requerimiento requerimiento, Estudiante estudiante, boolean entregado, boolean aprobado, Date fechaEntrega, Date fechaAprobacion) {
-        this.id = id;
-        this.requerimiento = requerimiento;
+    public EstadoRequerimientoEstudiante(Estudiante estudiante, Requerimiento requerimiento, boolean entregado, boolean aprobado, Date fechaEntrega, Date fechaAprobacion) {
+        this.id = new EstadoRequerimientoEstudiantePK(requerimiento.getId(), estudiante.getCarnet());
         this.estudiante = estudiante;
+        this.requerimiento = requerimiento;
         this.entregado = entregado;
         this.aprobado = aprobado;
         this.fechaEntrega = fechaEntrega;

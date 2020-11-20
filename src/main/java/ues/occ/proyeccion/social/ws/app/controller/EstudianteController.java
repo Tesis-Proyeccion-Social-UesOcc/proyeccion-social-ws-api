@@ -62,4 +62,9 @@ public class EstudianteController {
         );
 
     }
+
+    @PostMapping("/{carnet}/documentos/{documento}")
+    public void addDocument(@PathVariable String carnet, @PathVariable int documento){
+
+    }
 }
