@@ -4,23 +4,29 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import ues.occ.proyeccion.social.ws.app.dao.Estudiante;
+import ues.occ.proyeccion.social.ws.app.exceptions.InternalErrorException;
+import ues.occ.proyeccion.social.ws.app.model.EstadoRequerimientoEstudianteDTO;
 import ues.occ.proyeccion.social.ws.app.model.ProyectoDTO;
+import ues.occ.proyeccion.social.ws.app.service.EstadoRequerimientoEstudianteService;
 import ues.occ.proyeccion.social.ws.app.service.EstudianteService;
 import ues.occ.proyeccion.social.ws.app.service.ProyectoService;
 
+import javax.validation.Valid;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/estudiantes")
+    @RequestMapping("/estudiantes")
 public class EstudianteController {
-    private EstudianteService estudianteService;
-    private ProyectoService proyectoService;
+    private final EstudianteService estudianteService;
+    private final ProyectoService proyectoService;
+    private final EstadoRequerimientoEstudianteService estadoRequerimientoEstudianteService;
 
-    public EstudianteController(EstudianteService estudianteService, ProyectoService proyectoService) {
+    public EstudianteController(EstudianteService estudianteService, ProyectoService proyectoService, EstadoRequerimientoEstudianteService estadoRequerimientoEstudianteService) {
         this.estudianteService = estudianteService;
         this.proyectoService = proyectoService;
+        this.estadoRequerimientoEstudianteService = estadoRequerimientoEstudianteService;
     }
 
     @GetMapping
@@ -63,8 +69,10 @@ public class EstudianteController {
 
     }
 
-    @PostMapping("/{carnet}/documentos/{documento}")
-    public void addDocument(@PathVariable String carnet, @PathVariable int documento){
-
+    @PostMapping("/{carnet}/documentos/{requerimientoId}")
+    public EstadoRequerimientoEstudianteDTO addDocument(@PathVariable String carnet, @PathVariable int requerimientoId) {
+        return this.estadoRequerimientoEstudianteService.save(carnet, requerimientoId).orElseThrow(
+                () -> new InternalErrorException("Something went wrong")
+        );
     }
 }

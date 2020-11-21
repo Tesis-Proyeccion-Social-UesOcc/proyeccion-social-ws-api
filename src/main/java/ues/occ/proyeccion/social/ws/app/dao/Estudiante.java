@@ -5,6 +5,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "estudiante")
@@ -14,6 +15,7 @@ public class Estudiante implements Serializable {
 
 	@Id
 	@Column(name = "carnet", nullable = false, length = 10)
+	@Size(max = 6, min = 6, message = "Carnet must be a 6 character identifier")
 	private String carnet;
 	
 	@Column(name = "horas_progreso", nullable = true)

@@ -70,7 +70,7 @@ public class ProyectoServiceImpl implements ProyectoService {
     @Override
     public List<Proyecto> findProyectosByEstudiante(int page, int size, String carnet){
         Pageable paging = this.getPageable(page, size);
-        Page<Proyecto> proyectoPage = proyectoRepository.findAllByProyectoEstudianteSet_Carnet(carnet, paging);
+        Page<Proyecto> proyectoPage = proyectoRepository.findAllByProyectoEstudianteSet_Estudiante_Carnet(carnet, paging);
         return this.getData(proyectoPage);
     }
 
