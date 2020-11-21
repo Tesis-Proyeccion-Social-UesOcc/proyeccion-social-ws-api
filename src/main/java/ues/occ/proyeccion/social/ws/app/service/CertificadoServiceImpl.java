@@ -1,5 +1,6 @@
 package ues.occ.proyeccion.social.ws.app.service;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import org.slf4j.Logger;
@@ -28,7 +29,8 @@ public class CertificadoServiceImpl implements CertificadoService {
 	public ResponseEntity<ServiceResponse> crearCertificado(Certificado certificado) {
 		log.info("certificado " + certificado.toString());
 		try {
-			certificado.setFechaExpedicion(new Date());
+
+			certificado.setFechaExpedicion(LocalDateTime.now());
 			log.info("Se creo un certificado " + certificado.toString());
 /*
 			if (certificado.getBase64File().startsWith("http") == true
@@ -38,6 +40,10 @@ public class CertificadoServiceImpl implements CertificadoService {
 				// certificado.setUri(fileStorageService.savePictureOnBucket(certificado.getBase64File(),
 				// certificado.getNameFile()));
 
+=======
+			certificado.setFechaExpedicion(LocalDateTime.now());
+			log.info("Se creo un certificado "+certificado.toString());
+>>>>>>> a2a2bbd62312a70a94fc751a2427b41ff7d236d8
 			
 			}*/
 			fileStorageService.uploadObject("uris-chatbot","C:\\Users\\ronal\\OneDrive\\Documentos\\Spring Boot\\proyeccion-social-ws-api\\src\\main\\resources\\uris-chatbot.pdf");

@@ -31,6 +31,7 @@
 		</dependencies>
 	</dependencyManagement>
 
+
 	<dependencies>
 
 		<!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-gcp-starter-storage -->
@@ -39,6 +40,10 @@
 			<artifactId>spring-cloud-gcp-starter-storage</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-gcp-starter-storage</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
