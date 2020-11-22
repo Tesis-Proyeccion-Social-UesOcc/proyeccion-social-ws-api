@@ -1,9 +1,6 @@
 package ues.occ.proyeccion.social.ws.app.service;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -12,11 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
-import com.google.cloud.storage.Bucket;
-import com.google.cloud.storage.BucketInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 
@@ -28,7 +22,7 @@ public class FileStorageServiceImpl implements FileStorageService {
 	@Value("${component.projectId.value}")
 	private String projectId;
 
-	@Value("${component.bucketName.value}")
+	@Value("${component.bucketName.certificados.value}")
 	private String bucketName;
 
 	@Override
@@ -42,7 +36,7 @@ public class FileStorageServiceImpl implements FileStorageService {
 			String format = base64Picture.trim().split(",")[0];
 			format = format.split(";")[0];
 			format = format.split(":")[1];
-			InputStream inputStream = new ByteArrayInputStream(bites);
+		
 
 			return null;
 			// return pathPhoto.replaceAll(" ", "");
