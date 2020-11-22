@@ -8,6 +8,8 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,11 +37,9 @@ public class CertificadoServiceImpl implements CertificadoService {
 	@Autowired
 	private CertificadoRepository certificadoRepository;
 
-	@Autowired
-	private FileStorageServiceImpl fileStorageService;
+	@Value("${component.bucketName.value}")
+	private String bucketName;
 	
-	private ValidateService validate;
-
 	@Override
 	public ResponseEntity<ServiceResponse> crearCertificado(int id,  MultipartFile file,
 			RedirectAttributes redirectAttributes) {
@@ -50,7 +50,13 @@ public class CertificadoServiceImpl implements CertificadoService {
 			redirectAttributes.addFlashAttribute("message",
 					"You successfully uploaded " + file.getOriginalFilename() + "!");
 			String carnet =  certificadoRepository.findCarnet(id);
-			BlobId blobId = BlobId.of("certificados-documentos", carnet.toUpperCase()+"-" + file.getOriginalFilename());
+			if(carnet == null) {
+				return new ResponseEntity<ServiceResponse>(
+						new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk, "Registro de Proyecto no encontrado, no se guardo el certificado"),
+						HttpStatus.CREATED);
+			}
+			
+			BlobId blobId = BlobId.of(bucketName, carnet.toUpperCase()+"-" + file.getOriginalFilename());
 			BlobInfo blobInfo = BlobInfo.newBuilder(blobId).build();
 			String url;
 			try {
