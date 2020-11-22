@@ -10,6 +10,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
@@ -22,15 +24,8 @@ public class Certificado implements Serializable {
 	@Column(name = "id", unique = true, nullable = false)
 	private Integer id;
 
-	@JsonIgnore
 	@Column(name = "uri", nullable = false, length = 2048)
 	private String uri;
-
-	@Transient
-	private String base64File;
-
-	@Transient
-	private String nameFile;
 
 	@Column(name = "fecha_expedicion", nullable = false)
 	private LocalDateTime fechaExpedicion;
@@ -80,23 +75,7 @@ public class Certificado implements Serializable {
 	public void setProyectoEstudiante(ProyectoEstudiante proyectoEstudiante) {
 		this.proyectoEstudiante = proyectoEstudiante;
 	}
-
-	public String getBase64File() {
-		return base64File;
-	}
-
-	public void setBase64File(String base64File) {
-		this.base64File = base64File;
-	}
-
-	public String getNameFile() {
-		return nameFile;
-	}
-
-	public void setNameFile(String nameFile) {
-		this.nameFile = nameFile;
-	}
-
+	
 	@Override
 	public String toString() {
 		return "Certificado [id=" + id + ", uri=" + uri + ", fecha_expedicion=" + fechaExpedicion

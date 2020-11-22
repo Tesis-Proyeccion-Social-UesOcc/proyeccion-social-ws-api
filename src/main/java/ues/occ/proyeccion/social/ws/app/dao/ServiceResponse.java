@@ -15,6 +15,9 @@ public class ServiceResponse implements Serializable{
 	public static final String codeFatal = "99";
 	public static final String messageFatal = "Request failed";
 	
+	public static final String codeFailStorageDocumentBucket = "98";
+	public static final String messageFailStorageDocumentBucket = "Problems to storage the file into the bucket";
+	
 	private String code;
 	private String message;
 	private Object result;
