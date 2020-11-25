@@ -3,30 +3,34 @@ package ues.occ.proyeccion.social.ws.app.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import ues.occ.proyeccion.social.ws.app.dao.Certificado;
 import ues.occ.proyeccion.social.ws.app.dao.Estudiante;
 import ues.occ.proyeccion.social.ws.app.exceptions.InternalErrorException;
 import ues.occ.proyeccion.social.ws.app.model.EstadoRequerimientoEstudianteDTO;
 import ues.occ.proyeccion.social.ws.app.model.ProyectoDTO;
+import ues.occ.proyeccion.social.ws.app.service.CertificadoService;
 import ues.occ.proyeccion.social.ws.app.service.EstadoRequerimientoEstudianteService;
 import ues.occ.proyeccion.social.ws.app.service.EstudianteService;
 import ues.occ.proyeccion.social.ws.app.service.ProyectoService;
 
-import javax.validation.Valid;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
-    @RequestMapping("/estudiantes")
+@RequestMapping("/estudiantes")
 public class EstudianteController {
     private final EstudianteService estudianteService;
     private final ProyectoService proyectoService;
     private final EstadoRequerimientoEstudianteService estadoRequerimientoEstudianteService;
+    private final CertificadoService certificadoService;
 
-    public EstudianteController(EstudianteService estudianteService, ProyectoService proyectoService, EstadoRequerimientoEstudianteService estadoRequerimientoEstudianteService) {
+    public EstudianteController(EstudianteService estudianteService, ProyectoService proyectoService,
+                                EstadoRequerimientoEstudianteService estadoRequerimientoEstudianteService,
+                                CertificadoService certificadoService) {
+
         this.estudianteService = estudianteService;
         this.proyectoService = proyectoService;
         this.estadoRequerimientoEstudianteService = estadoRequerimientoEstudianteService;
+        this.certificadoService = certificadoService;
     }
 
     @GetMapping
@@ -75,4 +79,16 @@ public class EstudianteController {
                 () -> new InternalErrorException("Something went wrong")
         );
     }
+
+    // idProyectoEstudiante is needed due to OneToOne relationship
+    @PostMapping("/certificate/{idProyectoEstudiante}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Map<String, String> createCertificate(@PathVariable int idProyectoEstudiante, @RequestBody HashMap<String, String> urlInfo){
+        String urlStr = urlInfo.get("url");
+        Certificado result = this.certificadoService.save(urlStr, idProyectoEstudiante).orElseThrow(
+                () -> new InternalErrorException("Certificate creation failed")
+        );
+        return Map.of("url", result.getUri());
+    }
+
 }

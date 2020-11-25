@@ -1,9 +1,7 @@
 package ues.occ.proyeccion.social.ws.app.dao;
 
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 import java.io.Serializable;
-import java.util.Date;
+import java.sql.Date;
 import java.util.Objects;
 
 import javax.persistence.*;
