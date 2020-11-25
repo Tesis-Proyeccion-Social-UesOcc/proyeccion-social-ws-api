@@ -3,6 +3,8 @@ package ues.occ.proyeccion.social.ws.app.service;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
@@ -49,8 +51,6 @@ public class DocumentoServiceImpl implements DocumentoService {
 	}
 
 	public ResponseEntity<ServiceResponse> crearDocumento(DocumentoRequest model) {
-		// TODO Auto-generated method stub
-		//store(model.getFile());
 		log.info(model.toString());
 		LocalDateTime time = LocalDateTime.now();
 
@@ -64,7 +64,7 @@ public class DocumentoServiceImpl implements DocumentoService {
 			uri = blob.getMediaLink();
 			storage.createAcl(blobId, Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER));
 			log.info("uri " + uri);
-			
+
 			Documento documento = documentoRepository
 					.save(new Documento(model.getNombre(), model.getDescripcion(), uri, time));
 
@@ -81,9 +81,46 @@ public class DocumentoServiceImpl implements DocumentoService {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		} catch (Exception ex) {
 			return new ResponseEntity<ServiceResponse>(
-					new ServiceResponse(ServiceResponse.codeFatal,
-							ServiceResponse.messageFatal, ex.getMessage()),
+					new ServiceResponse(ServiceResponse.codeFatal, ServiceResponse.messageFatal, ex.getMessage()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	public ResponseEntity<ServiceResponse> findById(int id) {
+		// TODO Auto-generated method stub
+		Optional<Documento> documento = Optional.of(
+				documentoRepository.findById(id).orElseThrow(() -> new RuntimeException("Documento no encontrado")));
+		return new ResponseEntity<ServiceResponse>(
+				new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk, documento), HttpStatus.OK);
+
+	}
+
+	public ResponseEntity<ServiceResponse> findDocumentoByNombre(String nombre) {
+		try {
+			List<Documento> documentos = documentoRepository.findByNombreContainsOrderByFechaDocumento(nombre);
+			return new ResponseEntity<ServiceResponse>(
+					new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk, documentos), HttpStatus.OK);
+
+		} catch (Exception e) {
+			return new ResponseEntity<ServiceResponse>(
+					new ServiceResponse(ServiceResponse.codeFatal, ServiceResponse.messageFatal, e.getMessage()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	public ResponseEntity<ServiceResponse> deleteById(int id) {
+		// TODO Auto-generated method stub
+		try {
+			documentoRepository.deleteById(id);
+
+			return new ResponseEntity<ServiceResponse>(new ServiceResponse(ServiceResponse.codeOk,
+					ServiceResponse.messageOk, "documento eliminado con id " + id), HttpStatus.NO_CONTENT);
+
+		} catch (Exception e) {
+			return new ResponseEntity<ServiceResponse>(
+					new ServiceResponse(ServiceResponse.codeFatal, ServiceResponse.messageFatal, e.getMessage()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+
 		}
 
 	}
