@@ -81,7 +81,7 @@ public class EstudianteController {
     }
 
     // idProyectoEstudiante is needed due to OneToOne relationship
-    @PostMapping("/certificate/{idProyectoEstudiante}")
+    @PostMapping("/certificados/{idProyectoEstudiante}")
     @ResponseStatus(HttpStatus.CREATED)
     public Map<String, String> createCertificate(@PathVariable int idProyectoEstudiante, @RequestBody HashMap<String, String> urlInfo){
         String urlStr = urlInfo.get("url");
@@ -89,6 +89,14 @@ public class EstudianteController {
                 () -> new InternalErrorException("Certificate creation failed")
         );
         return Map.of("url", result.getUri());
+    }
+
+    @GetMapping("/certificados")
+    public List<Certificado> createCertificate(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size){
+        // todo: separate entities with serializer/deserializer representations (DTO)
+        return this.certificadoService.findAll(page, size);
     }
 
 }

@@ -15,13 +15,14 @@ import ues.occ.proyeccion.social.ws.app.model.ProyectoDTO;
 import ues.occ.proyeccion.social.ws.app.repository.ProyectoEstudianteRepository;
 import ues.occ.proyeccion.social.ws.app.repository.ProyectoRepository;
 import ues.occ.proyeccion.social.ws.app.repository.StatusRepository;
+import ues.occ.proyeccion.social.ws.app.utils.PageableUtility;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ProyectoServiceImpl implements ProyectoService {
+public class ProyectoServiceImpl extends PageableUtility<Proyecto> implements ProyectoService{
 
     private final ProyectoRepository proyectoRepository;
     private final ProyectoEstudianteRepository proyectoEstudianteRepository;
@@ -45,12 +46,7 @@ public class ProyectoServiceImpl implements ProyectoService {
     public List<Proyecto> findAll(int page, int size) {
         Pageable paging = this.getPageable(page, size);;
         Page<Proyecto> proyectoPage = proyectoRepository.findAll(paging);
-        if(proyectoPage.hasContent()){
-            return proyectoPage.getContent();
-        }
-        else{
-            return Collections.EMPTY_LIST;
-        }
+        return this.getData(proyectoPage);
     }
 
     @Override
@@ -72,19 +68,6 @@ public class ProyectoServiceImpl implements ProyectoService {
         Pageable paging = this.getPageable(page, size);
         Page<Proyecto> proyectoPage = proyectoRepository.findAllByProyectoEstudianteSet_Estudiante_Carnet(carnet, paging);
         return this.getData(proyectoPage);
-    }
-
-    private Pageable getPageable(int page, int size){
-        return PageRequest.of(page, size);
-    }
-
-    private List<Proyecto> getData(Page<Proyecto> proyectos){
-        if(proyectos.hasContent()){
-            return proyectos.getContent();
-        }
-        else{
-            return Collections.emptyList();
-        }
     }
 
     @Override
