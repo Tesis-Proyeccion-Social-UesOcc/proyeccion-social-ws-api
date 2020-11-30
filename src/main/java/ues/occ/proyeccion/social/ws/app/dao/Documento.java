@@ -2,7 +2,6 @@ package ues.occ.proyeccion.social.ws.app.dao;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.Set;
 
 import javax.persistence.Column;

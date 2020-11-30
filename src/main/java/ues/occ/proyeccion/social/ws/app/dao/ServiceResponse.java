@@ -10,8 +10,9 @@ public class ServiceResponse implements Serializable{
 	public static final String messageOk = "Request Successful";
 	public static final String messageNull = "Request Successful, Data not found";
 	
+	public static final String codeOkCreated = "01";
+	public static final String messageCreated = "Request Successful, Object created and stored in the database";
 	
-
 	public static final String codeFatal = "99";
 	public static final String messageFatal = "Request failed";
 	

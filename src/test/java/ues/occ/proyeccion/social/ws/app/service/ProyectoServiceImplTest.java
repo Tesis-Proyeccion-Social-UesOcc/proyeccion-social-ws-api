@@ -8,6 +8,7 @@ import org.mockito.MockitoAnnotations;
 import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
 import ues.occ.proyeccion.social.ws.app.repository.ProyectoRepository;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,7 +29,7 @@ class ProyectoServiceImplTest {
     void testFindById() {
         Optional<Proyecto> proyecto = Optional.of(
                 new Proyecto(
-                        5, "name", 250, true, null, null, null
+                        5, "name", 250, true, LocalDateTime.now()
                 )
         );
         Mockito.when(this.proyectoRepository.findById(Mockito.anyInt()))

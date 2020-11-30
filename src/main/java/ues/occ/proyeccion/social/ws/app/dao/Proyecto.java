@@ -1,10 +1,13 @@
 package ues.occ.proyeccion.social.ws.app.dao;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "proyecto")
@@ -25,6 +28,7 @@ public class Proyecto implements Serializable {
 	@Column(name = "interno", nullable = false)
 	private boolean interno;
 
+	@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "id_tutor")
 	private Personal tutor;
@@ -35,20 +39,37 @@ public class Proyecto implements Serializable {
 
 	@OneToMany(mappedBy = "proyecto", fetch = FetchType.LAZY)
 	private Set<ProyectoEstudiante> proyectoEstudianteSet;
-
 	
+	@Column(name = "fecha_creacion")
+	private LocalDateTime fechaCreacion;
+
 	public Proyecto() {
 		super();
 	}
 
-	public Proyecto(Integer id, String nombre, Integer duracion, boolean interno, Personal tutor, PersonalExterno encargadoExterno, Set<ProyectoEstudiante> proyectoEstudianteSet) {
+	public Proyecto(Integer id, String nombre, Integer duracion, boolean interno, Personal tutor, PersonalExterno encargadoExterno) {
 		this.id = id;
 		this.nombre = nombre;
 		this.duracion = duracion;
 		this.interno = interno;
 		this.tutor = tutor;
 		this.encargadoExterno = encargadoExterno;
-		this.proyectoEstudianteSet = proyectoEstudianteSet;
+	}
+
+	public Proyecto(int id, String nombre, int j, boolean interno, LocalDateTime now) {
+		this.id = id;
+		this.nombre = nombre;
+		this.interno =  interno;
+		this.fechaCreacion = now;
+		
+	}
+
+	public LocalDateTime getFechaCreacion() {
+		return fechaCreacion;
+	}
+
+	public void setFechaCreacion(LocalDateTime fechaCreacion) {
+		this.fechaCreacion = fechaCreacion;
 	}
 
 	public Integer getId() {
@@ -99,14 +120,6 @@ public class Proyecto implements Serializable {
 		this.encargadoExterno = encargadoExterno;
 	}
 
-	public Set<ProyectoEstudiante> getProyectoEstudianteSet() {
-		return proyectoEstudianteSet;
-	}
-
-	public void setProyectoEstudianteSet(Set<ProyectoEstudiante> proyectoEstudianteSet) {
-		this.proyectoEstudianteSet = proyectoEstudianteSet;
-	}
-
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
@@ -117,12 +130,12 @@ public class Proyecto implements Serializable {
 				Objects.equals(nombre, proyecto.nombre) &&
 				Objects.equals(duracion, proyecto.duracion) &&
 				Objects.equals(tutor, proyecto.tutor) &&
-				Objects.equals(encargadoExterno, proyecto.encargadoExterno) &&
-				Objects.equals(proyectoEstudianteSet, proyecto.proyectoEstudianteSet);
+				Objects.equals(encargadoExterno, proyecto.encargadoExterno);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, nombre, duracion, interno, tutor, encargadoExterno, proyectoEstudianteSet);
+		return Objects.hash(id, nombre, duracion, interno, tutor, encargadoExterno);
 	}
 }
+
