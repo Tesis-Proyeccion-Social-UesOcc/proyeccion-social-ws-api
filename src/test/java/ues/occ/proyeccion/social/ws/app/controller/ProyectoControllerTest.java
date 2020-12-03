@@ -14,6 +14,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
+import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO;
 import ues.occ.proyeccion.social.ws.app.service.ProyectoService;
 
 
@@ -60,7 +61,7 @@ class ProyectoControllerTest {
     @Test
     void getRange() throws Exception {
         Pageable request = PageRequest.of(1, 10);
-        List<Proyecto> payload = List.of(new Proyecto(), new Proyecto());
+        List<ProyectoCreationDTO.ProyectoDTO> payload = List.of(new ProyectoCreationDTO.ProyectoDTO(), new ProyectoCreationDTO.ProyectoDTO());
         Mockito.when(proyectoService.findAll(Mockito.anyInt(), Mockito.anyInt())).thenReturn(payload);
         mvc.perform(get("/proyectos/")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -81,7 +82,7 @@ class ProyectoControllerTest {
 
     @Test
     void findAllByStatus() throws Exception {
-        List<Proyecto> payload = List.of(new Proyecto(), new Proyecto());
+        List<ProyectoCreationDTO.ProyectoDTO> payload = List.of(new ProyectoCreationDTO.ProyectoDTO(), new ProyectoCreationDTO.ProyectoDTO());
         Mockito.when(proyectoService.findAllByStatus(5, 10, 7)).thenReturn(payload);
         mvc.perform(get("/proyectos/")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -104,7 +105,7 @@ class ProyectoControllerTest {
     }
     @Test
     void findAllPending() throws Exception {
-        List<Proyecto> payload = List.of(new Proyecto(), new Proyecto());
+        List<ProyectoCreationDTO.ProyectoDTO> payload = List.of(new ProyectoCreationDTO.ProyectoDTO(), new ProyectoCreationDTO.ProyectoDTO());
         Mockito.when(proyectoService.findAllPending(5, 10)).thenReturn(payload);
         mvc.perform(get("/proyectos/pending")
                 .contentType(MediaType.APPLICATION_JSON)

@@ -3,19 +3,24 @@ package ues.occ.proyeccion.social.ws.app.utils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
-public class PageableUtility<T> {
+public abstract class PageableResource<R, T> {
     protected Pageable getPageable(int page, int size){
         return PageRequest.of(page, size);
     }
 
-    protected List<T> getData(Page<T> entityPage){
+    protected abstract Function<R, T> getMapperFunction();
+
+    protected List<T> getData(Page<R> entityPage){
         if(entityPage.hasContent()){
-            return entityPage.getContent();
+            return entityPage.getContent().stream()
+                    .map(this.getMapperFunction())
+                    .collect(Collectors.toList());
         }
         else{
             return Collections.emptyList();

@@ -7,8 +7,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import ues.occ.proyeccion.social.ws.app.dao.Personal;
 import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
 import ues.occ.proyeccion.social.ws.app.exceptions.ResourceNotFoundException;
+import ues.occ.proyeccion.social.ws.app.mappers.ProyectoMapper;
+import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO;
+import ues.occ.proyeccion.social.ws.app.repository.ProyectoEstudianteRepository;
 import ues.occ.proyeccion.social.ws.app.repository.ProyectoRepository;
 
 import java.util.List;
@@ -20,12 +24,14 @@ class ProyectoServiceImplTest {
 
     @Mock
     private ProyectoRepository proyectoRepository;
-    @InjectMocks
+    @Mock
+    private ProyectoEstudianteRepository proyectoEstudianteRepository;
     private ProyectoServiceImpl proyectoService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        proyectoService = new ProyectoServiceImpl(proyectoRepository, proyectoEstudianteRepository, ProyectoMapper.INSTANCE);
     }
 
     @Test
@@ -49,12 +55,18 @@ class ProyectoServiceImplTest {
 
     @Test
     void testFindAll() {
-        List<Proyecto> data = List.of(new Proyecto(), new Proyecto());
+        Proyecto proyecto1 = new Proyecto();
+        proyecto1.setInterno(true);
+        proyecto1.setTutor(new Personal());
+        Proyecto proyecto2 = new Proyecto();
+        proyecto2.setInterno(true);
+        proyecto2.setTutor(new Personal());
+        List<Proyecto> data = List.of(proyecto1, proyecto2);
         Pageable pageable = PageRequest.of(5, 10);
         Page<Proyecto> page = new PageImpl<>(data, pageable, data.size());
         ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
         Mockito.when((this.proyectoRepository.findAll(Mockito.any(Pageable.class)))).thenReturn(page);
-        List<Proyecto> result = this.proyectoService.findAll(5, 10);
+        List<ProyectoCreationDTO.ProyectoDTO> result = this.proyectoService.findAll(5, 10);
         Mockito.verify(
                 this.proyectoRepository,
                 Mockito.times(1)

@@ -1,17 +1,16 @@
 package ues.occ.proyeccion.social.ws.app.controller;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import ues.occ.proyeccion.social.ws.app.dao.Certificado;
 import ues.occ.proyeccion.social.ws.app.dao.Estudiante;
 import ues.occ.proyeccion.social.ws.app.exceptions.InternalErrorException;
-import ues.occ.proyeccion.social.ws.app.model.EstadoRequerimientoEstudianteDTO;
-import ues.occ.proyeccion.social.ws.app.model.ProyectoDTO;
+import ues.occ.proyeccion.social.ws.app.model.*;
 import ues.occ.proyeccion.social.ws.app.service.CertificadoService;
 import ues.occ.proyeccion.social.ws.app.service.EstadoRequerimientoEstudianteService;
 import ues.occ.proyeccion.social.ws.app.service.EstudianteService;
 import ues.occ.proyeccion.social.ws.app.service.ProyectoService;
+import ues.occ.proyeccion.social.ws.app.utils.MapperUtility;
 
 import java.util.*;
 
@@ -39,38 +38,42 @@ public class EstudianteController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "si") Optional<String> isComplete
     ) {
-        List list = isComplete.map(this::isComplete)
+        // TODO: refactor with DTO
+        List list = isComplete.map(MapperUtility::isComplete)
                 .map(bool -> this.estudianteService.findAllByServicio(page, size, bool))
                 .orElse(Collections.emptyList());
         return list;
     }
 
-    private boolean isComplete(String isCompleteString) {
-        if ("si".equals(isCompleteString)) {
-            return true;
-        } else if ("no".equals(isCompleteString)) {
-            return false;
-        } else {
-            throw new IllegalArgumentException("Invalid parameters, valid are: si or no");
-        }
-    }
+
 
     @GetMapping("/{carnet}")
     public Estudiante getOne(@PathVariable String carnet) {
         return this.estudianteService.findByCarnet(carnet);
     }
 
-    @PostMapping(value = "/{carnet}/proyectos")
+    @PostMapping("/{carnet}/proyectos")
     @ResponseStatus(HttpStatus.CREATED)
-    public ProyectoDTO proyectosByEstudiante(
-            @RequestBody ProyectoDTO proyectoDTO,
+    public ProyectoCreationDTO createProject(
+            @RequestBody ProyectoCreationDTO proyectoCreationDTO,
             @PathVariable String carnet) {
 
         return this.proyectoService.save(
                 this.estudianteService.findByCarnet(carnet),
-                proyectoDTO
+                proyectoCreationDTO
         );
 
+    }
+
+    // TODO: Add implementation on proyectoService
+    @GetMapping("/{carnet}/proyectos")
+    public ProyectoDTOList projectsByStudentID(
+            @PathVariable String carnet,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "2") int status){
+        List<ProyectoCreationDTO.ProyectoDTO> result = this.proyectoService.findProyectosByEstudiante(page, size, carnet, status);
+        return new ProyectoDTOList(result);
     }
 
     @PostMapping("/{carnet}/documentos/{requerimientoId}")
@@ -78,6 +81,19 @@ public class EstudianteController {
         return this.estadoRequerimientoEstudianteService.save(carnet, requerimientoId).orElseThrow(
                 () -> new InternalErrorException("Something went wrong")
         );
+    }
+
+    @GetMapping("/carnet/documentos")
+    public EstadoRequerimientoEstudianteDTOList getStudentDocuments(@PathVariable String carnet,
+                                    @RequestParam(defaultValue = "1") int page,
+                                    @RequestParam(defaultValue = "10") int size,
+                                    @RequestParam(defaultValue = "si") Optional<String> aprobado){
+
+        List<EstadoRequerimientoEstudianteDTO> result = aprobado.map(MapperUtility::isAprobado)
+                .map(bool -> this.estadoRequerimientoEstudianteService.findAllByCarnet(page, size, carnet, bool))
+                .orElse(Collections.emptyList());
+
+        return new EstadoRequerimientoEstudianteDTOList(result);
     }
 
     // idProyectoEstudiante is needed due to OneToOne relationship
@@ -92,11 +108,11 @@ public class EstudianteController {
     }
 
     @GetMapping("/certificados")
-    public List<Certificado> createCertificate(
+    public CertificadoDTOList createCertificate(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size){
-        // todo: separate entities with serializer/deserializer representations (DTO)
-        return this.certificadoService.findAll(page, size);
+        List<CertificadoDTO> result = this.certificadoService.findAll(page, size);
+        return new CertificadoDTOList(result);
     }
 
 }

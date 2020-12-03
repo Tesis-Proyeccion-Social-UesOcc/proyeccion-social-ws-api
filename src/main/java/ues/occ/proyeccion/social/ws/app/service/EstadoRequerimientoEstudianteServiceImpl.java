@@ -1,6 +1,8 @@
 package ues.occ.proyeccion.social.ws.app.service;
 
 import org.hibernate.Session;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ues.occ.proyeccion.social.ws.app.dao.EstadoRequerimientoEstudiante;
 import ues.occ.proyeccion.social.ws.app.dao.Estudiante;
@@ -8,15 +10,20 @@ import ues.occ.proyeccion.social.ws.app.dao.Requerimiento;
 import ues.occ.proyeccion.social.ws.app.mappers.EstadoRequerimientoEstudianteMapper;
 import ues.occ.proyeccion.social.ws.app.model.EstadoRequerimientoEstudianteDTO;
 import ues.occ.proyeccion.social.ws.app.repository.EstadoRequerimientoEstudianteRepository;
+import ues.occ.proyeccion.social.ws.app.utils.PageableResource;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 @Service
-public class EstadoRequerimientoEstudianteServiceImpl implements EstadoRequerimientoEstudianteService {
+public class EstadoRequerimientoEstudianteServiceImpl
+        extends PageableResource<EstadoRequerimientoEstudiante, EstadoRequerimientoEstudianteDTO>
+        implements EstadoRequerimientoEstudianteService {
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -27,6 +34,16 @@ public class EstadoRequerimientoEstudianteServiceImpl implements EstadoRequerimi
     public EstadoRequerimientoEstudianteServiceImpl(EstadoRequerimientoEstudianteRepository repository, EstadoRequerimientoEstudianteMapper mapper) {
         this.repository = repository;
         this.mapper = mapper;
+    }
+
+    @Override
+    public List<EstadoRequerimientoEstudianteDTO> findAllByCarnet(int page, int size, String carnet, boolean aprobado) {
+
+        Pageable requerimientoEstudiantePage = this.getPageable(page, size);
+        Page<EstadoRequerimientoEstudiante> estadoRequerimientoEstudiantes =
+                this.repository.findAllByEstudiante_CarnetAndAprobado(carnet, aprobado, requerimientoEstudiantePage);
+
+        return this.getData(estadoRequerimientoEstudiantes);
     }
 
     // todo: refactor repositories to add entityManager and getSession method, that's needed to use only the entities ID in insertions, otherwise findById would be used
@@ -49,5 +66,10 @@ public class EstadoRequerimientoEstudianteServiceImpl implements EstadoRequerimi
             System.err.println(e);
             return Optional.empty();
         }
+    }
+
+    @Override
+    protected Function<EstadoRequerimientoEstudiante, EstadoRequerimientoEstudianteDTO> getMapperFunction() {
+        return this.mapper::estadoRequerimientoEstudianteToDTO;
     }
 }

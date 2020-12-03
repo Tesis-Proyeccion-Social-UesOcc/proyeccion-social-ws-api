@@ -2,6 +2,7 @@ package ues.occ.proyeccion.social.ws.app.controller;
 
 import org.springframework.web.bind.annotation.*;
 import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
+import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO;
 import ues.occ.proyeccion.social.ws.app.service.ProyectoService;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public class ProyectoController {
     }
 
     @GetMapping(params = {"page", "size"})
-    public List<Proyecto> getRange(
+    public List<ProyectoCreationDTO.ProyectoDTO> getRange(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) Integer status
@@ -33,7 +34,7 @@ public class ProyectoController {
     }
 
     @GetMapping("/pending")
-    public List<Proyecto> getPendingProjects(
+    public List<ProyectoCreationDTO.ProyectoDTO> getPendingProjects(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
             ) {
