@@ -9,6 +9,8 @@ import java.io.Serializable;
 
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ProyectoCreationDTO implements Serializable {
 
     private String nombre;
