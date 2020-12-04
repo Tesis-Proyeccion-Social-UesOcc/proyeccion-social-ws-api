@@ -7,6 +7,6 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class CertificadoDTOList {
-    private List<CertificadoCreationDTO.CertificadoDTO> certificados;
+public class EstudianteDTOList {
+    private List<EstudianteDTO> estudiantes;
 }

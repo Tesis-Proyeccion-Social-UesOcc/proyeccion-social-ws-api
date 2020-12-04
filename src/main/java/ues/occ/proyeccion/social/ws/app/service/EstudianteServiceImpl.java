@@ -6,38 +6,46 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ues.occ.proyeccion.social.ws.app.dao.Estudiante;
 import ues.occ.proyeccion.social.ws.app.exceptions.ResourceNotFoundException;
+import ues.occ.proyeccion.social.ws.app.mappers.EstudianteMapper;
+import ues.occ.proyeccion.social.ws.app.model.EstudianteDTO;
 import ues.occ.proyeccion.social.ws.app.repository.EstudianteRepository;
+import ues.occ.proyeccion.social.ws.app.utils.PageableResource;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 @Service
-public class EstudianteServiceImpl implements EstudianteService {
+public class EstudianteServiceImpl extends PageableResource<Estudiante, EstudianteDTO> implements EstudianteService {
 
     private final EstudianteRepository estudianteRepository;
+    private final EstudianteMapper mapper;
 
-    public EstudianteServiceImpl(EstudianteRepository estudianteRepository) {
+    public EstudianteServiceImpl(EstudianteRepository estudianteRepository, EstudianteMapper mapper) {
         this.estudianteRepository = estudianteRepository;
+        this.mapper = mapper;
     }
 
     @Override
-    public List<Estudiante> findAllByServicio(int page, int size, boolean isComplete) {
-        Pageable pageable = PageRequest.of(page, size);
+    public List<EstudianteDTO> findAllByServicio(int page, int size, boolean isComplete) {
+        Pageable pageable = this.getPageable(page, size);
         Page<Estudiante> estudiantePage = this.estudianteRepository.findAllByServicioCompleto(pageable, isComplete);
-        if (estudiantePage.hasContent()) {
-            return estudiantePage.getContent();
-        } else
-            return Collections.emptyList();
+        return this.getData(estudiantePage);
     }
 
     @Override
-    public Estudiante findByCarnet(String carnet) {
+    public EstudianteDTO findByCarnet(String carnet) {
         carnet = carnet.strip();
         if (carnet.length() != 7) {
             throw new IllegalArgumentException("Invalid student ID");
         }
         Optional<Estudiante> estudiante = this.estudianteRepository.findByCarnetIgnoreCase(carnet);
-        return estudiante.orElseThrow(() -> new ResourceNotFoundException("Student with the given ID does not exists"));
+        return estudiante.map(this.mapper::estudianteToEstudianteDTO)
+                .orElseThrow(() -> new ResourceNotFoundException("Student with the given ID does not exists"));
+    }
+
+    @Override
+    protected Function<Estudiante, EstudianteDTO> getMapperFunction() {
+        return this.mapper::estudianteToEstudianteDTO;
     }
 }

@@ -33,22 +33,20 @@ public class EstudianteController {
     }
 
     @GetMapping
-    public List<Estudiante> findAll(
+    public EstudianteDTOList findAll(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "si") Optional<String> isComplete
     ) {
-        // TODO: refactor with DTO
-        List list = isComplete.map(MapperUtility::isComplete)
+        List<EstudianteDTO> result = isComplete.map(MapperUtility::isComplete)
                 .map(bool -> this.estudianteService.findAllByServicio(page, size, bool))
                 .orElse(Collections.emptyList());
-        return list;
+        return new EstudianteDTOList(result);
     }
 
 
-
     @GetMapping("/{carnet}")
-    public Estudiante getOne(@PathVariable String carnet) {
+    public EstudianteDTO getOne(@PathVariable String carnet) {
         return this.estudianteService.findByCarnet(carnet);
     }
 
@@ -58,14 +56,10 @@ public class EstudianteController {
             @RequestBody ProyectoCreationDTO proyectoCreationDTO,
             @PathVariable String carnet) {
 
-        return this.proyectoService.save(
-                this.estudianteService.findByCarnet(carnet),
-                proyectoCreationDTO
-        );
+        return this.proyectoService.save(carnet, proyectoCreationDTO);
 
     }
 
-    // TODO: Add implementation on proyectoService
     @GetMapping("/{carnet}/proyectos")
     public ProyectoDTOList projectsByStudentID(
             @PathVariable String carnet,
@@ -83,7 +77,7 @@ public class EstudianteController {
         );
     }
 
-    @GetMapping("/carnet/documentos")
+    @GetMapping("/{carnet}/documentos")
     public EstadoRequerimientoEstudianteDTOList getStudentDocuments(@PathVariable String carnet,
                                     @RequestParam(defaultValue = "1") int page,
                                     @RequestParam(defaultValue = "10") int size,
@@ -96,22 +90,12 @@ public class EstudianteController {
         return new EstadoRequerimientoEstudianteDTOList(result);
     }
 
-    // idProyectoEstudiante is needed due to OneToOne relationship
-    @PostMapping("/certificados/{idProyectoEstudiante}")
-    @ResponseStatus(HttpStatus.CREATED)
-    public Map<String, String> createCertificate(@PathVariable int idProyectoEstudiante, @RequestBody HashMap<String, String> urlInfo){
-        String urlStr = urlInfo.get("url");
-        Certificado result = this.certificadoService.save(urlStr, idProyectoEstudiante).orElseThrow(
-                () -> new InternalErrorException("Certificate creation failed")
-        );
-        return Map.of("url", result.getUri());
-    }
-
-    @GetMapping("/certificados")
+    @GetMapping("/{carnet}/certificados")
     public CertificadoDTOList createCertificate(
+            @PathVariable String carnet,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size){
-        List<CertificadoDTO> result = this.certificadoService.findAll(page, size);
+        List<CertificadoCreationDTO.CertificadoDTO> result = this.certificadoService.findAllByCarnet(page, size, carnet);
         return new CertificadoDTOList(result);
     }
 

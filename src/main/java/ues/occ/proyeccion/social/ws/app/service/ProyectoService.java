@@ -12,5 +12,5 @@ public interface ProyectoService {
     List<ProyectoCreationDTO.ProyectoDTO> findAllByStatus(int page, int size, int statusId);
     List<ProyectoCreationDTO.ProyectoDTO> findAllPending(int page, int size);
     List<ProyectoCreationDTO.ProyectoDTO> findProyectosByEstudiante(int page, int size, String carnet, int status);
-    ProyectoCreationDTO save(Estudiante estudiante, ProyectoCreationDTO proyecto);
+    ProyectoCreationDTO save(String carnet, ProyectoCreationDTO proyecto);
 }

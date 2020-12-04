@@ -8,6 +8,9 @@ import org.springframework.stereotype.Repository;
 
 import ues.occ.proyeccion.social.ws.app.dao.ProyectoEstudiante;
 
+import java.util.Optional;
+
 @Repository
 public interface ProyectoEstudianteRepository extends PagingAndSortingRepository<ProyectoEstudiante, Integer> {
+    Optional<ProyectoEstudiante> findByProyecto_Id(int proyectoId);
 }

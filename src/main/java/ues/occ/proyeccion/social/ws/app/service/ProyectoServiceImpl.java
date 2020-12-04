@@ -70,10 +70,11 @@ public class ProyectoServiceImpl extends PageableResource<Proyecto, ProyectoCrea
     }
 
     @Override
-    public ProyectoCreationDTO save(Estudiante estudiante, ProyectoCreationDTO proyecto) {
+    public ProyectoCreationDTO save(String carnet, ProyectoCreationDTO proyecto) {
         try {
 
             Proyecto proyectoToSave = this.proyectoMapper.proyectoCreationDTOToProyecto(proyecto);
+            Estudiante estudiante = this.entityManager.getReference(Estudiante.class, carnet);
             this.setEncargado(proyectoToSave, proyecto.getPersonal());
             Proyecto savedProyecto = this.proyectoRepository.save(proyectoToSave);
             Status status = this.entityManager.getReference(Status.class, 1);
