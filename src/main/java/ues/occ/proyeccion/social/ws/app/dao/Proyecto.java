@@ -41,8 +41,7 @@ public class Proyecto implements Serializable {
 		super();
 	}
 
-	public Proyecto(Integer id, String nombre, Integer duracion, boolean interno, Personal tutor, PersonalExterno encargadoExterno, Set<ProyectoEstudiante> proyectoEstudianteSet) {
-		this.id = id;
+	public Proyecto(String nombre, Integer duracion, boolean interno, Personal tutor, PersonalExterno encargadoExterno, Set<ProyectoEstudiante> proyectoEstudianteSet) {
 		this.nombre = nombre;
 		this.duracion = duracion;
 		this.interno = interno;

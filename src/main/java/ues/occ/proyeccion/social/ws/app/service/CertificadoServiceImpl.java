@@ -28,7 +28,9 @@ public class CertificadoServiceImpl extends PageableResource<Certificado, Certif
     private final CertificadoMapper certificadoMapper;
     private final static Logger LOGGER = Logger.getLogger(CertificadoServiceImpl.class.getName());
 
-    public CertificadoServiceImpl(CertificadoRepository certificadoRepository, ProyectoEstudianteRepository proyectoEstudianteRepository, CertificadoMapper certificadoMapper) {
+    public CertificadoServiceImpl(CertificadoRepository certificadoRepository,
+                                  ProyectoEstudianteRepository proyectoEstudianteRepository,
+                                  CertificadoMapper certificadoMapper) {
         this.certificadoRepository = certificadoRepository;
         this.proyectoEstudianteRepository = proyectoEstudianteRepository;
         this.certificadoMapper = certificadoMapper;
