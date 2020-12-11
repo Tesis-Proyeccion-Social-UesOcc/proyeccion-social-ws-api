@@ -20,7 +20,7 @@ public class Certificado implements Serializable{
 	private String uri;
 	
 	@Column(name = "fecha_expedicion", nullable = false)
-	private Date fecha_expedicion;
+	private Date fechaExpedicion;
 
 	// Indica que la columna id de proyecto_estudiante se usara como PK y FK
 	@OneToOne
@@ -34,7 +34,7 @@ public class Certificado implements Serializable{
 	public Certificado(Integer id, String uri, Date fecha_expedicion, ProyectoEstudiante proyectoEstudiante) {
 		this.id = id;
 		this.uri = uri;
-		this.fecha_expedicion = fecha_expedicion;
+		this.fechaExpedicion = fecha_expedicion;
 		this.proyectoEstudiante = proyectoEstudiante;
 	}
 
@@ -55,11 +55,11 @@ public class Certificado implements Serializable{
 	}
 
 	public Date getFecha_expedicion() {
-		return fecha_expedicion;
+		return fechaExpedicion;
 	}
 
 	public void setFecha_expedicion(Date fecha_expedicion) {
-		this.fecha_expedicion = fecha_expedicion;
+		this.fechaExpedicion = fecha_expedicion;
 	}
 
 	public ProyectoEstudiante getProyectoEstudiante() {
@@ -77,12 +77,12 @@ public class Certificado implements Serializable{
 		Certificado that = (Certificado) o;
 		return Objects.equals(id, that.id) &&
 				Objects.equals(uri, that.uri) &&
-				Objects.equals(fecha_expedicion, that.fecha_expedicion) &&
+				Objects.equals(fechaExpedicion, that.fechaExpedicion) &&
 				Objects.equals(proyectoEstudiante, that.proyectoEstudiante);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, uri, fecha_expedicion, proyectoEstudiante);
+		return Objects.hash(id, uri, fechaExpedicion, proyectoEstudiante);
 	}
 }

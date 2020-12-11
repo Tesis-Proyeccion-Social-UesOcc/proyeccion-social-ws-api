@@ -1,5 +1,6 @@
 package ues.occ.proyeccion.social.ws.app.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -27,12 +28,22 @@ public class ProyectoServiceImpl extends PageableResource<Proyecto, ProyectoCrea
     @PersistenceContext
     private EntityManager entityManager;
 
+    @Autowired
     public ProyectoServiceImpl(ProyectoRepository proyectoRepository, ProyectoEstudianteRepository proyectoEstudianteRepository,
                                ProyectoMapper proyectoMapper) {
 
         this.proyectoRepository = proyectoRepository;
         this.proyectoEstudianteRepository = proyectoEstudianteRepository;
         this.proyectoMapper = proyectoMapper;
+    }
+
+    public ProyectoServiceImpl(ProyectoRepository proyectoRepository, ProyectoEstudianteRepository proyectoEstudianteRepository,
+                               ProyectoMapper proyectoMapper, EntityManager entityManager) {
+
+        this.proyectoRepository = proyectoRepository;
+        this.proyectoEstudianteRepository = proyectoEstudianteRepository;
+        this.proyectoMapper = proyectoMapper;
+        this.entityManager = entityManager;
     }
 
     @Override
