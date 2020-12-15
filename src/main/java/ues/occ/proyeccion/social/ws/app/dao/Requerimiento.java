@@ -21,7 +21,7 @@ public class Requerimiento implements Serializable {
     private boolean original;
 
     @Column(name = "cantidad_copias", nullable = true)
-    private Integer cantidad_copias;
+    private Integer cantidadCopias;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_proceso")
@@ -38,10 +38,10 @@ public class Requerimiento implements Serializable {
         super();
     }
 
-    public Requerimiento(Integer id, boolean original, Integer cantidad_copias, Proceso proceso, Documento documento, Set<EstadoRequerimientoEstudiante> estadoRequerimientoEstudiantes) {
+    public Requerimiento(Integer id, boolean original, Integer cantidadCopias, Proceso proceso, Documento documento, Set<EstadoRequerimientoEstudiante> estadoRequerimientoEstudiantes) {
         this.id = id;
         this.original = original;
-        this.cantidad_copias = cantidad_copias;
+        this.cantidadCopias = cantidadCopias;
         this.proceso = proceso;
         this.documento = documento;
         this.estadoRequerimientoEstudiantes = estadoRequerimientoEstudiantes;
@@ -63,12 +63,12 @@ public class Requerimiento implements Serializable {
         this.original = original;
     }
 
-    public Integer getCantidad_copias() {
-        return cantidad_copias;
+    public Integer getcantidadCopias() {
+        return cantidadCopias;
     }
 
-    public void setCantidad_copias(Integer cantidad_copias) {
-        this.cantidad_copias = cantidad_copias;
+    public void setcantidadCopias(Integer cantidadCopias) {
+        this.cantidadCopias = cantidadCopias;
     }
 
     public Proceso getProceso() {
@@ -102,7 +102,7 @@ public class Requerimiento implements Serializable {
         Requerimiento that = (Requerimiento) o;
         return original == that.original &&
                 Objects.equals(id, that.id) &&
-                Objects.equals(cantidad_copias, that.cantidad_copias) &&
+                Objects.equals(cantidadCopias, that.cantidadCopias) &&
                 Objects.equals(proceso, that.proceso) &&
                 Objects.equals(documento, that.documento) &&
                 Objects.equals(estadoRequerimientoEstudiantes, that.estadoRequerimientoEstudiantes);
@@ -110,6 +110,6 @@ public class Requerimiento implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, original, cantidad_copias, proceso, documento, estadoRequerimientoEstudiantes);
+        return Objects.hash(id, original, cantidadCopias, proceso, documento, estadoRequerimientoEstudiantes);
     }
 }

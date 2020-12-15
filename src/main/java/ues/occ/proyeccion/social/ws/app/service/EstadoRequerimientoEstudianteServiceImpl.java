@@ -1,6 +1,6 @@
 package ues.occ.proyeccion.social.ws.app.service;
 
-import org.hibernate.Session;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -31,7 +31,17 @@ public class EstadoRequerimientoEstudianteServiceImpl
     private final EstadoRequerimientoEstudianteRepository repository;
     private final EstadoRequerimientoEstudianteMapper mapper;
 
+    @Autowired
     public EstadoRequerimientoEstudianteServiceImpl(EstadoRequerimientoEstudianteRepository repository, EstadoRequerimientoEstudianteMapper mapper) {
+        this.repository = repository;
+        this.mapper = mapper;
+    }
+
+    /**
+     * Test purposes constructor
+     */
+    public EstadoRequerimientoEstudianteServiceImpl(EntityManager entityManager, EstadoRequerimientoEstudianteRepository repository, EstadoRequerimientoEstudianteMapper mapper) {
+        this.entityManager = entityManager;
         this.repository = repository;
         this.mapper = mapper;
     }
@@ -39,14 +49,13 @@ public class EstadoRequerimientoEstudianteServiceImpl
     @Override
     public List<EstadoRequerimientoEstudianteDTO> findAllByCarnet(int page, int size, String carnet, boolean aprobado) {
 
-        Pageable requerimientoEstudiantePage = this.getPageable(page, size);
+        Pageable requerimientoEstudiantePageable = this.getPageable(page, size);
         Page<EstadoRequerimientoEstudiante> estadoRequerimientoEstudiantes =
-                this.repository.findAllByEstudiante_CarnetAndAprobado(carnet, aprobado, requerimientoEstudiantePage);
+                this.repository.findAllByEstudiante_CarnetAndAprobado(carnet, aprobado, requerimientoEstudiantePageable);
 
         return this.getData(estadoRequerimientoEstudiantes);
     }
 
-    // todo: refactor repositories to add entityManager and getSession method, that's needed to use only the entities ID in insertions, otherwise findById would be used
     @Override
     public Optional<EstadoRequerimientoEstudianteDTO> save(String carnet, int requerimientoId) {
         carnet = carnet.strip();
