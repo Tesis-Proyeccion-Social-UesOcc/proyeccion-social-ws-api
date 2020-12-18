@@ -128,7 +128,7 @@ class EstudianteControllerTest {
                 .findAllByServicio(page.capture(), size.capture(), isComplete.capture());
         assertEquals(pageParam, page.getValue());
         assertEquals(sizeParam, size.getValue());
-        assertEquals(isCompleteParam, isComplete.getValue());
+    assertTrue(isComplete.getValue());
     }
 
     @Test

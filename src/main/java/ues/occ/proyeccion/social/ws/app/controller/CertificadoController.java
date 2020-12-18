@@ -6,6 +6,8 @@ import ues.occ.proyeccion.social.ws.app.exceptions.InternalErrorException;
 import ues.occ.proyeccion.social.ws.app.model.CertificadoCreationDTO;
 import ues.occ.proyeccion.social.ws.app.model.CertificadoDTOList;
 import ues.occ.proyeccion.social.ws.app.service.CertificadoService;
+
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -17,16 +19,16 @@ public class CertificadoController {
         this.certificadoService = certificadoService;
     }
 
-    @PostMapping("/certificados")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CertificadoCreationDTO.CertificadoDTO createCertificate(@RequestBody CertificadoCreationDTO dto){
+    public CertificadoCreationDTO.CertificadoDTO createCertificate(@Valid @RequestBody CertificadoCreationDTO dto){
         return this.certificadoService.save(dto).orElseThrow(
                 () -> new InternalErrorException("Certificate creation failed")
         );
     }
 
-    @GetMapping("/certificados")
-    public CertificadoDTOList createCertificate(
+    @GetMapping
+    public CertificadoDTOList getCertificates(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size){
         List<CertificadoCreationDTO.CertificadoDTO> result = this.certificadoService.findAll(page, size);

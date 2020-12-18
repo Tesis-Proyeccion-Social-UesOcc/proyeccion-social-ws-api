@@ -15,7 +15,7 @@ public class Estudiante implements Serializable {
 
 	@Id
 	@Column(name = "carnet", nullable = false, length = 10)
-	@Size(max = 6, min = 6, message = "Carnet must be a 6 character identifier")
+//	@Size(max = 6, min = 6, message = "Carnet must be a 6 character identifier")
 	private String carnet;
 	
 	@Column(name = "horas_progreso", nullable = true)
