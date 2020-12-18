@@ -1,6 +1,7 @@
 package ues.occ.proyeccion.social.ws.app.controller;
 
 import org.hamcrest.CoreMatchers;
+import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsCollectionWithSize;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,24 +12,38 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ues.occ.proyeccion.social.ws.app.dao.Estudiante;
+import ues.occ.proyeccion.social.ws.app.model.CertificadoCreationDTO;
+import ues.occ.proyeccion.social.ws.app.model.EstadoRequerimientoEstudianteDTO;
 import ues.occ.proyeccion.social.ws.app.model.EstudianteDTO;
 import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO;
+import ues.occ.proyeccion.social.ws.app.service.CertificadoService;
+import ues.occ.proyeccion.social.ws.app.service.EstadoRequerimientoEstudianteService;
 import ues.occ.proyeccion.social.ws.app.service.EstudianteService;
 import ues.occ.proyeccion.social.ws.app.service.ProyectoService;
 
+import java.sql.Date;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class EstudianteControllerTest {
 
     public static final String CARNET = "zh15002";
+    public static final int PAGE = 5;
+    public static final int SIZE = 10;
 
     @Mock
     EstudianteService estudianteService;
 
     @Mock
     ProyectoService proyectoService;
+
+    @Mock
+    EstadoRequerimientoEstudianteService estadoRequerimientoEstudianteService;
+
+    @Mock
+    CertificadoService certificadoService;
 
     @InjectMocks
     EstudianteController controller;
@@ -59,7 +74,7 @@ class EstudianteControllerTest {
         String carnet = "ZH15005";
         Estudiante estudiante = new Estudiante();
         estudiante.setCarnet(carnet);
-        Mockito.when(this.estudianteService.findByCarnet(Mockito.anyString())).thenThrow(IllegalArgumentException.class);
+        Mockito.when(this.estudianteService.findByCarnet(Mockito.anyString())).thenThrow(new IllegalArgumentException("Error"));
         mockMvc.perform(MockMvcRequestBuilders.get("/estudiantes/".concat(carnet)) // carnet length doesn't match
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
@@ -89,7 +104,7 @@ class EstudianteControllerTest {
                 .findAllByServicio(page.capture(), size.capture(), isComplete.capture());
         assertEquals(pageParam, page.getValue());
         assertEquals(sizeParam, size.getValue());
-        assertEquals(isCompleteParam, isComplete.getValue());
+        assertTrue(isComplete.getValue());
     }
 
     @Test
@@ -129,7 +144,7 @@ class EstudianteControllerTest {
     }
 
     @Test
-    void post() throws Exception {
+    void createProject() throws Exception {
         String projectName = "Test project name";
         ProyectoCreationDTO proyectoCreationDTO = new ProyectoCreationDTO(projectName, 250, true, 10);
         EstudianteDTO estudiante = new EstudianteDTO();
@@ -151,5 +166,148 @@ class EstudianteControllerTest {
         assertEquals(CARNET, carnetCaptor.getValue());
         assertEquals(proyectoCreationDTO, projectDTOCaptor.getValue());
 
+    }
+
+    @Test
+    void projectsByStudentID() throws Exception{
+        String status = "3";
+        ProyectoCreationDTO.ProyectoDTO dto1 = new ProyectoCreationDTO.ProyectoDTO("Project1", 100, true, "Steve Jobs");
+        ProyectoCreationDTO.ProyectoDTO dto2 = new ProyectoCreationDTO.ProyectoDTO("Project2", 200, true, "Steve Gerard");
+
+        ArgumentCaptor<Integer> pageCaptor = ArgumentCaptor.forClass(Integer.class);
+        ArgumentCaptor<Integer> sizeCaptor = ArgumentCaptor.forClass(Integer.class);
+        ArgumentCaptor<Integer> statusCaptor = ArgumentCaptor.forClass(Integer.class);
+        ArgumentCaptor<String> carnetCaptor = ArgumentCaptor.forClass(String.class);
+
+        List<ProyectoCreationDTO.ProyectoDTO> data = List.of(dto1, dto2);
+
+        Mockito.when(this.proyectoService
+                .findProyectosByEstudiante(Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString(), Mockito.anyInt()))
+                .thenReturn(data);
+        mockMvc.perform(MockMvcRequestBuilders.get("/estudiantes/".concat(CARNET).concat("/proyectos"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("page", "5")
+                .param("size", "10")
+                .param("status", status))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.proyectos",
+                            IsCollectionWithSize.hasSize(data.size())));
+        Mockito.verify(this.proyectoService, Mockito.times(1))
+                .findProyectosByEstudiante(pageCaptor.capture(), sizeCaptor.capture(), carnetCaptor.capture(), statusCaptor.capture());
+        assertEquals(PAGE, pageCaptor.getValue());
+        assertEquals(SIZE, sizeCaptor.getValue());
+        assertEquals(Integer.parseInt(status), statusCaptor.getValue());
+        assertEquals(CARNET, carnetCaptor.getValue());
+    }
+
+    @Test
+    void addDocument() throws Exception{
+        String dateStr = "2019-02-18", requerimientoId = "10";
+        EstadoRequerimientoEstudianteDTO dto = new EstadoRequerimientoEstudianteDTO(true, Date.valueOf(dateStr));
+        Optional<EstadoRequerimientoEstudianteDTO> toReturnObj = Optional.of(dto);
+
+        ArgumentCaptor<String> carnetCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<Integer> requerimientoIdCaptor = ArgumentCaptor.forClass(Integer.class);
+
+        Mockito.when(this.estadoRequerimientoEstudianteService.save(Mockito.anyString(), Mockito.anyInt())).thenReturn(toReturnObj);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/estudiantes/".concat(CARNET).concat("/documentos/").concat(requerimientoId))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.fechaEntrega", CoreMatchers.is(dateStr)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.aprobado", CoreMatchers.is(true)));
+
+        Mockito.verify(this.estadoRequerimientoEstudianteService, Mockito.times(1))
+                .save(carnetCaptor.capture(), requerimientoIdCaptor.capture());
+
+        assertEquals(CARNET, carnetCaptor.getValue());
+        assertEquals(Integer.parseInt(requerimientoId), requerimientoIdCaptor.getValue());
+    }
+
+    @Test
+    void addDocumentWithEmptyOptional() throws Exception{
+        Mockito.when(this.estadoRequerimientoEstudianteService.save(Mockito.anyString(), Mockito.anyInt())).thenReturn(Optional.empty());
+        mockMvc.perform(MockMvcRequestBuilders.post("/estudiantes/someCarnet/documentos/1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().is5xxServerError())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message", CoreMatchers.containsString("went wrong")));
+    }
+
+    @Test
+    void getStudentDocuments() throws Exception{
+        String dateStr1 = "2019-12-01", dateStr2 = "2018-11-01";
+        EstadoRequerimientoEstudianteDTO dto1 = new EstadoRequerimientoEstudianteDTO(false, Date.valueOf(dateStr1));
+        EstadoRequerimientoEstudianteDTO dto2 = new EstadoRequerimientoEstudianteDTO(true, Date.valueOf(dateStr2));
+        List<EstadoRequerimientoEstudianteDTO> data = List.of(dto1, dto2);
+
+        ArgumentCaptor<Integer> pageCaptor = ArgumentCaptor.forClass(Integer.class);
+        ArgumentCaptor<Integer> sizeCaptor = ArgumentCaptor.forClass(Integer.class);
+        ArgumentCaptor<String> carnetCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<Boolean> isAprobadoCaptor = ArgumentCaptor.forClass(Boolean.class);
+
+        Mockito.when(this.estadoRequerimientoEstudianteService
+                .findAllByCarnet(Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString(), Mockito.anyBoolean()))
+                .thenReturn(data);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/estudiantes/".concat(CARNET).concat("/documentos"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("page", "5")
+                .param("size", "10")
+                .param("aprobado", "si"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.documentos", IsCollectionWithSize.hasSize(data.size())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.documentos[0].fechaEntrega", CoreMatchers.is(dateStr1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.documentos[1].fechaEntrega", CoreMatchers.is(dateStr2)));
+
+        Mockito.verify(this.estadoRequerimientoEstudianteService, Mockito.times(1))
+                .findAllByCarnet(pageCaptor.capture(), sizeCaptor.capture(), carnetCaptor.capture(), isAprobadoCaptor.capture());
+
+        assertEquals(PAGE, pageCaptor.getValue());
+        assertEquals(SIZE, sizeCaptor.getValue());
+        assertEquals(CARNET, carnetCaptor.getValue());
+        assertTrue(isAprobadoCaptor.getValue());
+
+    }
+
+    @Test
+    void getStudentDocumentsWithInvalidAprobadoValue() throws Exception{
+        mockMvc.perform(MockMvcRequestBuilders.get("/estudiantes/".concat(CARNET).concat("/documentos"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("page", "5")
+                .param("size", "10")
+                .param("aprobado", "something"))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    void getCertificate() throws Exception{
+        String dateStr1 = "2019-12-01", dateStr2 = "2018-11-12";
+        CertificadoCreationDTO.CertificadoDTO dto1 = new CertificadoCreationDTO.CertificadoDTO(
+                1, "Proyecto 1", "http://www.google.com/certificado1", Date.valueOf(dateStr1));
+        CertificadoCreationDTO.CertificadoDTO dto2 = new CertificadoCreationDTO.CertificadoDTO(
+                1, "Proyecto 2", "http://www.google.com/certificado2", Date.valueOf(dateStr2));
+
+        List<CertificadoCreationDTO.CertificadoDTO> data = List.of(dto1, dto2);
+
+        ArgumentCaptor<Integer> pageCaptor = ArgumentCaptor.forClass(Integer.class);
+        ArgumentCaptor<Integer> sizeCaptor = ArgumentCaptor.forClass(Integer.class);
+        ArgumentCaptor<String> carnetCaptor = ArgumentCaptor.forClass(String.class);
+
+        Mockito.when(this.certificadoService.findAllByCarnet(Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString())).thenReturn(data);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/estudiantes/".concat(CARNET).concat("/certificados"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("page", "5")
+                .param("size", "10"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.certificados", IsCollectionWithSize.hasSize(data.size())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.certificados[0].fechaExpedicion", CoreMatchers.is(dateStr1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.certificados[1].fechaExpedicion", CoreMatchers.is(dateStr2)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.certificados[*].uri", Matchers.containsInAnyOrder(
+                        "http://www.google.com/certificado1", "http://www.google.com/certificado2"
+                )))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.certificados[*].proyecto", Matchers.containsInAnyOrder(
+                        "Proyecto 1", "Proyecto 2"
+                )));
     }
 }

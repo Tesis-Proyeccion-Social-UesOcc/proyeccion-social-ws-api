@@ -1,5 +1,6 @@
 package ues.occ.proyeccion.social.ws.app.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -17,11 +18,13 @@ public class CertificadoCreationDTO{
     private String uri;
 
     @Data
+    @AllArgsConstructor
     public static class CertificadoDTO {
         private int id;
         private String proyecto;
         private String uri;
-        private Date fecha_expedicion;
+        @JsonFormat(pattern = "yyyy-MM-dd")
+        private Date fechaExpedicion;
     }
 
 }

@@ -2,8 +2,6 @@ package ues.occ.proyeccion.social.ws.app.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ues.occ.proyeccion.social.ws.app.dao.Certificado;
-import ues.occ.proyeccion.social.ws.app.dao.Estudiante;
 import ues.occ.proyeccion.social.ws.app.exceptions.InternalErrorException;
 import ues.occ.proyeccion.social.ws.app.model.*;
 import ues.occ.proyeccion.social.ws.app.service.CertificadoService;
@@ -60,6 +58,7 @@ public class EstudianteController {
 
     }
 
+    // HERE DOWN
     @GetMapping("/{carnet}/proyectos")
     public ProyectoDTOList projectsByStudentID(
             @PathVariable String carnet,
@@ -71,6 +70,7 @@ public class EstudianteController {
     }
 
     @PostMapping("/{carnet}/documentos/{requerimientoId}")
+    @ResponseStatus(HttpStatus.CREATED)
     public EstadoRequerimientoEstudianteDTO addDocument(@PathVariable String carnet, @PathVariable int requerimientoId) {
         return this.estadoRequerimientoEstudianteService.save(carnet, requerimientoId).orElseThrow(
                 () -> new InternalErrorException("Something went wrong")
@@ -91,7 +91,7 @@ public class EstudianteController {
     }
 
     @GetMapping("/{carnet}/certificados")
-    public CertificadoDTOList createCertificate(
+    public CertificadoDTOList getCertificate(
             @PathVariable String carnet,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size){
