@@ -9,6 +9,7 @@ import org.mockito.*;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ues.occ.proyeccion.social.ws.app.model.CertificadoCreationDTO;
@@ -99,8 +100,8 @@ class CertificadoControllerTest {
                 .content(TestUtil.toJson(certificadoCreationDTO)))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.violations", IsCollectionWithSize.hasSize(2)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.violations[0].message", CoreMatchers.containsString("greater then")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.violations[1].message", CoreMatchers.containsString("must provide")));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.violations[*].message",
+                        Matchers.containsInAnyOrder("ID must be greater then 0","You must provide the certificate url")));
     }
 
     @Test
