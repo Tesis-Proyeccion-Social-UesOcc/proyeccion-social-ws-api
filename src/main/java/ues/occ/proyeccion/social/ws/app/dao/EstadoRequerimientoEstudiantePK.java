@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @Embeddable
-public class EstadoRequerimientoEstudiantePK implements Serializable {
+    public class EstadoRequerimientoEstudiantePK implements Serializable {
     @Column(name = "id_requerimiento")
     private Integer idRequerimiento;
 

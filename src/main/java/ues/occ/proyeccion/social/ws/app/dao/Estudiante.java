@@ -5,6 +5,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "estudiante")
@@ -14,13 +15,14 @@ public class Estudiante implements Serializable {
 
 	@Id
 	@Column(name = "carnet", nullable = false, length = 10)
+//	@Size(max = 6, min = 6, message = "Carnet must be a 6 character identifier")
 	private String carnet;
 	
 	@Column(name = "horas_progreso", nullable = true)
-	private Integer horas_progreso;
+	private Integer horasProgreso;
 	
 	@Column(name = "servicio_completo", nullable = true)
-	private boolean servicio_completo;
+	private boolean servicioCompleto;
 
 	@OneToMany(mappedBy = "estudiante", fetch = FetchType.LAZY)
 	private Set<EstadoRequerimientoEstudiante> estadoRequerimientoEstudiantes;
@@ -32,10 +34,10 @@ public class Estudiante implements Serializable {
 		super();
 	}
 
-	public Estudiante(String carnet, Integer horas_progreso, boolean servicio_completo, Set<EstadoRequerimientoEstudiante> estadoRequerimientoEstudiantes, Set<ProyectoEstudiante> proyectoEstudianteSet) {
+	public Estudiante(String carnet, Integer horasProgreso, boolean servicioCompleto, Set<EstadoRequerimientoEstudiante> estadoRequerimientoEstudiantes, Set<ProyectoEstudiante> proyectoEstudianteSet) {
 		this.carnet = carnet;
-		this.horas_progreso = horas_progreso;
-		this.servicio_completo = servicio_completo;
+		this.horasProgreso = horasProgreso;
+		this.servicioCompleto = servicioCompleto;
 		this.estadoRequerimientoEstudiantes = estadoRequerimientoEstudiantes;
 		this.proyectoEstudianteSet = proyectoEstudianteSet;
 	}
@@ -48,20 +50,20 @@ public class Estudiante implements Serializable {
 		this.carnet = carnet;
 	}
 
-	public Integer getHoras_progreso() {
-		return horas_progreso;
+	public Integer getHorasProgreso() {
+		return horasProgreso;
 	}
 
-	public void setHoras_progreso(Integer horas_progreso) {
-		this.horas_progreso = horas_progreso;
+	public void setHorasProgreso(Integer horasProgreso) {
+		this.horasProgreso = horasProgreso;
 	}
 
-	public boolean isServicio_completo() {
-		return servicio_completo;
+	public boolean isServicioCompleto() {
+		return servicioCompleto;
 	}
 
-	public void setServicio_completo(boolean servicio_completo) {
-		this.servicio_completo = servicio_completo;
+	public void setServicioCompleto(boolean servicioCompleto) {
+		this.servicioCompleto = servicioCompleto;
 	}
 
 	public Set<EstadoRequerimientoEstudiante> getEstadoRequerimientoEstudiantes() {
@@ -85,15 +87,15 @@ public class Estudiante implements Serializable {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		Estudiante that = (Estudiante) o;
-		return servicio_completo == that.servicio_completo &&
-				Objects.equals(carnet, that.carnet) &&
-				Objects.equals(horas_progreso, that.horas_progreso) &&
+		return servicioCompleto == that.servicioCompleto &&
+				carnet.equals(that.carnet) &&
+				Objects.equals(horasProgreso, that.horasProgreso) &&
 				Objects.equals(estadoRequerimientoEstudiantes, that.estadoRequerimientoEstudiantes) &&
 				Objects.equals(proyectoEstudianteSet, that.proyectoEstudianteSet);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(carnet, horas_progreso, servicio_completo, estadoRequerimientoEstudiantes, proyectoEstudianteSet);
+		return Objects.hash(carnet, horasProgreso, servicioCompleto, estadoRequerimientoEstudiantes, proyectoEstudianteSet);
 	}
 }
