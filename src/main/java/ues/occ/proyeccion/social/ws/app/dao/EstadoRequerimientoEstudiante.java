@@ -1,15 +1,27 @@
 package ues.occ.proyeccion.social.ws.app.dao;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Date;
 import java.util.Objects;
+
+import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MapsId;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "estado_requerimiento_estudiante")
 public class EstadoRequerimientoEstudiante implements Serializable {
 
-    @EmbeddedId
+    /**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@EmbeddedId
     private EstadoRequerimientoEstudiantePK id;
 
     @ManyToOne

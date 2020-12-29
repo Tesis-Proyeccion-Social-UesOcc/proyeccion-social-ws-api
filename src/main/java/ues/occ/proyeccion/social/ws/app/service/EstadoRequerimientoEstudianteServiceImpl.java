@@ -72,7 +72,7 @@ public class EstadoRequerimientoEstudianteServiceImpl
             EstadoRequerimientoEstudianteDTO resultDTO = this.mapper.estadoRequerimientoEstudianteToDTO(result);
             return Optional.of(resultDTO);
         }catch (Exception e){
-            System.err.println(e);
+            System.err.println(e.getMessage());
             return Optional.empty();
         }
     }

@@ -1,11 +1,17 @@
 package ues.occ.proyeccion.social.ws.app.dao;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.Objects;
+import java.time.LocalDateTime;
 import java.util.Set;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "documento")
@@ -28,7 +34,7 @@ public class Documento implements Serializable {
     private String uri;
 
     @Column(name = "fecha_documento", nullable = false)
-    private Date fecha_documento;
+    private LocalDateTime fechaDocumento;
 
     @OneToMany(mappedBy = "documento", fetch = FetchType.LAZY)
     private Set<Requerimiento> requerimientos;
@@ -37,78 +43,53 @@ public class Documento implements Serializable {
         super();
     }
 
-    public Documento(Integer id, String nombre, String descripcion, String uri, Date fecha_documento, Set<Requerimiento> requerimientos) {
-        Id = id;
+    public Documento(String nombre, String descripcion, String uri, LocalDateTime fecha_documento) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.uri = uri;
-        this.fecha_documento = fecha_documento;
-        this.requerimientos = requerimientos;
+        this.fechaDocumento = fecha_documento;
     }
 
-    public Integer getId() {
-        return Id;
-    }
+	public Integer getId() {
+		return Id;
+	}
 
-    public void setId(Integer id) {
-        Id = id;
-    }
+	public void setId(Integer id) {
+		Id = id;
+	}
 
-    public String getNombre() {
-        return nombre;
-    }
+	public String getNombre() {
+		return nombre;
+	}
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
 
-    public String getDescripcion() {
-        return descripcion;
-    }
+	public String getDescripcion() {
+		return descripcion;
+	}
 
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
+	}
 
-    public String getUri() {
-        return uri;
-    }
+	public String getUri() {
+		return uri;
+	}
 
-    public void setUri(String uri) {
-        this.uri = uri;
-    }
+	public void setUri(String uri) {
+		this.uri = uri;
+	}
 
-    public Date getFecha_documento() {
-        return fecha_documento;
-    }
+	public LocalDateTime getFechaDocumento() {
+		return fechaDocumento;
+	}
 
-    public void setFecha_documento(Date fecha_documento) {
-        this.fecha_documento = fecha_documento;
-    }
+	public void setFechaDocumento(LocalDateTime fechaDocumento) {
+		this.fechaDocumento = fechaDocumento;
+	}
 
-    public Set<Requerimiento> getRequerimientos() {
-        return requerimientos;
-    }
+   
 
-    public void setRequerimientos(Set<Requerimiento> requerimientos) {
-        this.requerimientos = requerimientos;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Documento documento = (Documento) o;
-        return Objects.equals(Id, documento.Id) &&
-                Objects.equals(nombre, documento.nombre) &&
-                Objects.equals(descripcion, documento.descripcion) &&
-                Objects.equals(uri, documento.uri) &&
-                Objects.equals(fecha_documento, documento.fecha_documento) &&
-                Objects.equals(requerimientos, documento.requerimientos);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(Id, nombre, descripcion, uri, fecha_documento, requerimientos);
-    }
 }

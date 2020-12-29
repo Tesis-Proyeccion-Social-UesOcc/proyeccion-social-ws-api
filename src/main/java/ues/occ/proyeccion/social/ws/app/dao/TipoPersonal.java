@@ -1,17 +1,15 @@
 package ues.occ.proyeccion.social.ws.app.dao;
 
 import java.io.Serializable;
-import java.util.Objects;
 import java.util.Set;
 
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -31,7 +29,7 @@ public class TipoPersonal implements Serializable{
 	@Column(name = "descripcion", nullable = false, length = 1000)
 	private String descripcion;
 	
-	@OneToMany(targetEntity = Personal.class, mappedBy = "tipoPersonal", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "tipoPersonal", fetch = FetchType.LAZY)
 	private Set<Personal> personal;
 	
 	public TipoPersonal() {
@@ -74,19 +72,4 @@ public class TipoPersonal implements Serializable{
 		return "TipoPersonal [id=" + id + ", nombre=" + nombre + ", descripcion=" + descripcion + "]";
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		TipoPersonal that = (TipoPersonal) o;
-		return Objects.equals(id, that.id) &&
-				Objects.equals(nombre, that.nombre) &&
-				Objects.equals(descripcion, that.descripcion) &&
-				Objects.equals(personal, that.personal);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(id, nombre, descripcion, personal);
-	}
 }

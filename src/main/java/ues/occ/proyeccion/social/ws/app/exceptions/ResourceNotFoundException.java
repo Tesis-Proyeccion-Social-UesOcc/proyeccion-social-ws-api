@@ -1,7 +1,12 @@
 package ues.occ.proyeccion.social.ws.app.exceptions;
 
 public class ResourceNotFoundException extends RuntimeException {
-    public ResourceNotFoundException() {
+    /**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public ResourceNotFoundException() {
     }
 
     public ResourceNotFoundException(String message) {

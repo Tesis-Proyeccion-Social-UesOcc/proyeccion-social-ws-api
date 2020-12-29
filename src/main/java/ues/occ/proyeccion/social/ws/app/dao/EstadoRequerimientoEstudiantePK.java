@@ -1,9 +1,10 @@
 package ues.occ.proyeccion.social.ws.app.dao;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
 import java.io.Serializable;
 import java.util.Objects;
+
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
 
 @Embeddable
     public class EstadoRequerimientoEstudiantePK implements Serializable {

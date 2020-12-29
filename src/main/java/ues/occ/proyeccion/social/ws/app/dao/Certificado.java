@@ -1,41 +1,45 @@
 package ues.occ.proyeccion.social.ws.app.dao;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.sql.Date;
 import java.util.Objects;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "certificado")
-public class Certificado implements Serializable{
+public class Certificado implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@Column(name = "id", unique = true, nullable = false)
 	private Integer id;
-	
+
 	@Column(name = "uri", nullable = false, length = 2048)
 	private String uri;
-	
+
 	@Column(name = "fecha_expedicion", nullable = false)
-	private Date fechaExpedicion;
+	private LocalDateTime fechaExpedicion;
 
 	// Indica que la columna id de proyecto_estudiante se usara como PK y FK
-	@OneToOne
-	@MapsId
-	@JoinColumn(name = "id")
+
+	@OneToOne(mappedBy = "certificado")
 	private ProyectoEstudiante proyectoEstudiante;
 
 	public Certificado() {
 	}
 
-	public Certificado(Integer id, String uri, Date fecha_expedicion, ProyectoEstudiante proyectoEstudiante) {
+	public Certificado(Integer id, String uri, LocalDateTime fechaExpedicion, ProyectoEstudiante proyectoEstudiante) {
 		this.id = id;
 		this.uri = uri;
-		this.fechaExpedicion = fecha_expedicion;
 		this.proyectoEstudiante = proyectoEstudiante;
+		this.fechaExpedicion = fechaExpedicion;
 	}
 
 	public Integer getId() {
@@ -54,11 +58,11 @@ public class Certificado implements Serializable{
 		this.uri = uri;
 	}
 
-	public Date getFecha_expedicion() {
+	public LocalDateTime getFechaExpedicion() {
 		return fechaExpedicion;
 	}
 
-	public void setFecha_expedicion(Date fecha_expedicion) {
+	public void setFechaExpedicion(LocalDateTime fecha_expedicion) {
 		this.fechaExpedicion = fecha_expedicion;
 	}
 
@@ -84,5 +88,11 @@ public class Certificado implements Serializable{
 	@Override
 	public int hashCode() {
 		return Objects.hash(id, uri, fechaExpedicion, proyectoEstudiante);
+	}
+
+	@Override
+	public String toString() {
+		return "Certificado [id=" + id + ", uri=" + uri + ", fecha_expedicion=" + fechaExpedicion
+				+ ", proyectoEstudiante=" + proyectoEstudiante + "]";
 	}
 }

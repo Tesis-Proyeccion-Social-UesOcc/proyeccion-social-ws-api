@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.sql.Date;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -25,7 +26,7 @@ public class CertificadoCreationDTO{
         private String proyecto;
         private String uri;
         @JsonFormat(pattern = "yyyy-MM-dd")
-        private Date fechaExpedicion;
+        private LocalDateTime fechaExpedicion;
     }
 
 }

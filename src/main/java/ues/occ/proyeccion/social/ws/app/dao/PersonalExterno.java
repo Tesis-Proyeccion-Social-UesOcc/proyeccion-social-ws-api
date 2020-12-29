@@ -25,7 +25,7 @@ public class PersonalExterno implements Serializable {
 	@Column(name = "descripcion", nullable = false, length = 500)
 	private String descripcion;
 
-	@OneToMany(mappedBy = "encargadoExterno", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "encargadoExterno")
 	private Set<Proyecto> proyectos;
 	
 	public PersonalExterno() {

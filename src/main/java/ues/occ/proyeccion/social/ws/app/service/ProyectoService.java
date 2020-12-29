@@ -14,3 +14,4 @@ public interface ProyectoService {
     List<ProyectoCreationDTO.ProyectoDTO> findProyectosByEstudiante(int page, int size, String carnet, int status);
     ProyectoCreationDTO save(String carnet, ProyectoCreationDTO proyecto);
 }
+

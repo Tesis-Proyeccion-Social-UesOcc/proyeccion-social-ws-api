@@ -22,6 +22,9 @@ import ues.occ.proyeccion.social.ws.app.service.EstudianteService;
 import ues.occ.proyeccion.social.ws.app.service.ProyectoService;
 
 import java.sql.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -283,9 +286,11 @@ class EstudianteControllerTest {
     void getCertificate() throws Exception{
         String dateStr1 = "2019-12-01", dateStr2 = "2018-11-12";
         CertificadoCreationDTO.CertificadoDTO dto1 = new CertificadoCreationDTO.CertificadoDTO(
-                1, "Proyecto 1", "http://www.google.com/certificado1", Date.valueOf(dateStr1));
+                1, "Proyecto 1", "http://www.google.com/certificado1", LocalDateTime.of(
+                        LocalDate.of(2019, 12,1), LocalTime.now()));
         CertificadoCreationDTO.CertificadoDTO dto2 = new CertificadoCreationDTO.CertificadoDTO(
-                1, "Proyecto 2", "http://www.google.com/certificado2", Date.valueOf(dateStr2));
+                1, "Proyecto 2", "http://www.google.com/certificado2",  LocalDateTime.of(
+                LocalDate.of(2018, 11,12), LocalTime.now()));
 
         List<CertificadoCreationDTO.CertificadoDTO> data = List.of(dto1, dto2);
 

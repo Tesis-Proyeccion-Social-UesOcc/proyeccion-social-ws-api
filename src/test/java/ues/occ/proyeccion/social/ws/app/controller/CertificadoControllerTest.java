@@ -16,6 +16,9 @@ import ues.occ.proyeccion.social.ws.app.model.CertificadoCreationDTO;
 import ues.occ.proyeccion.social.ws.app.service.CertificadoService;
 
 import java.sql.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,7 +45,8 @@ class CertificadoControllerTest {
         String dateStr = "2019-12-01";
         CertificadoCreationDTO certificadoCreationDTO = new CertificadoCreationDTO(1, "http://www.google.com");
         CertificadoCreationDTO.CertificadoDTO result = new CertificadoCreationDTO.CertificadoDTO(
-                1, "Proyecto", "http://www.google.com", Date.valueOf(dateStr));
+                1, "Proyecto", "http://www.google.com",  LocalDateTime.of(
+                LocalDate.of(2019, 12,1), LocalTime.now()));
 
         ArgumentCaptor<CertificadoCreationDTO> certificateCaptor = ArgumentCaptor.forClass(CertificadoCreationDTO.class);
 
@@ -110,9 +114,11 @@ class CertificadoControllerTest {
         String dateStr1 = "2019-12-01", dateStr2 = "2019-09-01";
         String uri1 = "http://www.google.com/cert1", uri2 = "http://www.google.com/cert2";
         CertificadoCreationDTO.CertificadoDTO dto1 = new CertificadoCreationDTO.CertificadoDTO(
-                1, "Proyecto1", uri1, Date.valueOf(dateStr1));
+                1, "Proyecto1", uri1,  LocalDateTime.of(
+                LocalDate.of(2019, 12,1), LocalTime.now()));
         CertificadoCreationDTO.CertificadoDTO dto2 = new CertificadoCreationDTO.CertificadoDTO(
-                2, "Proyecto2", uri2, Date.valueOf(dateStr2));
+                2, "Proyecto2", uri2,  LocalDateTime.of(
+                LocalDate.of(2019, 9,1), LocalTime.now()));
 
         List<CertificadoCreationDTO.CertificadoDTO> data = List.of(dto1, dto2);
 

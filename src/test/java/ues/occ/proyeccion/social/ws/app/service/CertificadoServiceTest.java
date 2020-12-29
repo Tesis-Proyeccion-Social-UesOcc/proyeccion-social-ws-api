@@ -1,5 +1,6 @@
 package ues.occ.proyeccion.social.ws.app.service;
 
+import com.google.cloud.storage.Storage;
 import org.assertj.core.internal.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,6 +33,9 @@ class CertificadoServiceTest {
     CertificadoRepository certificadoRepository;
 
     @Mock
+    Storage storage;
+
+    @Mock
     ProyectoEstudianteRepository proyectoEstudianteRepository;
 
     CertificadoService service;
@@ -41,7 +45,7 @@ class CertificadoServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        service = new CertificadoServiceImpl(certificadoRepository, proyectoEstudianteRepository, CertificadoMapper.INSTANCE);
+        service = new CertificadoServiceImpl(certificadoRepository, proyectoEstudianteRepository, CertificadoMapper.INSTANCE, storage);
     }
 
     @Test

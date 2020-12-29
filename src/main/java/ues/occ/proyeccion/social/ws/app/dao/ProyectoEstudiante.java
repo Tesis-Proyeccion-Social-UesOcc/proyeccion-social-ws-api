@@ -30,7 +30,8 @@ public class ProyectoEstudiante implements Serializable {
     @JoinColumn(name = "id_status")
     private Status status;
 
-    @OneToOne(mappedBy = "proyectoEstudiante", cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "id", referencedColumnName = "id")
     private Certificado certificado;
 
     public ProyectoEstudiante() {

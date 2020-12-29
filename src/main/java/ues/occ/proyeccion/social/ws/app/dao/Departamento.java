@@ -1,7 +1,6 @@
 package ues.occ.proyeccion.social.ws.app.dao;
 
 import java.io.Serializable;
-import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -35,10 +34,9 @@ public class Departamento implements Serializable{
 		super();
 	}
 
-	public Departamento(Integer id, String nombre, Set<Personal> personal) {
+	public Departamento(Integer id, String nombre) {
 		this.id = id;
 		this.nombre = nombre;
-		this.personal = personal;
 	}
 
 	public Integer getId() {
@@ -57,26 +55,5 @@ public class Departamento implements Serializable{
 		this.nombre = nombre;
 	}
 
-	public Set<Personal> getPersonal() {
-		return personal;
-	}
 
-	public void setPersonal(Set<Personal> personal) {
-		this.personal = personal;
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		Departamento that = (Departamento) o;
-		return Objects.equals(id, that.id) &&
-				Objects.equals(nombre, that.nombre) &&
-				Objects.equals(personal, that.personal);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(id, nombre, personal);
-	}
 }
