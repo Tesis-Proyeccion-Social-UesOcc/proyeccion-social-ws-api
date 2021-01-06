@@ -1,9 +1,18 @@
 package ues.occ.proyeccion.social.ws.app.service;
 
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.Optional;
+import java.util.function.Function;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
 import ues.occ.proyeccion.social.ws.app.dao.EstadoRequerimientoEstudiante;
 import ues.occ.proyeccion.social.ws.app.dao.Estudiante;
 import ues.occ.proyeccion.social.ws.app.dao.Requerimiento;
@@ -11,14 +20,6 @@ import ues.occ.proyeccion.social.ws.app.mappers.EstadoRequerimientoEstudianteMap
 import ues.occ.proyeccion.social.ws.app.model.EstadoRequerimientoEstudianteDTO;
 import ues.occ.proyeccion.social.ws.app.repository.EstadoRequerimientoEstudianteRepository;
 import ues.occ.proyeccion.social.ws.app.utils.PageableResource;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.sql.Date;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
 
 @Service
 public class EstadoRequerimientoEstudianteServiceImpl
@@ -47,13 +48,13 @@ public class EstadoRequerimientoEstudianteServiceImpl
     }
 
     @Override
-    public List<EstadoRequerimientoEstudianteDTO> findAllByCarnet(int page, int size, String carnet, boolean aprobado) {
+    public Page<EstadoRequerimientoEstudianteDTO> findAllByCarnet(int page, int size, String carnet, boolean aprobado) {
 
         Pageable requerimientoEstudiantePageable = this.getPageable(page, size);
         Page<EstadoRequerimientoEstudiante> estadoRequerimientoEstudiantes =
                 this.repository.findAllByEstudiante_CarnetAndAprobado(carnet, aprobado, requerimientoEstudiantePageable);
 
-        return this.getData(estadoRequerimientoEstudiantes);
+        return this.getDataPageable(estadoRequerimientoEstudiantes);
     }
 
     @Override

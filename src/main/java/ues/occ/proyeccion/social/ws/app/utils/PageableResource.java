@@ -1,6 +1,7 @@
 package ues.occ.proyeccion.social.ws.app.utils;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
@@ -26,4 +27,14 @@ public abstract class PageableResource<R, T> {
             return Collections.emptyList();
         }
     }
+    
+    protected Page<T> getDataPageable(Page<R> entityPage){
+        if(entityPage.hasContent()){
+            return new PageImpl<T>(
+            		entityPage.getContent().stream()
+                    .map(this.getMapperFunction()).collect(Collectors.toList()));
+        }
+		return Page.empty();
+    }
+    
 }

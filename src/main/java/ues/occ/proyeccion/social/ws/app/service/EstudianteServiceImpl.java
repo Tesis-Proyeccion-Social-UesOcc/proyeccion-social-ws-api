@@ -1,19 +1,18 @@
 package ues.occ.proyeccion.social.ws.app.service;
 
+import java.util.Optional;
+import java.util.function.Function;
+
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
 import ues.occ.proyeccion.social.ws.app.dao.Estudiante;
 import ues.occ.proyeccion.social.ws.app.exceptions.ResourceNotFoundException;
 import ues.occ.proyeccion.social.ws.app.mappers.EstudianteMapper;
 import ues.occ.proyeccion.social.ws.app.model.EstudianteDTO;
 import ues.occ.proyeccion.social.ws.app.repository.EstudianteRepository;
 import ues.occ.proyeccion.social.ws.app.utils.PageableResource;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
 
 @Service
 public class EstudianteServiceImpl extends PageableResource<Estudiante, EstudianteDTO> implements EstudianteService {
@@ -27,10 +26,10 @@ public class EstudianteServiceImpl extends PageableResource<Estudiante, Estudian
     }
 
     @Override
-    public List<EstudianteDTO> findAllByServicio(int page, int size, boolean isComplete) {
+    public Page<EstudianteDTO> findAllByServicio(int page, int size, boolean isComplete) {
         Pageable pageable = this.getPageable(page, size);
         Page<Estudiante> estudiantePage = this.estudianteRepository.findAllByServicioCompleto(pageable, isComplete);
-        return this.getData(estudiantePage);
+        return this.getDataPageable(estudiantePage);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package ues.occ.proyeccion.social.ws.app.controller;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ues.occ.proyeccion.social.ws.app.exceptions.InternalErrorException;
@@ -31,15 +32,15 @@ public class EstudianteController {
     }
 
     @GetMapping
-    public EstudianteDTOList findAll(
-            @RequestParam(defaultValue = "1") int page,
+    public EstudianteDTOPage findAll(
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "si") Optional<String> isComplete
     ) {
-        List<EstudianteDTO> result = isComplete.map(MapperUtility::isComplete)
+        Page<EstudianteDTO> result = isComplete.map(MapperUtility::isComplete)
                 .map(bool -> this.estudianteService.findAllByServicio(page, size, bool))
-                .orElse(Collections.emptyList());
-        return new EstudianteDTOList(result);
+                .orElse(Page.empty());
+        return new EstudianteDTOPage(result);
     }
 
 
@@ -60,13 +61,13 @@ public class EstudianteController {
 
     // HERE DOWN
     @GetMapping("/{carnet}/proyectos")
-    public ProyectoDTOList projectsByStudentID(
+    public ProyectoDTOPage projectsByStudentID(
             @PathVariable String carnet,
-            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "2") int status){
-        List<ProyectoCreationDTO.ProyectoDTO> result = this.proyectoService.findProyectosByEstudiante(page, size, carnet, status);
-        return new ProyectoDTOList(result);
+        Page<ProyectoCreationDTO.ProyectoDTO> result = this.proyectoService.findProyectosByEstudiante(page, size, carnet, status);
+        return new ProyectoDTOPage(result);
     }
 
     @PostMapping("/{carnet}/documentos/{requerimientoId}")
@@ -78,25 +79,25 @@ public class EstudianteController {
     }
 
     @GetMapping("/{carnet}/documentos")
-    public EstadoRequerimientoEstudianteDTOList getStudentDocuments(@PathVariable String carnet,
-                                    @RequestParam(defaultValue = "1") int page,
+    public EstadoRequerimientoEstudianteDTOPage getStudentDocuments(@PathVariable String carnet,
+                                    @RequestParam(defaultValue = "0") int page,
                                     @RequestParam(defaultValue = "10") int size,
                                     @RequestParam(defaultValue = "si") Optional<String> aprobado){
 
-        List<EstadoRequerimientoEstudianteDTO> result = aprobado.map(MapperUtility::isAprobado)
+        Page<EstadoRequerimientoEstudianteDTO> result = aprobado.map(MapperUtility::isAprobado)
                 .map(bool -> this.estadoRequerimientoEstudianteService.findAllByCarnet(page, size, carnet, bool))
-                .orElse(Collections.emptyList());
+                .orElse(Page.empty());
 
-        return new EstadoRequerimientoEstudianteDTOList(result);
+        return new EstadoRequerimientoEstudianteDTOPage(result);
     }
 
     @GetMapping("/{carnet}/certificados")
-    public CertificadoDTOList getCertificate(
+    public CertificadoDTOPage getCertificate(
             @PathVariable String carnet,
-            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size){
-        List<CertificadoCreationDTO.CertificadoDTO> result = this.certificadoService.findAllByCarnet(page, size, carnet);
-        return new CertificadoDTOList(result);
+        Page<CertificadoCreationDTO.CertificadoDTO> result = this.certificadoService.findAllByCarnet(page, size, carnet);
+        return new CertificadoDTOPage(result);
     }
 
 }

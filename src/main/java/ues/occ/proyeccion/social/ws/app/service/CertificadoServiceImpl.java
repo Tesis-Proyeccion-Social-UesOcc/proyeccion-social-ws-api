@@ -1,9 +1,12 @@
 package ues.occ.proyeccion.social.ws.app.service;
 
-import com.google.cloud.storage.Acl;
-import com.google.cloud.storage.BlobId;
-import com.google.cloud.storage.BlobInfo;
-import com.google.cloud.storage.Storage;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.function.Function;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +17,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.google.cloud.storage.Acl;
+import com.google.cloud.storage.BlobId;
+import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.Storage;
+
 import ues.occ.proyeccion.social.ws.app.dao.Certificado;
 import ues.occ.proyeccion.social.ws.app.dao.ProyectoEstudiante;
 import ues.occ.proyeccion.social.ws.app.dao.ServiceResponse;
@@ -23,14 +32,6 @@ import ues.occ.proyeccion.social.ws.app.model.CertificadoCreationDTO;
 import ues.occ.proyeccion.social.ws.app.repository.CertificadoRepository;
 import ues.occ.proyeccion.social.ws.app.repository.ProyectoEstudianteRepository;
 import ues.occ.proyeccion.social.ws.app.utils.PageableResource;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
 
 @Service
 public class CertificadoServiceImpl extends PageableResource<Certificado, CertificadoCreationDTO.CertificadoDTO> implements CertificadoService {
@@ -75,17 +76,17 @@ public class CertificadoServiceImpl extends PageableResource<Certificado, Certif
     }
 
     @Override
-    public List<CertificadoCreationDTO.CertificadoDTO> findAll(int page, int size) {
+    public Page<CertificadoCreationDTO.CertificadoDTO> findAll(int page, int size) {
         Pageable pageable = this.getPageable(page, size);
         Page<Certificado> certificadoPage = this.certificadoRepository.findAll(pageable);
-        return this.getData(certificadoPage);
+        return this.getDataPageable(certificadoPage);
     }
 
     @Override
-    public List<CertificadoCreationDTO.CertificadoDTO> findAllByCarnet(int page, int size, String carnet) {
+    public Page<CertificadoCreationDTO.CertificadoDTO> findAllByCarnet(int page, int size, String carnet) {
         Pageable pageable = this.getPageable(page, size);
         Page<Certificado> certificadoPage = this.certificadoRepository.findAllByProyectoEstudiante_Estudiante_Carnet(carnet, pageable);
-        return this.getData(certificadoPage);
+        return this.getDataPageable(certificadoPage);
     }
 
     @Override

@@ -17,7 +17,7 @@ import java.util.List;
 // This repository extends CrudRepository
 @Repository
 public interface ProyectoRepository extends PagingAndSortingRepository<Proyecto, Integer> {
-    Page<Proyecto> findAllByProyectoEstudianteSet_StatusId(int statusId, Pageable pageable);
+  
     // proyectos pendientes, es decir, no existen en proyecto_estudiante
     Page<Proyecto> findAllByProyectoEstudianteSet_Empty(Pageable pageable);
     Page<Proyecto> findAllByProyectoEstudianteSet_Estudiante_CarnetAndProyectoEstudianteSet_Status_id(String carnet, int status, Pageable pageable);
@@ -26,5 +26,7 @@ public interface ProyectoRepository extends PagingAndSortingRepository<Proyecto,
 			"FROM chatbot_db.proyecto p\r\n" +
 			"INNER JOIN chatbot_db.proyecto_estudiante pe ON p.id = pe.id_proyecto\r\n" +
 			"WHERE pe.id_status = ?1  ORDER BY p.fecha_creacion DESC;", nativeQuery = true)
-	public List<Proyecto> findProyectosByStatus(int idStatus);
+	List<Proyecto> findProyectosByStatus(int idStatus);
+    
+    Page<Proyecto> findAllByProyectoEstudianteSet_StatusId(int statusId, Pageable pageable);
 }

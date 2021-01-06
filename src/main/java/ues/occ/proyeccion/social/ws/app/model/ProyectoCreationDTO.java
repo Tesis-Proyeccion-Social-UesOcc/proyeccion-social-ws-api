@@ -1,11 +1,11 @@
 package ues.occ.proyeccion.social.ws.app.model;
 
+import java.io.Serializable;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.io.Serializable;
 
 @Data
 @Builder
@@ -13,7 +13,11 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class ProyectoCreationDTO implements Serializable {
 
-    private String nombre;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private String nombre;
     private Integer duracion;
     private boolean interno;
     private int personal;
@@ -23,7 +27,11 @@ public class ProyectoCreationDTO implements Serializable {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ProyectoDTO implements Serializable{
-        private String nombre;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private String nombre;
         private Integer duracion;
         private boolean interno;
         private String personal;
