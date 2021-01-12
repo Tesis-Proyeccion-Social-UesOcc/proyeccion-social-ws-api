@@ -6,6 +6,9 @@ import org.hamcrest.collection.IsCollectionWithSize;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -121,23 +124,19 @@ class CertificadoControllerTest {
                 LocalDate.of(2019, 9,1), LocalTime.now()));
 
         List<CertificadoCreationDTO.CertificadoDTO> data = List.of(dto1, dto2);
-
+        var toReturn = new PageImpl<CertificadoCreationDTO.CertificadoDTO>(data, PageRequest.of(page, size), data.size());
         ArgumentCaptor<Integer> pageCaptor = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> sizeCaptor = ArgumentCaptor.forClass(Integer.class);
 
-        Mockito.when(this.certificadoService.findAll(Mockito.anyInt(), Mockito.anyInt())).thenReturn(data);
+        Mockito.when(this.certificadoService.findAll(Mockito.anyInt(), Mockito.anyInt())).thenReturn(toReturn);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/certificados")
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("page", "5")
                 .param("size", "10"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.certificados", IsCollectionWithSize.hasSize(data.size())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.certificados[0].id", CoreMatchers.is(1)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.certificados[1].id", CoreMatchers.is(2)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.certificados[*].proyecto", Matchers.containsInAnyOrder("Proyecto1", "Proyecto2")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.certificados[*].uri", Matchers.containsInAnyOrder(uri1, uri2)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.certificados[*].fechaExpedicion", Matchers.containsInAnyOrder(dateStr1, dateStr2)));
+                .andDo(MockMvcResultHandlers.print());
+
 
         Mockito.verify(this.certificadoService, Mockito.times(1)).findAll(pageCaptor.capture(), sizeCaptor.capture());
 

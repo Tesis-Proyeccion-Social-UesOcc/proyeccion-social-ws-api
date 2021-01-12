@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
@@ -14,6 +15,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
+import ues.occ.proyeccion.social.ws.app.model.EstudianteDTO;
 import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO;
 import ues.occ.proyeccion.social.ws.app.service.ProyectoService;
 
@@ -62,7 +64,9 @@ class ProyectoControllerTest {
     void getRange() throws Exception {
         Pageable request = PageRequest.of(1, 10);
         List<ProyectoCreationDTO.ProyectoDTO> payload = List.of(new ProyectoCreationDTO.ProyectoDTO(), new ProyectoCreationDTO.ProyectoDTO());
-        Mockito.when(proyectoService.findAll(Mockito.anyInt(), Mockito.anyInt())).thenReturn(payload);
+        var toReturn = new PageImpl<>(payload, PageRequest.of(1, 10),  payload.size());
+
+        Mockito.when(proyectoService.findAll(Mockito.anyInt(), Mockito.anyInt())).thenReturn(toReturn);
         mvc.perform(get("/proyectos/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
@@ -83,7 +87,9 @@ class ProyectoControllerTest {
     @Test
     void findAllByStatus() throws Exception {
         List<ProyectoCreationDTO.ProyectoDTO> payload = List.of(new ProyectoCreationDTO.ProyectoDTO(), new ProyectoCreationDTO.ProyectoDTO());
-        Mockito.when(proyectoService.findAllByStatus(5, 10, 7)).thenReturn(payload);
+        var toReturn = new PageImpl<>(payload, PageRequest.of(1, 10),  payload.size());
+
+        Mockito.when(proyectoService.findAllByStatus(5, 10, 7)).thenReturn(toReturn);
         mvc.perform(get("/proyectos/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
@@ -106,7 +112,9 @@ class ProyectoControllerTest {
     @Test
     void findAllPending() throws Exception {
         List<ProyectoCreationDTO.ProyectoDTO> payload = List.of(new ProyectoCreationDTO.ProyectoDTO(), new ProyectoCreationDTO.ProyectoDTO());
-        Mockito.when(proyectoService.findAllPending(5, 10)).thenReturn(payload);
+        var toReturn = new PageImpl<>(payload, PageRequest.of(1, 10),  payload.size());
+
+        Mockito.when(proyectoService.findAllPending(5, 10)).thenReturn(toReturn);
         mvc.perform(get("/proyectos/pending")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)

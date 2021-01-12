@@ -114,15 +114,15 @@ class CertificadoServiceTest {
         ArgumentCaptor<Pageable> pageableArgumentCaptor = ArgumentCaptor.forClass(Pageable.class);
 
         Mockito.when(this.certificadoRepository.findAll(Mockito.any(Pageable.class))).thenReturn(certificadoPage);
-        List<CertificadoCreationDTO.CertificadoDTO> result = this.service.findAll(PAGE, SIZE);
+        Page<CertificadoCreationDTO.CertificadoDTO> result = this.service.findAll(PAGE, SIZE);
         Mockito.verify(this.certificadoRepository, Mockito.times(1)).findAll(pageableArgumentCaptor.capture());
 
         assertNotNull(pageableArgumentCaptor.getValue());
         assertEquals(PAGE, pageableArgumentCaptor.getValue().getPageNumber());
         assertEquals(SIZE, pageableArgumentCaptor.getValue().getPageSize());
-        assertEquals(2, result.size());
-        assertEquals(projectName1, result.get(0).getProyecto());
-        assertEquals(projectName2, result.get(1).getProyecto());
+        assertEquals(2, result.getTotalElements());
+        assertEquals(projectName1, result.toList().get(0).getProyecto());
+        assertEquals(projectName2, result.toList().get(1).getProyecto());
 
     }
 
@@ -143,7 +143,7 @@ class CertificadoServiceTest {
         Mockito.when(this.certificadoRepository.findAllByProyectoEstudiante_Estudiante_Carnet(
                 Mockito.anyString(), Mockito.any(Pageable.class))).thenReturn(certificadoPage);
 
-        List<CertificadoCreationDTO.CertificadoDTO> result = this.service.findAllByCarnet(PAGE, SIZE, carnet);
+        Page<CertificadoCreationDTO.CertificadoDTO> result = this.service.findAllByCarnet(PAGE, SIZE, carnet);
 
         Mockito.verify(this.certificadoRepository, Mockito.times(1))
                 .findAllByProyectoEstudiante_Estudiante_Carnet(carnetArgumentCaptor.capture(), pageableArgumentCaptor.capture());
@@ -153,6 +153,6 @@ class CertificadoServiceTest {
         assertEquals(SIZE, pageableArgumentCaptor.getValue().getPageSize());
         // there is no way to assert student carnet with the given one because its not part of CertificadoDTO
         assertEquals(carnet, carnetArgumentCaptor.getValue());
-        assertEquals(2, result.size());
+        assertEquals(2, result.getTotalElements());
     }
 }

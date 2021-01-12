@@ -53,14 +53,14 @@ class EstudianteServiceImplTest {
                 Mockito.any(Pageable.class),
                 Mockito.anyBoolean())).thenReturn(estudiantePage);
 
-        List<EstudianteDTO> estudianteDTOS = this.estudianteService.findAllByServicio(5, 10, true);
+        Page<EstudianteDTO> estudianteDTOS = this.estudianteService.findAllByServicio(5, 10, true);
         Mockito.verify(this.estudianteRepository, Mockito.times(1))
                 .findAllByServicioCompleto(pageableCaptor.capture(), isCompleteCaptor.capture());
 
         assertNotNull(estudianteDTOS);
-        assertEquals(2, estudianteDTOS.size());
-        assertEquals(estudianteDTOS.get(0).getCarnet(), "zh1");
-        assertEquals(estudianteDTOS.get(1).getCarnet(), "zh2");
+        assertEquals(2, estudianteDTOS.getTotalElements());
+        assertEquals(estudianteDTOS.toList().get(0).getCarnet(), "zh1");
+        assertEquals(estudianteDTOS.toList().get(1).getCarnet(), "zh2");
         assertEquals(PAGE, pageableCaptor.getValue().getPageNumber());
         assertEquals(SIZE, pageableCaptor.getValue().getPageSize());
         assertTrue(isCompleteCaptor.getValue());
