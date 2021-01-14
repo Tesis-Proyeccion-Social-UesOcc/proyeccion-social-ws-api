@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -31,6 +32,7 @@ import ues.occ.proyeccion.social.ws.app.mappers.CertificadoMapper;
 import ues.occ.proyeccion.social.ws.app.model.CertificadoCreationDTO;
 import ues.occ.proyeccion.social.ws.app.repository.CertificadoRepository;
 import ues.occ.proyeccion.social.ws.app.repository.ProyectoEstudianteRepository;
+import ues.occ.proyeccion.social.ws.app.utils.PageDtoWrapper;
 import ues.occ.proyeccion.social.ws.app.utils.PageableResource;
 
 @Service
@@ -76,10 +78,11 @@ public class CertificadoServiceImpl extends PageableResource<Certificado, Certif
     }
 
     @Override
-    public Page<CertificadoCreationDTO.CertificadoDTO> findAll(int page, int size) {
+    public PageDtoWrapper<Certificado, CertificadoCreationDTO.CertificadoDTO> findAll(int page, int size) {
         Pageable pageable = this.getPageable(page, size);
         Page<Certificado> certificadoPage = this.certificadoRepository.findAll(pageable);
-        return this.getDataPageable(certificadoPage);
+        return this.getPagedData(certificadoPage);
+
     }
 
     @Override

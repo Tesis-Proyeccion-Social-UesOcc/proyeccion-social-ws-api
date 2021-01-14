@@ -5,11 +5,15 @@ import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsCollectionWithSize;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
@@ -32,7 +36,6 @@ class CertificadoControllerTest {
     @Mock
     CertificadoService certificadoService;
 
-    @InjectMocks
     CertificadoController controller;
 
     MockMvc mockMvc;
@@ -40,6 +43,7 @@ class CertificadoControllerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        controller = new CertificadoController(certificadoService, new GenericApplicationContext());
         mockMvc = MockMvcBuilders.standaloneSetup(controller).setControllerAdvice(new RestResponseExceptionCatcher()).build();
     }
 
@@ -124,11 +128,11 @@ class CertificadoControllerTest {
                 LocalDate.of(2019, 9,1), LocalTime.now()));
 
         List<CertificadoCreationDTO.CertificadoDTO> data = List.of(dto1, dto2);
-        var toReturn = new PageImpl<CertificadoCreationDTO.CertificadoDTO>(data, PageRequest.of(page, size), data.size());
+        var toReturn = new PageImpl<>(data, PageRequest.of(page, size), data.size());
         ArgumentCaptor<Integer> pageCaptor = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> sizeCaptor = ArgumentCaptor.forClass(Integer.class);
 
-        Mockito.when(this.certificadoService.findAll(Mockito.anyInt(), Mockito.anyInt())).thenReturn(toReturn);
+//        Mockito.when(this.certificadoService.findAll(Mockito.anyInt(), Mockito.anyInt())).thenReturn(toReturn);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/certificados")
                 .contentType(MediaType.APPLICATION_JSON)

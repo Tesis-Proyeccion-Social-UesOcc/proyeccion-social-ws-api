@@ -27,6 +27,19 @@ public abstract class PageableResource<R, T> {
             return Collections.emptyList();
         }
     }
+
+    protected PageDtoWrapper<R, T> getPagedData(Page<R> entityPage){
+        List<T> content = null;
+        if(entityPage.hasContent()){
+            content =  entityPage.getContent().stream()
+                    .map(this.getMapperFunction())
+                    .collect(Collectors.toList());
+        }
+        else{
+             content = Collections.emptyList();
+        }
+        return new PageDtoWrapper<>(entityPage, content);
+    }
     
     protected Page<T> getDataPageable(Page<R> entityPage){
         if(entityPage.hasContent()){
