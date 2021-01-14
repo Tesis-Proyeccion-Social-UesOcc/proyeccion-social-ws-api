@@ -10,6 +10,7 @@ import ues.occ.proyeccion.social.ws.app.service.EstadoRequerimientoEstudianteSer
 import ues.occ.proyeccion.social.ws.app.service.EstudianteService;
 import ues.occ.proyeccion.social.ws.app.service.ProyectoService;
 import ues.occ.proyeccion.social.ws.app.utils.MapperUtility;
+import ues.occ.proyeccion.social.ws.app.utils.PageDtoWrapper;
 
 import java.util.*;
 
@@ -32,15 +33,15 @@ public class EstudianteController {
     }
 
     @GetMapping
-    public EstudianteDTOPage findAll(
+    public PageDTO<EstudianteDTO> findAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "si") Optional<String> isComplete
     ) {
-        Page<EstudianteDTO> result = isComplete.map(MapperUtility::isComplete)
+        var result = isComplete.map(MapperUtility::isComplete)
                 .map(bool -> this.estudianteService.findAllByServicio(page, size, bool))
-                .orElse(Page.empty());
-        return new EstudianteDTOPage(result);
+                .orElse(null);
+        return result == null ? new PageDTO<>() : new PageDTO<>(result);
     }
 
 
@@ -61,13 +62,13 @@ public class EstudianteController {
 
     // HERE DOWN
     @GetMapping("/{carnet}/proyectos")
-    public ProyectoDTOPage projectsByStudentID(
+    public PageDTO<ProyectoCreationDTO.ProyectoDTO> projectsByStudentID(
             @PathVariable String carnet,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "2") int status){
-        Page<ProyectoCreationDTO.ProyectoDTO> result = this.proyectoService.findProyectosByEstudiante(page, size, carnet, status);
-        return new ProyectoDTOPage(result);
+        var result = this.proyectoService.findProyectosByEstudiante(page, size, carnet, status);
+        return new PageDTO<>(result);
     }
 
     @PostMapping("/{carnet}/documentos/{requerimientoId}")
@@ -79,25 +80,24 @@ public class EstudianteController {
     }
 
     @GetMapping("/{carnet}/documentos")
-    public EstadoRequerimientoEstudianteDTOPage getStudentDocuments(@PathVariable String carnet,
+    public PageDTO<EstadoRequerimientoEstudianteDTO> getStudentDocuments(@PathVariable String carnet,
                                     @RequestParam(defaultValue = "0") int page,
                                     @RequestParam(defaultValue = "10") int size,
                                     @RequestParam(defaultValue = "si") Optional<String> aprobado){
 
-        Page<EstadoRequerimientoEstudianteDTO> result = aprobado.map(MapperUtility::isAprobado)
+        var result = aprobado.map(MapperUtility::isAprobado)
                 .map(bool -> this.estadoRequerimientoEstudianteService.findAllByCarnet(page, size, carnet, bool))
-                .orElse(Page.empty());
-
-        return new EstadoRequerimientoEstudianteDTOPage(result);
+                .orElse(null);
+        return result == null ? new PageDTO<>() : new PageDTO<>(result);
     }
 
     @GetMapping("/{carnet}/certificados")
-    public CertificadoDTOPage getCertificate(
+    public PageDTO<CertificadoCreationDTO.CertificadoDTO> getCertificate(
             @PathVariable String carnet,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size){
-        Page<CertificadoCreationDTO.CertificadoDTO> result = this.certificadoService.findAllByCarnet(page, size, carnet);
-        return new CertificadoDTOPage(result);
+        var result = this.certificadoService.findAllByCarnet(page, size, carnet);
+        return new PageDTO<>(result);
     }
 
 }

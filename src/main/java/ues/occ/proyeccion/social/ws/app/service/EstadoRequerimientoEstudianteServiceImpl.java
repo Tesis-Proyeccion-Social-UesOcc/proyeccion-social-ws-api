@@ -19,6 +19,7 @@ import ues.occ.proyeccion.social.ws.app.dao.Requerimiento;
 import ues.occ.proyeccion.social.ws.app.mappers.EstadoRequerimientoEstudianteMapper;
 import ues.occ.proyeccion.social.ws.app.model.EstadoRequerimientoEstudianteDTO;
 import ues.occ.proyeccion.social.ws.app.repository.EstadoRequerimientoEstudianteRepository;
+import ues.occ.proyeccion.social.ws.app.utils.PageDtoWrapper;
 import ues.occ.proyeccion.social.ws.app.utils.PageableResource;
 
 @Service
@@ -48,13 +49,13 @@ public class EstadoRequerimientoEstudianteServiceImpl
     }
 
     @Override
-    public Page<EstadoRequerimientoEstudianteDTO> findAllByCarnet(int page, int size, String carnet, boolean aprobado) {
+    public PageDtoWrapper<EstadoRequerimientoEstudiante, EstadoRequerimientoEstudianteDTO> findAllByCarnet(int page, int size, String carnet, boolean aprobado) {
 
         Pageable requerimientoEstudiantePageable = this.getPageable(page, size);
         Page<EstadoRequerimientoEstudiante> estadoRequerimientoEstudiantes =
                 this.repository.findAllByEstudiante_CarnetAndAprobado(carnet, aprobado, requerimientoEstudiantePageable);
 
-        return this.getDataPageable(estadoRequerimientoEstudiantes);
+        return this.getPagedData(estadoRequerimientoEstudiantes);
     }
 
     @Override

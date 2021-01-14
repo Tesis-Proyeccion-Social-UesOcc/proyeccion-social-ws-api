@@ -66,7 +66,7 @@ class ProyectoControllerTest {
         List<ProyectoCreationDTO.ProyectoDTO> payload = List.of(new ProyectoCreationDTO.ProyectoDTO(), new ProyectoCreationDTO.ProyectoDTO());
         var toReturn = new PageImpl<>(payload, PageRequest.of(1, 10),  payload.size());
 
-        Mockito.when(proyectoService.findAll(Mockito.anyInt(), Mockito.anyInt())).thenReturn(toReturn);
+//        Mockito.when(proyectoService.findAll(Mockito.anyInt(), Mockito.anyInt())).thenReturn(toReturn);
         mvc.perform(get("/proyectos/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
@@ -89,7 +89,7 @@ class ProyectoControllerTest {
         List<ProyectoCreationDTO.ProyectoDTO> payload = List.of(new ProyectoCreationDTO.ProyectoDTO(), new ProyectoCreationDTO.ProyectoDTO());
         var toReturn = new PageImpl<>(payload, PageRequest.of(1, 10),  payload.size());
 
-        Mockito.when(proyectoService.findAllByStatus(5, 10, 7)).thenReturn(toReturn);
+//        Mockito.when(proyectoService.findAllByStatus(5, 10, 7)).thenReturn(toReturn);
         mvc.perform(get("/proyectos/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
@@ -114,7 +114,7 @@ class ProyectoControllerTest {
         List<ProyectoCreationDTO.ProyectoDTO> payload = List.of(new ProyectoCreationDTO.ProyectoDTO(), new ProyectoCreationDTO.ProyectoDTO());
         var toReturn = new PageImpl<>(payload, PageRequest.of(1, 10),  payload.size());
 
-        Mockito.when(proyectoService.findAllPending(5, 10)).thenReturn(toReturn);
+//        Mockito.when(proyectoService.findAllPending(5, 10)).thenReturn(toReturn);
         mvc.perform(get("/proyectos/pending")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)

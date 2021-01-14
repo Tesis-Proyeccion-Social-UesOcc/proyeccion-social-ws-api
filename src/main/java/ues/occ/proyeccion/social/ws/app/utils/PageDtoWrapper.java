@@ -13,5 +13,4 @@ import java.util.List;
 public class PageDtoWrapper<T1, T2> {
     private Page<T1> originalPage;
     private List<T2> content;
-
 }

@@ -3,8 +3,10 @@ package ues.occ.proyeccion.social.ws.app.controller;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
+import ues.occ.proyeccion.social.ws.app.model.PageDTO;
 import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO;
 import ues.occ.proyeccion.social.ws.app.service.ProyectoService;
+import ues.occ.proyeccion.social.ws.app.utils.PageDtoWrapper;
 
 import java.util.List;
 
@@ -23,22 +25,26 @@ public class ProyectoController {
     }
 
     @GetMapping
-    public Page<ProyectoCreationDTO.ProyectoDTO> getRange(
+    public PageDTO<ProyectoCreationDTO.ProyectoDTO> getRange(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(name = "status", required = false) Integer status
     ) {
+        PageDtoWrapper<Proyecto, ProyectoCreationDTO.ProyectoDTO> result;
         if (status == null) {
-            return this.service.findAll(page, size);
-        } else
-            return this.service.findAllByStatus(page, size, status);
+            result = this.service.findAll(page, size);
+        } else {
+            result = this.service.findAllByStatus(page, size, status);
+        }
+        return new PageDTO<>(result);
     }
 
     @GetMapping("/pending")
-    public Page<ProyectoCreationDTO.ProyectoDTO> getPendingProjects(
+    public PageDTO<ProyectoCreationDTO.ProyectoDTO> getPendingProjects(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
             ) {
-        return this.service.findAllPending(page, size);
+        var result =  this.service.findAllPending(page, size);
+        return new PageDTO<>(result);
     }
 }

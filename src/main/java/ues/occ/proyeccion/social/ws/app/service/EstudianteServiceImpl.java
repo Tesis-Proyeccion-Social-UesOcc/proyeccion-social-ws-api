@@ -12,6 +12,7 @@ import ues.occ.proyeccion.social.ws.app.exceptions.ResourceNotFoundException;
 import ues.occ.proyeccion.social.ws.app.mappers.EstudianteMapper;
 import ues.occ.proyeccion.social.ws.app.model.EstudianteDTO;
 import ues.occ.proyeccion.social.ws.app.repository.EstudianteRepository;
+import ues.occ.proyeccion.social.ws.app.utils.PageDtoWrapper;
 import ues.occ.proyeccion.social.ws.app.utils.PageableResource;
 
 @Service
@@ -26,10 +27,10 @@ public class EstudianteServiceImpl extends PageableResource<Estudiante, Estudian
     }
 
     @Override
-    public Page<EstudianteDTO> findAllByServicio(int page, int size, boolean isComplete) {
+    public PageDtoWrapper<Estudiante, EstudianteDTO> findAllByServicio(int page, int size, boolean isComplete) {
         Pageable pageable = this.getPageable(page, size);
         Page<Estudiante> estudiantePage = this.estudianteRepository.findAllByServicioCompleto(pageable, isComplete);
-        return this.getDataPageable(estudiantePage);
+        return this.getPagedData(estudiantePage);
     }
 
     @Override

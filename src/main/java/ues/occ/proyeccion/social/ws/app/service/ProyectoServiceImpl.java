@@ -12,6 +12,7 @@ import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO;
 import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO.ProyectoDTO;
 import ues.occ.proyeccion.social.ws.app.repository.ProyectoEstudianteRepository;
 import ues.occ.proyeccion.social.ws.app.repository.ProyectoRepository;
+import ues.occ.proyeccion.social.ws.app.utils.PageDtoWrapper;
 import ues.occ.proyeccion.social.ws.app.utils.PageableResource;
 
 import javax.persistence.EntityManager;
@@ -54,31 +55,31 @@ public class ProyectoServiceImpl extends PageableResource<Proyecto, ProyectoCrea
     }
 
     @Override
-    public Page<ProyectoCreationDTO.ProyectoDTO> findAll(int page, int size) {
+    public PageDtoWrapper<Proyecto, ProyectoDTO> findAll(int page, int size) {
         Pageable paging = this.getPageable(page, size);;
         Page<Proyecto> proyectoPage = proyectoRepository.findAll(paging);
-        return this.getDataPageable(proyectoPage);
+        return this.getPagedData(proyectoPage);
     }
 
 	@Override
-    public Page<ProyectoCreationDTO.ProyectoDTO> findAllByStatus(int page, int size, int statusId) {
+    public PageDtoWrapper<Proyecto, ProyectoCreationDTO.ProyectoDTO> findAllByStatus(int page, int size, int statusId) {
         Pageable paging = this.getPageable(page, size);
         Page<Proyecto> proyectoPage = proyectoRepository.findAllByProyectoEstudianteSet_StatusId(statusId, paging);
-        return this.getDataPageable(proyectoPage);
+        return this.getPagedData(proyectoPage);
     }
 
     @Override
-    public Page<ProyectoCreationDTO.ProyectoDTO> findAllPending(int page, int size) {
+    public PageDtoWrapper<Proyecto, ProyectoCreationDTO.ProyectoDTO>findAllPending(int page, int size) {
         Pageable paging = this.getPageable(page, size);
         Page<Proyecto> proyectoPage = proyectoRepository.findAllByProyectoEstudianteSet_Empty(paging);
-        return this.getDataPageable(proyectoPage);
+        return this.getPagedData(proyectoPage);
     }
 
     @Override
-    public Page<ProyectoCreationDTO.ProyectoDTO> findProyectosByEstudiante(int page, int size, String carnet, int status){
+    public PageDtoWrapper<Proyecto, ProyectoCreationDTO.ProyectoDTO> findProyectosByEstudiante(int page, int size, String carnet, int status){
         Pageable paging = this.getPageable(page, size);
         Page<Proyecto> proyectoPage = proyectoRepository.findAllByProyectoEstudianteSet_Estudiante_CarnetAndProyectoEstudianteSet_Status_id(carnet, status, paging);
-    return this.getDataPageable(proyectoPage);
+    return this.getPagedData(proyectoPage);
     }
 
     @Override

@@ -86,10 +86,10 @@ public class CertificadoServiceImpl extends PageableResource<Certificado, Certif
     }
 
     @Override
-    public Page<CertificadoCreationDTO.CertificadoDTO> findAllByCarnet(int page, int size, String carnet) {
+    public PageDtoWrapper<Certificado, CertificadoCreationDTO.CertificadoDTO> findAllByCarnet(int page, int size, String carnet) {
         Pageable pageable = this.getPageable(page, size);
         Page<Certificado> certificadoPage = this.certificadoRepository.findAllByProyectoEstudiante_Estudiante_Carnet(carnet, pageable);
-        return this.getDataPageable(certificadoPage);
+        return this.getPagedData(certificadoPage);
     }
 
     @Override

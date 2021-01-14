@@ -6,6 +6,7 @@ import lombok.Setter;
 import ues.occ.proyeccion.social.ws.app.utils.PageDtoWrapper;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 
 @Getter
@@ -26,6 +27,15 @@ public class PageDTO<T> {
         setTotalElements(pageDtoWrapper.getOriginalPage().getTotalElements());
         setSize(pageDtoWrapper.getOriginalPage().getSize());
         setLast(pageDtoWrapper.getOriginalPage().isLast());
+    }
+
+    public PageDTO(){
+        setContent(Collections.emptyList());
+        setTotalPages(0);
+        setFirst(false);
+        setTotalElements(0);
+        setSize(0);
+        setLast(false);
     }
 
 }
