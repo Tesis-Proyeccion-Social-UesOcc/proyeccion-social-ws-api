@@ -1,7 +1,6 @@
 package ues.occ.proyeccion.social.ws.app.service;
 
 import com.google.cloud.storage.Storage;
-import org.assertj.core.internal.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -19,9 +18,6 @@ import ues.occ.proyeccion.social.ws.app.mappers.CertificadoMapper;
 import ues.occ.proyeccion.social.ws.app.model.CertificadoCreationDTO;
 import ues.occ.proyeccion.social.ws.app.repository.CertificadoRepository;
 import ues.occ.proyeccion.social.ws.app.repository.ProyectoEstudianteRepository;
-
-import java.sql.Date;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -114,15 +110,15 @@ class CertificadoServiceTest {
         ArgumentCaptor<Pageable> pageableArgumentCaptor = ArgumentCaptor.forClass(Pageable.class);
 
         Mockito.when(this.certificadoRepository.findAll(Mockito.any(Pageable.class))).thenReturn(certificadoPage);
-//        Page<CertificadoCreationDTO.CertificadoDTO> result = this.service.findAll(PAGE, SIZE);
+        var result = this.service.findAll(PAGE, SIZE);
         Mockito.verify(this.certificadoRepository, Mockito.times(1)).findAll(pageableArgumentCaptor.capture());
 
         assertNotNull(pageableArgumentCaptor.getValue());
         assertEquals(PAGE, pageableArgumentCaptor.getValue().getPageNumber());
         assertEquals(SIZE, pageableArgumentCaptor.getValue().getPageSize());
-//        assertEquals(2, result.getTotalElements());
-//        assertEquals(projectName1, result.toList().get(0).getProyecto());
-//        assertEquals(projectName2, result.toList().get(1).getProyecto());
+        assertEquals(2, result.getContent().size());
+        assertEquals(projectName1, result.getContent().get(0).getProyecto());
+        assertEquals(projectName2, result.getContent().get(1).getProyecto());
 
     }
 
@@ -143,7 +139,7 @@ class CertificadoServiceTest {
         Mockito.when(this.certificadoRepository.findAllByProyectoEstudiante_Estudiante_Carnet(
                 Mockito.anyString(), Mockito.any(Pageable.class))).thenReturn(certificadoPage);
 
-//        Page<CertificadoCreationDTO.CertificadoDTO> result = this.service.findAllByCarnet(PAGE, SIZE, carnet);
+        var result = this.service.findAllByCarnet(PAGE, SIZE, carnet);
 
         Mockito.verify(this.certificadoRepository, Mockito.times(1))
                 .findAllByProyectoEstudiante_Estudiante_Carnet(carnetArgumentCaptor.capture(), pageableArgumentCaptor.capture());
@@ -153,6 +149,6 @@ class CertificadoServiceTest {
         assertEquals(SIZE, pageableArgumentCaptor.getValue().getPageSize());
         // there is no way to assert student carnet with the given one because its not part of CertificadoDTO
         assertEquals(carnet, carnetArgumentCaptor.getValue());
-//        assertEquals(2, result.getTotalElements());
+        assertEquals(2, result.getContent().size());
     }
 }

@@ -6,6 +6,7 @@ import org.hamcrest.collection.IsCollectionWithSize;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
@@ -13,7 +14,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import ues.occ.proyeccion.social.ws.app.dao.Certificado;
+import ues.occ.proyeccion.social.ws.app.dao.EstadoRequerimientoEstudiante;
 import ues.occ.proyeccion.social.ws.app.dao.Estudiante;
+import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
 import ues.occ.proyeccion.social.ws.app.model.CertificadoCreationDTO;
 import ues.occ.proyeccion.social.ws.app.model.EstadoRequerimientoEstudianteDTO;
 import ues.occ.proyeccion.social.ws.app.model.EstudianteDTO;
@@ -22,6 +26,7 @@ import ues.occ.proyeccion.social.ws.app.service.CertificadoService;
 import ues.occ.proyeccion.social.ws.app.service.EstadoRequerimientoEstudianteService;
 import ues.occ.proyeccion.social.ws.app.service.EstudianteService;
 import ues.occ.proyeccion.social.ws.app.service.ProyectoService;
+import ues.occ.proyeccion.social.ws.app.utils.PageDtoWrapper;
 
 import java.sql.Date;
 import java.time.LocalDate;
@@ -49,6 +54,9 @@ class EstudianteControllerTest {
 
     @Mock
     CertificadoService certificadoService;
+
+    @Mock
+    ApplicationEventPublisher publisher;
 
     @InjectMocks
     EstudianteController controller;
@@ -89,12 +97,13 @@ class EstudianteControllerTest {
     void findAll() throws Exception {
         int pageParam = 2, sizeParam = 10;
         boolean isCompleteParam = true;
-        List<EstudianteDTO> lista = List.of(new EstudianteDTO(), new EstudianteDTO());
-        var toReturn = new PageImpl<EstudianteDTO>(lista, PageRequest.of(PAGE, SIZE),  lista.size());
+        var lista1 = List.of(new EstudianteDTO(), new EstudianteDTO());
+        var lista2 = List.of(new Estudiante(), new Estudiante());
+        var toReturn = new PageDtoWrapper<>(new PageImpl<>(lista2, PageRequest.of(PAGE, SIZE),  lista2.size()), lista1);
 
-//        Mockito.when(this.estudianteService.findAllByServicio(
-//                pageParam, sizeParam, true))
-//                .thenReturn(toReturn);
+        Mockito.when(this.estudianteService.findAllByServicio(
+                pageParam, sizeParam, true))
+                .thenReturn(toReturn);
         mockMvc.perform(MockMvcRequestBuilders.get("/estudiantes/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("page", String.valueOf(pageParam))
@@ -102,8 +111,8 @@ class EstudianteControllerTest {
                 .param("isComplete", isCompleteParam ? "si" : "no"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath(
-                        "$.estudiantes",
-                        IsCollectionWithSize.hasSize(lista.size())));
+                        "$.content",
+                        IsCollectionWithSize.hasSize(toReturn.getContent().size())));
         ArgumentCaptor<Integer> page = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> size = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Boolean> isComplete = ArgumentCaptor.forClass(Boolean.class);
@@ -116,20 +125,21 @@ class EstudianteControllerTest {
 
     @Test
     void findAllWithNoParams() throws Exception {
-        int pageParam = 1, sizeParam = 10;
+        int pageParam = 0, sizeParam = 10;
         boolean isCompleteParam = true;
-        List<EstudianteDTO> lista = List.of(new EstudianteDTO(), new EstudianteDTO());
-        var toReturn = new PageImpl<>(lista, PageRequest.of(PAGE, SIZE), lista.size());
+        var lista1 = List.of(new EstudianteDTO(), new EstudianteDTO());
+        var lista2 = List.of(new Estudiante(), new Estudiante());
+        var toReturn = new PageDtoWrapper<>(new PageImpl<>(lista2, PageRequest.of(PAGE, SIZE),  lista2.size()), lista1);
 
-//        Mockito.when(this.estudianteService.findAllByServicio(
-//                pageParam, sizeParam, true))
-//                .thenReturn(toReturn);
+        Mockito.when(this.estudianteService.findAllByServicio(
+                pageParam, sizeParam, true))
+                .thenReturn(toReturn);
         mockMvc.perform(MockMvcRequestBuilders.get("/estudiantes/")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath(
-                        "$.estudiantes",
-                        IsCollectionWithSize.hasSize(lista.size())));
+                        "$.content",
+                        IsCollectionWithSize.hasSize(toReturn.getContent().size())));
         ArgumentCaptor<Integer> page = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> size = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Boolean> isComplete = ArgumentCaptor.forClass(Boolean.class);
@@ -142,12 +152,13 @@ class EstudianteControllerTest {
 
     @Test
     void whenBadIsCompleteValueIsGivenThenAnExceptionIsThrown() throws Exception {
-        List<EstudianteDTO> lista = List.of(new EstudianteDTO(), new EstudianteDTO());
-        var toReturn = new PageImpl<>(lista, PageRequest.of(PAGE, SIZE),  lista.size());
+        var lista1 = List.of(new EstudianteDTO(), new EstudianteDTO());
+        var lista2 = List.of(new Estudiante(), new Estudiante());
+        var toReturn = new PageDtoWrapper<>(new PageImpl<>(lista2, PageRequest.of(PAGE, SIZE),  lista2.size()), lista1);
 
-//        Mockito.when(this.estudianteService.findAllByServicio(
-//                Mockito.anyInt(), Mockito.anyInt(), Mockito.anyBoolean()))
-//                .thenReturn(toReturn);
+        Mockito.when(this.estudianteService.findAllByServicio(
+                Mockito.anyInt(), Mockito.anyInt(), Mockito.anyBoolean()))
+                .thenReturn(toReturn);
         mockMvc.perform(MockMvcRequestBuilders.get("/estudiantes/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("isComplete", "something"))
@@ -190,20 +201,21 @@ class EstudianteControllerTest {
         ArgumentCaptor<Integer> statusCaptor = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<String> carnetCaptor = ArgumentCaptor.forClass(String.class);
 
-        List<ProyectoCreationDTO.ProyectoDTO> data = List.of(dto1, dto2);
-        var toReturn = new PageImpl<ProyectoCreationDTO.ProyectoDTO>(data, PageRequest.of(PAGE, SIZE), data.size());
+        var lista1 = List.of(dto1, dto2);
+        var lista2 = List.of(new Proyecto(), new Proyecto());
+        var toReturn = new PageDtoWrapper<>(new PageImpl<>(lista2, PageRequest.of(PAGE, SIZE),  lista2.size()), lista1);
 
-//        Mockito.when(this.proyectoService
-//                .findProyectosByEstudiante(Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString(), Mockito.anyInt()))
-//                .thenReturn(toReturn);
+        Mockito.when(this.proyectoService
+                .findProyectosByEstudiante(Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString(), Mockito.anyInt()))
+                .thenReturn(toReturn);
         mockMvc.perform(MockMvcRequestBuilders.get("/estudiantes/".concat(CARNET).concat("/proyectos"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("page", "5")
                 .param("size", "10")
                 .param("status", status))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.proyectos",
-                            IsCollectionWithSize.hasSize(data.size())));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content",
+                            IsCollectionWithSize.hasSize(toReturn.getContent().size())));
         Mockito.verify(this.proyectoService, Mockito.times(1))
                 .findProyectosByEstudiante(pageCaptor.capture(), sizeCaptor.capture(), carnetCaptor.capture(), statusCaptor.capture());
         assertEquals(PAGE, pageCaptor.getValue());
@@ -250,8 +262,9 @@ class EstudianteControllerTest {
         String dateStr1 = "2019-12-01", dateStr2 = "2018-11-01";
         EstadoRequerimientoEstudianteDTO dto1 = new EstadoRequerimientoEstudianteDTO(false, Date.valueOf(dateStr1));
         EstadoRequerimientoEstudianteDTO dto2 = new EstadoRequerimientoEstudianteDTO(true, Date.valueOf(dateStr2));
-        List<EstadoRequerimientoEstudianteDTO> data = List.of(dto1, dto2);
-        var toReturn = new PageImpl<>(data, PageRequest.of(PAGE, SIZE),  data.size());
+        var lista1 = List.of(dto1, dto2);
+        var lista2 = List.of(new EstadoRequerimientoEstudiante(), new EstadoRequerimientoEstudiante());
+        var toReturn = new PageDtoWrapper<>(new PageImpl<>(lista2, PageRequest.of(PAGE, SIZE),  lista2.size()), lista1);
 
 
         ArgumentCaptor<Integer> pageCaptor = ArgumentCaptor.forClass(Integer.class);
@@ -259,9 +272,9 @@ class EstudianteControllerTest {
         ArgumentCaptor<String> carnetCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<Boolean> isAprobadoCaptor = ArgumentCaptor.forClass(Boolean.class);
 
-//        Mockito.when(this.estadoRequerimientoEstudianteService
-//                .findAllByCarnet(Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString(), Mockito.anyBoolean()))
-//                .thenReturn(toReturn);
+        Mockito.when(this.estadoRequerimientoEstudianteService
+                .findAllByCarnet(Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString(), Mockito.anyBoolean()))
+                .thenReturn(toReturn);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/estudiantes/".concat(CARNET).concat("/documentos"))
                 .contentType(MediaType.APPLICATION_JSON)
@@ -269,9 +282,9 @@ class EstudianteControllerTest {
                 .param("size", "10")
                 .param("aprobado", "si"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.documentos", IsCollectionWithSize.hasSize(data.size())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.documentos[0].fechaEntrega", CoreMatchers.is(dateStr1)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.documentos[1].fechaEntrega", CoreMatchers.is(dateStr2)));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content", IsCollectionWithSize.hasSize(toReturn.getContent().size())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].fechaEntrega", CoreMatchers.is(dateStr1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[1].fechaEntrega", CoreMatchers.is(dateStr2)));
 
         Mockito.verify(this.estadoRequerimientoEstudianteService, Mockito.times(1))
                 .findAllByCarnet(pageCaptor.capture(), sizeCaptor.capture(), carnetCaptor.capture(), isAprobadoCaptor.capture());
@@ -303,28 +316,29 @@ class EstudianteControllerTest {
                 1, "Proyecto 2", "http://www.google.com/certificado2",  LocalDateTime.of(
                 LocalDate.of(2018, 11,12), LocalTime.now()));
 
-        List<CertificadoCreationDTO.CertificadoDTO> data = List.of(dto1, dto2);
-        var toReturn = new PageImpl<>(data, PageRequest.of(PAGE, SIZE),  data.size());
+        var lista1 = List.of(dto1, dto2);
+        var lista2 = List.of(new Certificado(), new Certificado());
+        var toReturn = new PageDtoWrapper<>(new PageImpl<>(lista2, PageRequest.of(PAGE, SIZE),  lista2.size()), lista1);
 
 
         ArgumentCaptor<Integer> pageCaptor = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> sizeCaptor = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<String> carnetCaptor = ArgumentCaptor.forClass(String.class);
 
-//        Mockito.when(this.certificadoService.findAllByCarnet(Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString())).thenReturn(toReturn);
+        Mockito.when(this.certificadoService.findAllByCarnet(Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString())).thenReturn(toReturn);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/estudiantes/".concat(CARNET).concat("/certificados"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("page", "5")
                 .param("size", "10"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.certificados", IsCollectionWithSize.hasSize(data.size())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.certificados[0].fechaExpedicion", CoreMatchers.is(dateStr1)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.certificados[1].fechaExpedicion", CoreMatchers.is(dateStr2)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.certificados[*].uri", Matchers.containsInAnyOrder(
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content", IsCollectionWithSize.hasSize(toReturn.getContent().size())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].fechaExpedicion", CoreMatchers.is(dateStr1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[1].fechaExpedicion", CoreMatchers.is(dateStr2)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].uri", Matchers.containsInAnyOrder(
                         "http://www.google.com/certificado1", "http://www.google.com/certificado2"
                 )))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.certificados[*].proyecto", Matchers.containsInAnyOrder(
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].proyecto", Matchers.containsInAnyOrder(
                         "Proyecto 1", "Proyecto 2"
                 )));
     }

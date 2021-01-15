@@ -1,8 +1,13 @@
 package ues.occ.proyeccion.social.ws.app.controller;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
+import ues.occ.proyeccion.social.ws.app.dao.Certificado;
+import ues.occ.proyeccion.social.ws.app.dao.Estudiante;
+import ues.occ.proyeccion.social.ws.app.events.PaginatedResultsRetrievedEvent;
 import ues.occ.proyeccion.social.ws.app.exceptions.InternalErrorException;
 import ues.occ.proyeccion.social.ws.app.model.*;
 import ues.occ.proyeccion.social.ws.app.service.CertificadoService;
@@ -12,6 +17,7 @@ import ues.occ.proyeccion.social.ws.app.service.ProyectoService;
 import ues.occ.proyeccion.social.ws.app.utils.MapperUtility;
 import ues.occ.proyeccion.social.ws.app.utils.PageDtoWrapper;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
 @RestController
@@ -21,27 +27,43 @@ public class EstudianteController {
     private final ProyectoService proyectoService;
     private final EstadoRequerimientoEstudianteService estadoRequerimientoEstudianteService;
     private final CertificadoService certificadoService;
+    private final ApplicationEventPublisher publisher;
 
     public EstudianteController(EstudianteService estudianteService, ProyectoService proyectoService,
                                 EstadoRequerimientoEstudianteService estadoRequerimientoEstudianteService,
-                                CertificadoService certificadoService) {
+                                CertificadoService certificadoService, ApplicationEventPublisher publisher) {
 
         this.estudianteService = estudianteService;
         this.proyectoService = proyectoService;
         this.estadoRequerimientoEstudianteService = estadoRequerimientoEstudianteService;
         this.certificadoService = certificadoService;
+        this.publisher = publisher;
     }
 
     @GetMapping
     public PageDTO<EstudianteDTO> findAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "si") Optional<String> isComplete
+            @RequestParam(defaultValue = "si") Optional<String> isComplete,
+            UriComponentsBuilder builder, HttpServletResponse response
     ) {
+        int totalPages = 0;
+        PageDTO<EstudianteDTO> toReturn;
         var result = isComplete.map(MapperUtility::isComplete)
                 .map(bool -> this.estudianteService.findAllByServicio(page, size, bool))
                 .orElse(null);
-        return result == null ? new PageDTO<>() : new PageDTO<>(result);
+
+        if (result == null) {
+            toReturn = new PageDTO<>();
+        } else {
+            totalPages = result.getOriginalPage().getTotalPages();
+            toReturn = new PageDTO<>(result);
+        }
+        publisher.publishEvent(new PaginatedResultsRetrievedEvent<>(
+                this.getClass(), builder, response, page,
+                totalPages, size)
+        );
+        return toReturn;
     }
 
 
@@ -66,8 +88,13 @@ public class EstudianteController {
             @PathVariable String carnet,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "2") int status){
+            @RequestParam(defaultValue = "2") int status,
+            UriComponentsBuilder builder, HttpServletResponse response) {
         var result = this.proyectoService.findProyectosByEstudiante(page, size, carnet, status);
+        publisher.publishEvent(new PaginatedResultsRetrievedEvent<>(
+                this.getClass(), builder, response, page,
+                result.getOriginalPage().getTotalPages(), size)
+        );
         return new PageDTO<>(result);
     }
 
@@ -80,23 +107,36 @@ public class EstudianteController {
     }
 
     @GetMapping("/{carnet}/documentos")
-    public PageDTO<EstadoRequerimientoEstudianteDTO> getStudentDocuments(@PathVariable String carnet,
-                                    @RequestParam(defaultValue = "0") int page,
-                                    @RequestParam(defaultValue = "10") int size,
-                                    @RequestParam(defaultValue = "si") Optional<String> aprobado){
-
+    public PageDTO<EstadoRequerimientoEstudianteDTO> getStudentDocuments(
+            @PathVariable String carnet,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "si") Optional<String> aprobado,
+            UriComponentsBuilder builder, HttpServletResponse response) {
+        int totalPages = 0;
+        PageDTO<EstadoRequerimientoEstudianteDTO> toReturn = null;
         var result = aprobado.map(MapperUtility::isAprobado)
                 .map(bool -> this.estadoRequerimientoEstudianteService.findAllByCarnet(page, size, carnet, bool))
                 .orElse(null);
-        return result == null ? new PageDTO<>() : new PageDTO<>(result);
+        if (result == null) {
+            toReturn = new PageDTO<>();
+        } else {
+            totalPages = result.getOriginalPage().getTotalPages();
+            toReturn = new PageDTO<>(result);
+        }
+        publisher.publishEvent(new PaginatedResultsRetrievedEvent<>(this.getClass(), builder, response, page, totalPages, size));
+        return toReturn;
     }
 
     @GetMapping("/{carnet}/certificados")
     public PageDTO<CertificadoCreationDTO.CertificadoDTO> getCertificate(
             @PathVariable String carnet,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size){
+            @RequestParam(defaultValue = "10") int size,
+            UriComponentsBuilder builder, HttpServletResponse response) {
         var result = this.certificadoService.findAllByCarnet(page, size, carnet);
+        publisher.publishEvent(new PaginatedResultsRetrievedEvent<>(this.getClass(), builder, response, page,
+                result.getOriginalPage().getTotalPages(), size));
         return new PageDTO<>(result);
     }
 

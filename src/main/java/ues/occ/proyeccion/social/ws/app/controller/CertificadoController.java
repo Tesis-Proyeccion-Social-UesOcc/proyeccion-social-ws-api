@@ -5,7 +5,6 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,13 +19,9 @@ import ues.occ.proyeccion.social.ws.app.dao.Certificado;
 import ues.occ.proyeccion.social.ws.app.events.PaginatedResultsRetrievedEvent;
 import ues.occ.proyeccion.social.ws.app.exceptions.InternalErrorException;
 import ues.occ.proyeccion.social.ws.app.model.CertificadoCreationDTO;
-import ues.occ.proyeccion.social.ws.app.model.CertificadoDTOList;
-import ues.occ.proyeccion.social.ws.app.model.CertificadoDTOPage;
 import ues.occ.proyeccion.social.ws.app.model.PageDTO;
 import ues.occ.proyeccion.social.ws.app.service.CertificadoService;
-import ues.occ.proyeccion.social.ws.app.utils.PageDtoWrapper;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/certificados")

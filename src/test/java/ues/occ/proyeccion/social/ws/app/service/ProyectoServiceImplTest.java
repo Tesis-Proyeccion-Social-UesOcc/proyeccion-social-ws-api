@@ -84,7 +84,7 @@ class ProyectoServiceImplTest {
         Page<Proyecto> page = new PageImpl<>(data, pageable, data.size());
         ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
         Mockito.when((this.proyectoRepository.findAll(Mockito.any(Pageable.class)))).thenReturn(page);
-        Page<ProyectoCreationDTO.ProyectoDTO> result = this.proyectoService.findAll(5, 10);
+        var result = this.proyectoService.findAll(5, 10);
         Mockito.verify(
                 this.proyectoRepository,
                 Mockito.times(1)
@@ -93,7 +93,8 @@ class ProyectoServiceImplTest {
         assertEquals(5, captured.getPageNumber());
         assertEquals(10, captured.getPageSize());
         assertNotNull(result);
-        assertEquals(2, result.getTotalElements());
+        //prueba con content
+        assertEquals(2, result.getContent().size());
 
     }
 
@@ -107,7 +108,7 @@ class ProyectoServiceImplTest {
 
         Mockito.when(this.proyectoRepository.findAllByProyectoEstudianteSet_StatusId(Mockito.anyInt(), Mockito.any(Pageable.class))).thenReturn(page);
 
-        Page<ProyectoCreationDTO.ProyectoDTO> result = this.proyectoService.findAllByStatus(5, 10, 1);
+        var result = this.proyectoService.findAllByStatus(5, 10, 1);
 
         Mockito.verify(this.proyectoRepository, Mockito.times(1))
                 .findAllByProyectoEstudianteSet_StatusId(statusCaptor.capture(), pageableArgumentCaptor.capture());
@@ -115,10 +116,11 @@ class ProyectoServiceImplTest {
         assertNotNull(result);
         assertEquals(PAGE, pageableArgumentCaptor.getValue().getPageNumber());
         assertEquals(SIZE, pageableArgumentCaptor.getValue().getPageSize());
-        assertEquals(2, result.getTotalElements());
-        assertFalse(result.toList().get(0).isInterno());
-        assertEquals(result.toList().get(0).getPersonal(), "text");
-        assertTrue(result.toList().get(1).isInterno());
+        // prueba con get content
+        assertEquals(2, result.getContent().size());
+        assertFalse(result.getContent().get(0).isInterno());
+        assertEquals(result.getContent().get(0).getPersonal(), "text");
+        assertTrue(result.getContent().get(1).isInterno());
         assertEquals(1, statusCaptor.getValue());
 
     }
@@ -132,7 +134,7 @@ class ProyectoServiceImplTest {
 
         Mockito.when(this.proyectoRepository.findAllByProyectoEstudianteSet_Empty(Mockito.any(Pageable.class))).thenReturn(page);
 
-        Page<ProyectoCreationDTO.ProyectoDTO> result = this.proyectoService.findAllPending(5, 10);
+        var result = this.proyectoService.findAllPending(5, 10);
 
         Mockito.verify(this.proyectoRepository, Mockito.times(1))
                 .findAllByProyectoEstudianteSet_Empty(pageableArgumentCaptor.capture());
@@ -140,10 +142,11 @@ class ProyectoServiceImplTest {
         assertNotNull(result);
         assertEquals(PAGE, pageableArgumentCaptor.getValue().getPageNumber());
         assertEquals(SIZE, pageableArgumentCaptor.getValue().getPageSize());
-        assertEquals(2, result.getTotalElements());
-        assertFalse(result.toList().get(0).isInterno());
-        assertEquals(result.toList().get(0).getPersonal(), "text");
-        assertTrue(result.toList().get(1).isInterno());
+        // prueba con content
+        assertEquals(2, result.getContent().size());
+        assertFalse(result.getContent().get(0).isInterno());
+        assertEquals(result.getContent().get(0).getPersonal(), "text");
+        assertTrue(result.getContent().get(1).isInterno());
 
     }
 
@@ -160,7 +163,7 @@ class ProyectoServiceImplTest {
         Mockito.when(this.proyectoRepository.findAllByProyectoEstudianteSet_Estudiante_CarnetAndProyectoEstudianteSet_Status_id(
                 Mockito.anyString(), Mockito.anyInt(), Mockito.any(Pageable.class))).thenReturn(page);
 
-        Page<ProyectoCreationDTO.ProyectoDTO> result = this.proyectoService.findProyectosByEstudiante(5, 10, "zh", 3);
+        var result = this.proyectoService.findProyectosByEstudiante(5, 10, "zh", 3);
 
         Mockito.verify(this.proyectoRepository, Mockito.times(1))
                 .findAllByProyectoEstudianteSet_Estudiante_CarnetAndProyectoEstudianteSet_Status_id(
@@ -170,10 +173,11 @@ class ProyectoServiceImplTest {
         assertNotNull(result);
         assertEquals(PAGE, pageableArgumentCaptor.getValue().getPageNumber());
         assertEquals(SIZE, pageableArgumentCaptor.getValue().getPageSize());
-        assertEquals(2, result.getTotalElements());
-        assertFalse(result.toList().get(0).isInterno());
-        assertEquals(result.toList().get(0).getPersonal(), "text");
-        assertTrue(result.toList().get(1).isInterno());
+        // prueba con content
+        assertEquals(2, result.getContent().size());
+        assertFalse(result.getContent().get(0).isInterno());
+        assertEquals(result.getContent().get(0).getPersonal(), "text");
+        assertTrue(result.getContent().get(1).isInterno());
         assertEquals("zh", carnetArgumentCaptor.getValue());
         assertEquals(3, statusArgumentCaptor.getValue());
 

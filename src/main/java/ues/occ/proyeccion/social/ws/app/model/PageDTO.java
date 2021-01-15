@@ -11,7 +11,6 @@ import java.util.List;
 
 @Getter
 @Setter
-@NoArgsConstructor
 public class PageDTO<T> {
     private List<T> content;
     private int totalPages;

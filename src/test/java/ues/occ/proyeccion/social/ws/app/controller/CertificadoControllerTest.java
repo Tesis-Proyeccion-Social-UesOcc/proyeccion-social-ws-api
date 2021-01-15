@@ -7,7 +7,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -19,8 +21,10 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import ues.occ.proyeccion.social.ws.app.dao.Certificado;
 import ues.occ.proyeccion.social.ws.app.model.CertificadoCreationDTO;
 import ues.occ.proyeccion.social.ws.app.service.CertificadoService;
+import ues.occ.proyeccion.social.ws.app.utils.PageDtoWrapper;
 
 import java.sql.Date;
 import java.time.LocalDate;
@@ -36,6 +40,9 @@ class CertificadoControllerTest {
     @Mock
     CertificadoService certificadoService;
 
+    @Mock
+    ApplicationEventPublisher publisher;
+
     CertificadoController controller;
 
     MockMvc mockMvc;
@@ -43,7 +50,7 @@ class CertificadoControllerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        controller = new CertificadoController(certificadoService, new GenericApplicationContext());
+        controller = new CertificadoController(certificadoService, publisher);
         mockMvc = MockMvcBuilders.standaloneSetup(controller).setControllerAdvice(new RestResponseExceptionCatcher()).build();
     }
 
@@ -126,20 +133,25 @@ class CertificadoControllerTest {
         CertificadoCreationDTO.CertificadoDTO dto2 = new CertificadoCreationDTO.CertificadoDTO(
                 2, "Proyecto2", uri2,  LocalDateTime.of(
                 LocalDate.of(2019, 9,1), LocalTime.now()));
-
+        var listOfEmptyCertificado = List.of(new Certificado(), new Certificado());
         List<CertificadoCreationDTO.CertificadoDTO> data = List.of(dto1, dto2);
-        var toReturn = new PageImpl<>(data, PageRequest.of(page, size), data.size());
+        var toReturn = new PageDtoWrapper<>(new PageImpl<>(listOfEmptyCertificado, PageRequest.of(page, size), listOfEmptyCertificado.size()), data);
         ArgumentCaptor<Integer> pageCaptor = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> sizeCaptor = ArgumentCaptor.forClass(Integer.class);
 
-//        Mockito.when(this.certificadoService.findAll(Mockito.anyInt(), Mockito.anyInt())).thenReturn(toReturn);
+        Mockito.when(this.certificadoService.findAll(Mockito.anyInt(), Mockito.anyInt())).thenReturn(toReturn);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/certificados")
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("page", "5")
                 .param("size", "10"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andDo(MockMvcResultHandlers.print());
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content", IsCollectionWithSize.hasSize(data.size())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].id", CoreMatchers.is(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[1].id", CoreMatchers.is(2)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].proyecto", Matchers.containsInAnyOrder("Proyecto1", "Proyecto2")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].uri", Matchers.containsInAnyOrder(uri1, uri2)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].fechaExpedicion", Matchers.containsInAnyOrder(dateStr1, dateStr2)));
 
 
         Mockito.verify(this.certificadoService, Mockito.times(1)).findAll(pageCaptor.capture(), sizeCaptor.capture());

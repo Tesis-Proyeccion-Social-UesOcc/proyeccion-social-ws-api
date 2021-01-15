@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -14,10 +15,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import ues.occ.proyeccion.social.ws.app.dao.Estudiante;
 import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
 import ues.occ.proyeccion.social.ws.app.model.EstudianteDTO;
 import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO;
 import ues.occ.proyeccion.social.ws.app.service.ProyectoService;
+import ues.occ.proyeccion.social.ws.app.utils.PageDtoWrapper;
 
 
 import java.util.List;
@@ -30,6 +33,9 @@ class ProyectoControllerTest {
 
     @Mock
     ProyectoService proyectoService;
+
+    @Mock
+    ApplicationEventPublisher publisher;
 
     @InjectMocks
     ProyectoController proyectoController;
@@ -53,7 +59,7 @@ class ProyectoControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.estudiante.carnet", is(carnet)));
+//                .andExpect(jsonPath("$.estudiante.carnet", is(carnet)))
                 .andExpect(jsonPath("$.nombre", is(name)));
 
 
@@ -63,10 +69,10 @@ class ProyectoControllerTest {
     @Test
     void getRange() throws Exception {
         Pageable request = PageRequest.of(1, 10);
-        List<ProyectoCreationDTO.ProyectoDTO> payload = List.of(new ProyectoCreationDTO.ProyectoDTO(), new ProyectoCreationDTO.ProyectoDTO());
-        var toReturn = new PageImpl<>(payload, PageRequest.of(1, 10),  payload.size());
-
-//        Mockito.when(proyectoService.findAll(Mockito.anyInt(), Mockito.anyInt())).thenReturn(toReturn);
+        var lista1 = List.of(new ProyectoCreationDTO.ProyectoDTO(), new ProyectoCreationDTO.ProyectoDTO());
+        var lista2 = List.of(new Proyecto(), new Proyecto());
+        var toReturn = new PageDtoWrapper<>(new PageImpl<>(lista2, PageRequest.of(0, 10),  lista2.size()), lista1);
+        Mockito.when(proyectoService.findAll(Mockito.anyInt(), Mockito.anyInt())).thenReturn(toReturn);
         mvc.perform(get("/proyectos/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
@@ -86,10 +92,11 @@ class ProyectoControllerTest {
 
     @Test
     void findAllByStatus() throws Exception {
-        List<ProyectoCreationDTO.ProyectoDTO> payload = List.of(new ProyectoCreationDTO.ProyectoDTO(), new ProyectoCreationDTO.ProyectoDTO());
-        var toReturn = new PageImpl<>(payload, PageRequest.of(1, 10),  payload.size());
+        var lista1 = List.of(new ProyectoCreationDTO.ProyectoDTO(), new ProyectoCreationDTO.ProyectoDTO());
+        var lista2 = List.of(new Proyecto(), new Proyecto());
+        var toReturn = new PageDtoWrapper<>(new PageImpl<>(lista2, PageRequest.of(0, 10),  lista2.size()), lista1);
 
-//        Mockito.when(proyectoService.findAllByStatus(5, 10, 7)).thenReturn(toReturn);
+        Mockito.when(proyectoService.findAllByStatus(5, 10, 7)).thenReturn(toReturn);
         mvc.perform(get("/proyectos/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
@@ -97,7 +104,7 @@ class ProyectoControllerTest {
                 .param("size", "10")
                 .param("status", "7"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", IsCollectionWithSize.hasSize(2)));
+                .andExpect(jsonPath("$.content", IsCollectionWithSize.hasSize(2)));
         ArgumentCaptor<Integer> page = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> size = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> status = ArgumentCaptor.forClass(Integer.class);
@@ -111,17 +118,17 @@ class ProyectoControllerTest {
     }
     @Test
     void findAllPending() throws Exception {
-        List<ProyectoCreationDTO.ProyectoDTO> payload = List.of(new ProyectoCreationDTO.ProyectoDTO(), new ProyectoCreationDTO.ProyectoDTO());
-        var toReturn = new PageImpl<>(payload, PageRequest.of(1, 10),  payload.size());
-
-//        Mockito.when(proyectoService.findAllPending(5, 10)).thenReturn(toReturn);
+        var lista1 = List.of(new ProyectoCreationDTO.ProyectoDTO(), new ProyectoCreationDTO.ProyectoDTO());
+        var lista2 = List.of(new Proyecto(), new Proyecto());
+        var toReturn = new PageDtoWrapper<>(new PageImpl<>(lista2, PageRequest.of(0, 10),  lista2.size()), lista1);
+        Mockito.when(proyectoService.findAllPending(5, 10)).thenReturn(toReturn);
         mvc.perform(get("/proyectos/pending")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .param("page", "5")
                 .param("size", "10"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", IsCollectionWithSize.hasSize(2)));
+                .andExpect(jsonPath("$.content", IsCollectionWithSize.hasSize(2)));
         ArgumentCaptor<Integer> page = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> size = ArgumentCaptor.forClass(Integer.class);
 

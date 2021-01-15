@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.web.util.UriComponentsBuilder;
 
-public final class PaginatedResultsRetrievedEvent<T extends Serializable> extends ApplicationEvent {
+public final class PaginatedResultsRetrievedEvent<T> extends ApplicationEvent {
     private final UriComponentsBuilder uriBuilder;
     private final HttpServletResponse response;
     private final int page;
