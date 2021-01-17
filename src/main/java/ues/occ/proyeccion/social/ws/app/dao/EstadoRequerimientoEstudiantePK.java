@@ -7,13 +7,8 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 @Embeddable
-public class EstadoRequerimientoEstudiantePK implements Serializable {
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	@Column(name = "id_requerimiento")
+    public class EstadoRequerimientoEstudiantePK implements Serializable {
+    @Column(name = "id_requerimiento")
     private Integer idRequerimiento;
 
     @Column(name = "id_estudiante")

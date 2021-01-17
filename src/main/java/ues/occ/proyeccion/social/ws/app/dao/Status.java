@@ -6,7 +6,7 @@ import java.util.Set;
 
 import javax.persistence.*;
 
-	@Entity
+@Entity
 @Table(name = "status")
 public class Status implements Serializable {
 
@@ -15,7 +15,7 @@ public class Status implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
-	private Integer Id;
+	private Integer id;
 	
 	@Column(name = "status", nullable = false, length = 50)
 	private String status;
@@ -30,19 +30,23 @@ public class Status implements Serializable {
 		super();
 	}
 
-		public Status(Integer id, String status, String descripcion, Set<ProyectoEstudiante> proyectoEstudianteSet) {
-			Id = id;
+		public Status(Integer id, String status, String descripcion) {
+			this.id = id;
 			this.status = status;
 			this.descripcion = descripcion;
-			this.proyectoEstudianteSet = proyectoEstudianteSet;
+		}
+
+		public Status(Integer id, String descripcion) {
+			this.id = id;
+			this.descripcion = descripcion;
 		}
 
 		public Integer getId() {
-			return Id;
+			return id;
 		}
 
 		public void setId(Integer id) {
-			Id = id;
+			this.id = id;
 		}
 
 		public String getStatus() {
@@ -74,7 +78,7 @@ public class Status implements Serializable {
 			if (this == o) return true;
 			if (o == null || getClass() != o.getClass()) return false;
 			Status status1 = (Status) o;
-			return Objects.equals(Id, status1.Id) &&
+			return Objects.equals(this.id, status1.id) &&
 					Objects.equals(status, status1.status) &&
 					Objects.equals(descripcion, status1.descripcion) &&
 					Objects.equals(proyectoEstudianteSet, status1.proyectoEstudianteSet);
@@ -82,6 +86,6 @@ public class Status implements Serializable {
 
 		@Override
 		public int hashCode() {
-			return Objects.hash(Id, status, descripcion, proyectoEstudianteSet);
+			return Objects.hash(id, status, descripcion, proyectoEstudianteSet);
 		}
 	}

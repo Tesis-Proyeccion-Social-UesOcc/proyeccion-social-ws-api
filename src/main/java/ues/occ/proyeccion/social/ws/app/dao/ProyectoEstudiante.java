@@ -37,12 +37,10 @@ public class ProyectoEstudiante implements Serializable {
     public ProyectoEstudiante() {
     }
 
-    public ProyectoEstudiante(Integer id, Estudiante estudiante, Proyecto proyecto, Status status, Certificado certificado) {
-        this.id = id;
+    public ProyectoEstudiante(Estudiante estudiante, Proyecto proyecto, Status status) {
         this.estudiante = estudiante;
         this.proyecto = proyecto;
         this.status = status;
-        this.certificado = certificado;
     }
 
     public Integer getId() {

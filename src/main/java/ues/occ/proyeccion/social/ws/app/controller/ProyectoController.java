@@ -1,37 +1,65 @@
 package ues.occ.proyeccion.social.ws.app.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
+import ues.occ.proyeccion.social.ws.app.dao.Estudiante;
 import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
-import ues.occ.proyeccion.social.ws.app.dao.ServiceResponse;
+import ues.occ.proyeccion.social.ws.app.events.PaginatedResultsRetrievedEvent;
+import ues.occ.proyeccion.social.ws.app.model.PageDTO;
+import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO;
 import ues.occ.proyeccion.social.ws.app.service.ProyectoService;
+import ues.occ.proyeccion.social.ws.app.utils.PageDtoWrapper;
+
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 @RestController
-@RequestMapping(value = "/proyectos")
+@RequestMapping("/proyectos")
 public class ProyectoController {
+    private final ProyectoService service;
+    private final ApplicationEventPublisher publisher;
 
-	@Autowired
-	private ProyectoService proyectoService;
-	
-	@GetMapping
-	public ResponseEntity<ServiceResponse> findAll(){
-		return proyectoService.findAll(); 
-	}
-	
-	@PostMapping
-	public ResponseEntity<ServiceResponse> create(@RequestBody Proyecto proyecto){
-		return proyectoService.create(proyecto);
-	}
-	
-	@GetMapping(value = "/findByStatus/{idStatus}")
-	public ResponseEntity<ServiceResponse> findProyectosByStatus(@PathVariable("idStatus") int idStatus){
-		return proyectoService.findProyectosByStatus(idStatus); 
-	}
+    public ProyectoController(ProyectoService service, ApplicationEventPublisher publisher) {
+        this.service = service;
+        this.publisher = publisher;
+    }
+
+    @GetMapping("/{projectId}")
+    public Proyecto getOne(@PathVariable int projectId) {
+        return this.service.findById(projectId);
+    }
+
+    @GetMapping
+    public PageDTO<ProyectoCreationDTO.ProyectoDTO> getRange(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(name = "status", required = false) Integer status,
+            UriComponentsBuilder builder, HttpServletResponse response
+    ) {
+        PageDtoWrapper<Proyecto, ProyectoCreationDTO.ProyectoDTO> result;
+        if (status == null) {
+            result = this.service.findAll(page, size);
+        } else {
+            result = this.service.findAllByStatus(page, size, status);
+        }
+        this.publish(builder, response, size, page, result.getOriginalPage().getTotalPages());
+        return new PageDTO<>(result);
+    }
+
+    @GetMapping("/pending")
+    public PageDTO<ProyectoCreationDTO.ProyectoDTO> getPendingProjects(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            UriComponentsBuilder builder, HttpServletResponse response
+            ) {
+        var result =  this.service.findAllPending(page, size);
+        this.publish(builder, response, size, page, result.getOriginalPage().getTotalPages());
+        return new PageDTO<>(result);
+    }
+
+    private void publish(UriComponentsBuilder builder, HttpServletResponse response, int size, int page, int totalPages){
+        this.publisher.publishEvent(new PaginatedResultsRetrievedEvent<>(this.getClass(), builder, response, page, totalPages, size));
+    }
 }

@@ -15,7 +15,7 @@ import com.google.cloud.storage.StorageOptions;
 public class GoogleCloudFileUpload {
 
 	// get service by env var GOOGLE_APPLICATION_CREDENTIALS. Json file generated in API & Services -> Service account key
-		private static Storage storage = StorageOptions.getDefaultInstance().getService(); 
+		private static final Storage storage = StorageOptions.getDefaultInstance().getService();
 		
 		public String upload(MultipartFile file) throws IOException {
 			try {			

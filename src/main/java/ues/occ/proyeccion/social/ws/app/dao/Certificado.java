@@ -2,6 +2,8 @@ package ues.occ.proyeccion.social.ws.app.dao;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.sql.Date;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -33,9 +35,10 @@ public class Certificado implements Serializable {
 	public Certificado() {
 	}
 
-	public Certificado(Integer id, String uri, LocalDateTime fechaExpedicion) {
+	public Certificado(Integer id, String uri, LocalDateTime fechaExpedicion, ProyectoEstudiante proyectoEstudiante) {
 		this.id = id;
 		this.uri = uri;
+		this.proyectoEstudiante = proyectoEstudiante;
 		this.fechaExpedicion = fechaExpedicion;
 	}
 
@@ -70,11 +73,26 @@ public class Certificado implements Serializable {
 	public void setProyectoEstudiante(ProyectoEstudiante proyectoEstudiante) {
 		this.proyectoEstudiante = proyectoEstudiante;
 	}
-	
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Certificado that = (Certificado) o;
+		return Objects.equals(id, that.id) &&
+				Objects.equals(uri, that.uri) &&
+				Objects.equals(fechaExpedicion, that.fechaExpedicion) &&
+				Objects.equals(proyectoEstudiante, that.proyectoEstudiante);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, uri, fechaExpedicion, proyectoEstudiante);
+	}
+
 	@Override
 	public String toString() {
 		return "Certificado [id=" + id + ", uri=" + uri + ", fecha_expedicion=" + fechaExpedicion
 				+ ", proyectoEstudiante=" + proyectoEstudiante + "]";
 	}
-
 }

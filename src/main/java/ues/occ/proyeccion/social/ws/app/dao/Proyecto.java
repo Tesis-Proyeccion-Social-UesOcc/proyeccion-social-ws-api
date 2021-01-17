@@ -39,7 +39,7 @@ public class Proyecto implements Serializable {
 
 	@OneToMany(mappedBy = "proyecto", fetch = FetchType.LAZY)
 	private Set<ProyectoEstudiante> proyectoEstudianteSet;
-	
+
 	@Column(name = "fecha_creacion")
 	private LocalDateTime fechaCreacion;
 
@@ -47,8 +47,7 @@ public class Proyecto implements Serializable {
 		super();
 	}
 
-	public Proyecto(Integer id, String nombre, Integer duracion, boolean interno, Personal tutor, PersonalExterno encargadoExterno) {
-		this.id = id;
+	public Proyecto(String nombre, Integer duracion, boolean interno, Personal tutor, PersonalExterno encargadoExterno, Set<ProyectoEstudiante> proyectoEstudianteSet) {
 		this.nombre = nombre;
 		this.duracion = duracion;
 		this.interno = interno;
@@ -61,7 +60,7 @@ public class Proyecto implements Serializable {
 		this.nombre = nombre;
 		this.interno =  interno;
 		this.fechaCreacion = now;
-		
+
 	}
 
 	public LocalDateTime getFechaCreacion() {

@@ -23,38 +23,38 @@ import ues.occ.proyeccion.social.ws.app.service.CertificadoServiceImpl;
 @RequestMapping(value = "/proyectos-estudiante")
 public class ProyectoEstudianteController {
 
-	// private final StorageService storageService;
+    // private final StorageService storageService;
 
-	@Autowired
-	private Storage storage;
-	@Autowired
-	private CertificadoServiceImpl certificadoServiceImpl;
+    @Autowired
+    private Storage storage;
+    @Autowired
+    private CertificadoServiceImpl certificadoServiceImpl;
 
-	@PostMapping(value = "/certificado/{idProyectoEstudiante}")
-	public ResponseEntity<ServiceResponse> crearCertificado(
-			@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes, 
-			@PathVariable("idProyectoEstudiante") int id) {
-		return certificadoServiceImpl.crearCertificado(id, file, redirectAttributes);
-	}
-	
-	@RequestMapping(path = { "/hello" }, method = { RequestMethod.GET })
-	public Message readFromFile() throws Exception {
+    @PostMapping(value = "/certificado/{idProyectoEstudiante}")
+    public ResponseEntity<ServiceResponse> crearCertificado(
+            @RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes,
+            @PathVariable("idProyectoEstudiante") int id) {
+        return certificadoServiceImpl.crearCertificado(id, file, redirectAttributes);
+    }
 
-		StringBuilder sb = new StringBuilder();
+    @RequestMapping(path = {"/hello"}, method = {RequestMethod.GET})
+    public Message readFromFile() throws Exception {
 
-		try (ReadChannel channel = storage.reader("carbonrider", "uri-chatbot.pdf")) {
-			ByteBuffer bytes = ByteBuffer.allocate(64 * 1024);
-			while (channel.read(bytes) > 0) {
-				bytes.flip();
-				String data = new String(bytes.array(), 0, bytes.limit());
-				sb.append(data);
-				bytes.clear();
-			}
-		}
+        StringBuilder sb = new StringBuilder();
 
-		Message message = new Message();
-		message.setContents(sb.toString());
+        try (ReadChannel channel = storage.reader("carbonrider", "uri-chatbot.pdf")) {
+            ByteBuffer bytes = ByteBuffer.allocate(64 * 1024);
+            while (channel.read(bytes) > 0) {
+                bytes.flip();
+                String data = new String(bytes.array(), 0, bytes.limit());
+                sb.append(data);
+                bytes.clear();
+            }
+        }
 
-		return message;
-	}
+        Message message = new Message();
+        message.setContents(sb.toString());
+
+        return message;
+    }
 }

@@ -1,17 +1,15 @@
 package ues.occ.proyeccion.social.ws.app.service;
 
-import org.springframework.http.ResponseEntity;
-
 import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
-import ues.occ.proyeccion.social.ws.app.dao.ServiceResponse;
+import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO;
+import ues.occ.proyeccion.social.ws.app.utils.PageDtoWrapper;
 
 public interface ProyectoService {
     Proyecto findById(int id);
-
-	public abstract ResponseEntity<ServiceResponse> findAll();
-	
-	public abstract ResponseEntity<ServiceResponse> create(Proyecto proyectoO);
-
-	public abstract ResponseEntity<ServiceResponse> findProyectosByStatus(int idStatus);
+    PageDtoWrapper<Proyecto, ProyectoCreationDTO.ProyectoDTO> findAll(int page, int size);
+    PageDtoWrapper<Proyecto, ProyectoCreationDTO.ProyectoDTO> findAllByStatus(int page, int size, int statusId);
+    PageDtoWrapper<Proyecto, ProyectoCreationDTO.ProyectoDTO> findAllPending(int page, int size);
+    PageDtoWrapper<Proyecto, ProyectoCreationDTO.ProyectoDTO> findProyectosByEstudiante(int page, int size, String carnet, int status);
+    ProyectoCreationDTO save(String carnet, ProyectoCreationDTO proyecto);
 }
 
