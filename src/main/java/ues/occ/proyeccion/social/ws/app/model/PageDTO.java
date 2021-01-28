@@ -18,6 +18,7 @@ public class PageDTO<T> {
     private long totalElements;
     private int size;
     private boolean last;
+    private Integer currentPage;
 
     public PageDTO(PageDtoWrapper<? extends Serializable, T> pageDtoWrapper){
         setContent(pageDtoWrapper.getContent());
@@ -26,6 +27,7 @@ public class PageDTO<T> {
         setTotalElements(pageDtoWrapper.getOriginalPage().getTotalElements());
         setSize(pageDtoWrapper.getOriginalPage().getSize());
         setLast(pageDtoWrapper.getOriginalPage().isLast());
+        setCurrentPage(pageDtoWrapper.getOriginalPage().getNumber());
     }
 
     public PageDTO(){
@@ -35,6 +37,7 @@ public class PageDTO<T> {
         setTotalElements(0);
         setSize(0);
         setLast(false);
+        setCurrentPage(null);
     }
 
 }
