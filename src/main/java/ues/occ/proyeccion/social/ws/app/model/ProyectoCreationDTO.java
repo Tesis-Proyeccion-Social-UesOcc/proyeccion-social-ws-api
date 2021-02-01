@@ -17,6 +17,7 @@ public class ProyectoCreationDTO implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private Integer id;
 	private String nombre;
     private Integer duracion;
     private boolean interno;
@@ -31,6 +32,7 @@ public class ProyectoCreationDTO implements Serializable {
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
+		private Integer id;
 		private String nombre;
         private Integer duracion;
         private boolean interno;

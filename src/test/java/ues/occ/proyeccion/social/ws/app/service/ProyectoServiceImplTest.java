@@ -190,7 +190,7 @@ class ProyectoServiceImplTest {
         personal.setId(1);
         personal.setNombre("Steve");
 
-        ProyectoCreationDTO proyectoCreationDTO = new ProyectoCreationDTO("Project", 150, true, 1);
+        ProyectoCreationDTO proyectoCreationDTO = new ProyectoCreationDTO(1,"Project", 150, true, 1);
         Proyecto resultProject = this.proyectoMapper.proyectoCreationDTOToProyecto(proyectoCreationDTO);
         resultProject.setTutor(personal);
 

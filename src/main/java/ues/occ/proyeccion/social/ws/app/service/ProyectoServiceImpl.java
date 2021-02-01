@@ -1,10 +1,23 @@
 package ues.occ.proyeccion.social.ws.app.service;
 
+import java.util.function.Function;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import ues.occ.proyeccion.social.ws.app.dao.*;
+
+import ues.occ.proyeccion.social.ws.app.dao.Estudiante;
+import ues.occ.proyeccion.social.ws.app.dao.Personal;
+import ues.occ.proyeccion.social.ws.app.dao.PersonalExterno;
+import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
+import ues.occ.proyeccion.social.ws.app.dao.ProyectoEstudiante;
+import ues.occ.proyeccion.social.ws.app.dao.Status;
 import ues.occ.proyeccion.social.ws.app.exceptions.InternalErrorException;
 import ues.occ.proyeccion.social.ws.app.exceptions.ResourceNotFoundException;
 import ues.occ.proyeccion.social.ws.app.mappers.ProyectoMapper;
@@ -15,17 +28,14 @@ import ues.occ.proyeccion.social.ws.app.repository.ProyectoRepository;
 import ues.occ.proyeccion.social.ws.app.utils.PageDtoWrapper;
 import ues.occ.proyeccion.social.ws.app.utils.PageableResource;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.util.List;
-import java.util.function.Function;
-
 @Service
 public class ProyectoServiceImpl extends PageableResource<Proyecto, ProyectoCreationDTO.ProyectoDTO> implements ProyectoService{
 
     private final ProyectoRepository proyectoRepository;
     private final ProyectoEstudianteRepository proyectoEstudianteRepository;
     private final ProyectoMapper proyectoMapper;
+
+	private static final Logger log = LoggerFactory.getLogger(ProyectoServiceImpl.class);
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -58,6 +68,7 @@ public class ProyectoServiceImpl extends PageableResource<Proyecto, ProyectoCrea
     public PageDtoWrapper<Proyecto, ProyectoDTO> findAll(int page, int size) {
         Pageable paging = this.getPageable(page, size);;
         Page<Proyecto> proyectoPage = proyectoRepository.findAll(paging);
+        log.info(proyectoPage.getContent().toString());
         return this.getPagedData(proyectoPage);
     }
 

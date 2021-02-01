@@ -3,6 +3,7 @@ package ues.occ.proyeccion.social.ws.app.mappers;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
+
 import ues.occ.proyeccion.social.ws.app.dao.EstadoRequerimientoEstudiante;
 import ues.occ.proyeccion.social.ws.app.model.EstadoRequerimientoEstudianteDTO;
 

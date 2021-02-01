@@ -1,10 +1,8 @@
 package ues.occ.proyeccion.social.ws.app.mappers;
 
-import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
+
 import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
 import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO;
 
@@ -19,20 +17,22 @@ public abstract class ProyectoMapper {
         else
             personal = proyecto.getEncargadoExterno().getNombre();
         return ProyectoCreationDTO.ProyectoDTO.builder()
-                .nombre(proyecto.getNombre())
+        		.id(proyecto.getId())
+        		.nombre(proyecto.getNombre())
                 .duracion(proyecto.getDuracion())
                 .interno(proyecto.isInterno())
                 .personal(personal)
                 .build();
     }
-    public ProyectoCreationDTO proyectoToProyectoCreationDTO(Proyecto proyecto){
+    public ProyectoCreationDTO proyectoToProyectoCreationDTO(Proyecto proyecto) {
         int personal = 0;
         if(proyecto.isInterno())
             personal = proyecto.getTutor().getId();
         else
             personal = proyecto.getEncargadoExterno().getId();
         return ProyectoCreationDTO.builder()
-                .nombre(proyecto.getNombre())
+        		.id(proyecto.getId())
+        		.nombre(proyecto.getNombre())
                 .duracion(proyecto.getDuracion())
                 .interno(proyecto.isInterno())
                 .personal(personal)

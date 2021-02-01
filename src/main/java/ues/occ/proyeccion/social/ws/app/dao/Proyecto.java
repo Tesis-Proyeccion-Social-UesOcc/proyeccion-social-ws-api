@@ -136,5 +136,12 @@ public class Proyecto implements Serializable {
 	public int hashCode() {
 		return Objects.hash(id, nombre, duracion, interno, tutor, encargadoExterno);
 	}
+
+	@Override
+	public String toString() {
+		return "Proyecto [id=" + id + ", nombre=" + nombre + "]";
+	}
+	
+	
 }
 
