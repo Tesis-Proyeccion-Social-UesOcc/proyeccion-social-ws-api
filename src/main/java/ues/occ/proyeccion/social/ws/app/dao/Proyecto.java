@@ -142,7 +142,7 @@ public class Proyecto implements Serializable {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, nombre, duracion, interno, tutor, encargadoExterno);
+		return Objects.hash(id, nombre, duracion, interno);
 	}
 }
 

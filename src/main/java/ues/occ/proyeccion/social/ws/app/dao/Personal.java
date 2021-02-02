@@ -65,6 +65,14 @@ public class Personal implements Serializable {
 		this.tipoPersonal = tipoPersonal;
 	}
 
+	public Personal(Integer id, String nombre, String apellido){
+		super();
+		this.id = id;
+		this.nombre = nombre;
+		this.apellido = apellido;
+	}
+
+
 
 	public PersonalEncargado getPersonalEncargado() {
 		return personalEncargado;

@@ -50,7 +50,7 @@ class ProyectoControllerTest {
 
     @Test
     void getOne() throws Exception {
-        Proyecto proyecto = new Proyecto();
+        var proyecto = new ProyectoCreationDTO.ProyectoDTO();
         String name = "project 64";
         proyecto.setId(12);
         proyecto.setNombre(name);

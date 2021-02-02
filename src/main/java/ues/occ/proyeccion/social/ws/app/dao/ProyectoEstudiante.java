@@ -30,7 +30,7 @@ public class ProyectoEstudiante implements Serializable {
     @JoinColumn(name = "id_status")
     private Status status;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "id", referencedColumnName = "id")
     private Certificado certificado;
 
@@ -97,6 +97,6 @@ public class ProyectoEstudiante implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, estudiante, proyecto, status, certificado);
+        return Objects.hash(id, estudiante, proyecto, status);
     }
 }

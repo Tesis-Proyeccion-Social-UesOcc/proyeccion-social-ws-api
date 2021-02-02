@@ -82,14 +82,21 @@ class ProyectoServiceImplTest {
 
     @Test
     void testFindById() {
-        Proyecto proyecto = new Proyecto();
-        proyecto.setId(5);
+        var proyecto = new Proyecto();
+        proyecto.setId(101);
+        proyecto.setDuracion(500);
+        proyecto.setTutor(new Personal());
+        proyecto.setInterno(true);
+
         Optional<Proyecto> proyecto_ = Optional.of(proyecto);
         Mockito.when(this.proyectoRepository.findById(Mockito.anyInt()))
                 .thenReturn(proyecto_);
-        Proyecto resultObject = this.proyectoService.findById(1);
+
+        ProyectoCreationDTO.ProyectoDTO resultObject = this.proyectoService.findById(1);
+
         assertNotNull(resultObject);
-        assertEquals(resultObject.getId(), 5);
+        assertEquals(resultObject.getId(), 101);
+        assertEquals(resultObject.getDuracion(), 500);
     }
 
     @Test

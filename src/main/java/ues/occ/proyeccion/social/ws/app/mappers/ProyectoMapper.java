@@ -8,9 +8,8 @@ import ues.occ.proyeccion.social.ws.app.model.EstudianteDTO;
 import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 
-@Mapper
+@Mapper(uses = {EstudianteMapper.class})
 public interface ProyectoMapper {
     ProyectoMapper INSTANCE = Mappers.getMapper(ProyectoMapper.class);
     EstudianteMapper MAPPER = Mappers.getMapper(EstudianteMapper.class);
@@ -27,12 +26,12 @@ public interface ProyectoMapper {
 
     @Named("estudiantesBuilder")
     default Set<EstudianteDTO> getEstudiantes(Set<ProyectoEstudiante> proyectoEstudiantes){
-        return proyectoEstudiantes.stream().map(ProyectoEstudiante::getEstudiante).map(MAPPER::estudianteToEstudianteDTO).collect(Collectors.toSet());
+        return MAPPER.ToEstudianteList(proyectoEstudiantes, new CycleUtil());
     }
 
     @Mapping(source = "proyecto", target = "personal", qualifiedByName = "nombreChecker")
     @Mapping(source = "proyecto.proyectoEstudianteSet", target = "estudiantes", qualifiedByName = "estudiantesBuilder")
-    ProyectoCreationDTO.ProyectoDTO proyectoToProyectoDTO(Proyecto proyecto);
+    ProyectoCreationDTO.ProyectoDTO proyectoToProyectoDTO(Proyecto proyecto, @Context CycleUtil cycleUtil);
 
     @Mapping(source = "proyecto", target = "personal", qualifiedByName = "idChecker")
     ProyectoCreationDTO proyectoToProyectoCreationDTO(Proyecto proyecto);

@@ -1,11 +1,10 @@
 package ues.occ.proyeccion.social.ws.app.dao;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import javax.persistence.*;
-import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "estudiante")
@@ -25,16 +24,16 @@ public class Estudiante implements Serializable {
 	private boolean servicioCompleto;
 
 	@OneToMany(mappedBy = "estudiante", fetch = FetchType.LAZY)
-	private Set<EstadoRequerimientoEstudiante> estadoRequerimientoEstudiantes;
+	private List<EstadoRequerimientoEstudiante> estadoRequerimientoEstudiantes;
 
 	@OneToMany(mappedBy = "estudiante", fetch = FetchType.LAZY)
-	private Set<ProyectoEstudiante> proyectoEstudianteSet;
+	private List<ProyectoEstudiante> proyectoEstudianteSet;
 
 	public Estudiante() {
 		super();
 	}
 
-	public Estudiante(String carnet, Integer horasProgreso, boolean servicioCompleto, Set<EstadoRequerimientoEstudiante> estadoRequerimientoEstudiantes, Set<ProyectoEstudiante> proyectoEstudianteSet) {
+	public Estudiante(String carnet, Integer horasProgreso, boolean servicioCompleto, List<EstadoRequerimientoEstudiante> estadoRequerimientoEstudiantes, List<ProyectoEstudiante> proyectoEstudianteSet) {
 		this.carnet = carnet;
 		this.horasProgreso = horasProgreso;
 		this.servicioCompleto = servicioCompleto;
@@ -66,19 +65,19 @@ public class Estudiante implements Serializable {
 		this.servicioCompleto = servicioCompleto;
 	}
 
-	public Set<EstadoRequerimientoEstudiante> getEstadoRequerimientoEstudiantes() {
+	public List<EstadoRequerimientoEstudiante> getEstadoRequerimientoEstudiantes() {
 		return estadoRequerimientoEstudiantes;
 	}
 
-	public void setEstadoRequerimientoEstudiantes(Set<EstadoRequerimientoEstudiante> estadoRequerimientoEstudiantes) {
+	public void setEstadoRequerimientoEstudiantes(List<EstadoRequerimientoEstudiante> estadoRequerimientoEstudiantes) {
 		this.estadoRequerimientoEstudiantes = estadoRequerimientoEstudiantes;
 	}
 
-	public Set<ProyectoEstudiante> getProyectoEstudianteSet() {
+	public List<ProyectoEstudiante> getProyectoEstudianteSet() {
 		return proyectoEstudianteSet;
 	}
 
-	public void setProyectoEstudianteSet(Set<ProyectoEstudiante> proyectoEstudianteSet) {
+	public void setProyectoEstudianteSet(List<ProyectoEstudiante> proyectoEstudianteSet) {
 		this.proyectoEstudianteSet = proyectoEstudianteSet;
 	}
 
@@ -96,6 +95,6 @@ public class Estudiante implements Serializable {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(carnet, horasProgreso, servicioCompleto, estadoRequerimientoEstudiantes, proyectoEstudianteSet);
+		return Objects.hash(carnet, horasProgreso, servicioCompleto);
 	}
 }

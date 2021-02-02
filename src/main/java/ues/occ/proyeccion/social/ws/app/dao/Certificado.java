@@ -2,14 +2,9 @@ package ues.occ.proyeccion.social.ws.app.dao;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.sql.Date;
 import java.util.Objects;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "certificado")
@@ -29,7 +24,7 @@ public class Certificado implements Serializable {
 
 	// Indica que la columna id de proyecto_estudiante se usara como PK y FK
 
-	@OneToOne(mappedBy = "certificado")
+	@OneToOne(mappedBy = "certificado", fetch = FetchType.LAZY)
 	private ProyectoEstudiante proyectoEstudiante;
 
 	public Certificado() {
@@ -87,7 +82,7 @@ public class Certificado implements Serializable {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, uri, fechaExpedicion, proyectoEstudiante);
+		return Objects.hash(id, uri, fechaExpedicion);
 	}
 
 	@Override

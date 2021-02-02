@@ -1,16 +1,11 @@
 package ues.occ.proyeccion.social.ws.app.dao;
 
+
 import java.io.Serializable;
 import java.sql.Date;
 import java.util.Objects;
 
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.MapsId;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "estado_requerimiento_estudiante")
@@ -24,12 +19,12 @@ public class EstadoRequerimientoEstudiante implements Serializable {
 	@EmbeddedId
     private EstadoRequerimientoEstudiantePK id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("idRequerimiento")
     @JoinColumn(name = "id_requerimiento")
     private Requerimiento requerimiento;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("idEstudiante")
     @JoinColumn(name = "id_estudiante")
     private Estudiante estudiante;
@@ -131,6 +126,6 @@ public class EstadoRequerimientoEstudiante implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, requerimiento, estudiante, entregado, aprobado, fechaEntrega, fechaAprobacion);
+        return Objects.hash(id, entregado, aprobado, fechaEntrega, fechaAprobacion);
     }
 }
