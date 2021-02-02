@@ -123,6 +123,10 @@ public class Proyecto implements Serializable {
 		return proyectoEstudianteSet;
 	}
 
+	public void setProyectoEstudianteSet(Set<ProyectoEstudiante> proyectoEstudianteSet) {
+		this.proyectoEstudianteSet = proyectoEstudianteSet;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
