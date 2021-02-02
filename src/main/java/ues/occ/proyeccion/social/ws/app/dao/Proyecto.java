@@ -119,6 +119,10 @@ public class Proyecto implements Serializable {
 		this.encargadoExterno = encargadoExterno;
 	}
 
+	public Set<ProyectoEstudiante> getProyectoEstudianteSet() {
+		return proyectoEstudianteSet;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
