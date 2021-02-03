@@ -1,10 +1,8 @@
 package ues.occ.proyeccion.social.ws.app.controller;
 
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
-import ues.occ.proyeccion.social.ws.app.dao.Estudiante;
 import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
 import ues.occ.proyeccion.social.ws.app.events.PaginatedResultsRetrievedEvent;
 import ues.occ.proyeccion.social.ws.app.model.PageDTO;
@@ -13,7 +11,6 @@ import ues.occ.proyeccion.social.ws.app.service.ProyectoService;
 import ues.occ.proyeccion.social.ws.app.utils.PageDtoWrapper;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 
 @RestController
 @RequestMapping("/proyectos")
@@ -27,7 +24,7 @@ public class ProyectoController {
     }
 
     @GetMapping("/{projectId}")
-    public Proyecto getOne(@PathVariable int projectId) {
+    public ProyectoCreationDTO.ProyectoDTO getOne(@PathVariable int projectId) {
         return this.service.findById(projectId);
     }
 

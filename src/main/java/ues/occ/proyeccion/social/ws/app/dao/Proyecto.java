@@ -119,6 +119,14 @@ public class Proyecto implements Serializable {
 		this.encargadoExterno = encargadoExterno;
 	}
 
+	public Set<ProyectoEstudiante> getProyectoEstudianteSet() {
+		return proyectoEstudianteSet;
+	}
+
+	public void setProyectoEstudianteSet(Set<ProyectoEstudiante> proyectoEstudianteSet) {
+		this.proyectoEstudianteSet = proyectoEstudianteSet;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
@@ -134,7 +142,7 @@ public class Proyecto implements Serializable {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, nombre, duracion, interno, tutor, encargadoExterno);
+		return Objects.hash(id, nombre, duracion, interno);
 	}
 }
 

@@ -1,42 +1,40 @@
 package ues.occ.proyeccion.social.ws.app.mappers;
 
-import org.mapstruct.AfterMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
+import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
+import ues.occ.proyeccion.social.ws.app.dao.ProyectoEstudiante;
+import ues.occ.proyeccion.social.ws.app.model.EstudianteDTO;
 import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO;
 
-@Mapper
-public abstract class ProyectoMapper {
-    public static ProyectoMapper INSTANCE = Mappers.getMapper(ProyectoMapper.class);
+import java.util.Set;
 
-    public ProyectoCreationDTO.ProyectoDTO proyectoToProyectoDTO(Proyecto proyecto){
-        String personal;
-        if(proyecto.isInterno())
-            personal = proyecto.getTutor().getNombre();
-        else
-            personal = proyecto.getEncargadoExterno().getNombre();
-        return ProyectoCreationDTO.ProyectoDTO.builder()
-                .nombre(proyecto.getNombre())
-                .duracion(proyecto.getDuracion())
-                .interno(proyecto.isInterno())
-                .personal(personal)
-                .build();
+@Mapper(uses = {EstudianteMapper.class})
+public interface ProyectoMapper {
+    ProyectoMapper INSTANCE = Mappers.getMapper(ProyectoMapper.class);
+    EstudianteMapper MAPPER = Mappers.getMapper(EstudianteMapper.class);
+
+    @Named("nombreChecker")
+    default String getNombrePersonal(Proyecto proyecto){
+        return proyecto.isInterno() ? proyecto.getTutor().getNombre() : proyecto.getEncargadoExterno().getNombre();
     }
-    public ProyectoCreationDTO proyectoToProyectoCreationDTO(Proyecto proyecto){
-        int personal = 0;
-        if(proyecto.isInterno())
-            personal = proyecto.getTutor().getId();
-        else
-            personal = proyecto.getEncargadoExterno().getId();
-        return ProyectoCreationDTO.builder()
-                .nombre(proyecto.getNombre())
-                .duracion(proyecto.getDuracion())
-                .interno(proyecto.isInterno())
-                .personal(personal)
-                .build();
+
+    @Named("idChecker")
+    default Integer getIdPersonal(Proyecto proyecto){
+        return proyecto.isInterno() ? proyecto.getTutor().getId() : proyecto.getEncargadoExterno().getId();
     }
-    public abstract Proyecto proyectoCreationDTOToProyecto(ProyectoCreationDTO proyectoCreationDTO);
+
+    @Named("estudiantesBuilder")
+    default Set<EstudianteDTO> getEstudiantes(Set<ProyectoEstudiante> proyectoEstudiantes){
+        return MAPPER.ToEstudianteList(proyectoEstudiantes, new CycleUtil());
+    }
+
+    @Mapping(source = "proyecto", target = "personal", qualifiedByName = "nombreChecker")
+    @Mapping(source = "proyecto.proyectoEstudianteSet", target = "estudiantes", qualifiedByName = "estudiantesBuilder")
+    ProyectoCreationDTO.ProyectoDTO proyectoToProyectoDTO(Proyecto proyecto, @Context CycleUtil cycleUtil);
+
+    @Mapping(source = "proyecto", target = "personal", qualifiedByName = "idChecker")
+    ProyectoCreationDTO proyectoToProyectoCreationDTO(Proyecto proyecto);
+
+    Proyecto proyectoCreationDTOToProyecto(ProyectoCreationDTO proyectoCreationDTO);
 }

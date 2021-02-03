@@ -1,8 +1,8 @@
 package ues.occ.proyeccion.social.ws.app.dao;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import javax.persistence.*;
 
@@ -25,14 +25,14 @@ public class PersonalExterno implements Serializable {
 	@Column(name = "descripcion", nullable = false, length = 500)
 	private String descripcion;
 
-	@OneToMany(mappedBy = "encargadoExterno")
-	private Set<Proyecto> proyectos;
+	@OneToMany(mappedBy = "encargadoExterno", fetch = FetchType.LAZY)
+	private List<Proyecto> proyectos;
 	
 	public PersonalExterno() {
 		super();
 	}
 
-	public PersonalExterno(Integer id, String nombre, String apellido, String descripcion, Set<Proyecto> proyectos) {
+	public PersonalExterno(Integer id, String nombre, String apellido, String descripcion, List<Proyecto> proyectos) {
 		this.id = id;
 		this.nombre = nombre;
 		this.apellido = apellido;
@@ -72,11 +72,11 @@ public class PersonalExterno implements Serializable {
 		this.descripcion = descripcion;
 	}
 
-	public Set<Proyecto> getProyectos() {
+	public List<Proyecto> getProyectos() {
 		return proyectos;
 	}
 
-	public void setProyectos(Set<Proyecto> proyectos) {
+	public void setProyectos(List<Proyecto> proyectos) {
 		this.proyectos = proyectos;
 	}
 

@@ -1,8 +1,8 @@
 	package ues.occ.proyeccion.social.ws.app.dao;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import javax.persistence.*;
 
@@ -24,7 +24,7 @@ public class Status implements Serializable {
 	private String descripcion;
 
 	@OneToMany(mappedBy = "status", fetch = FetchType.LAZY)
-	private Set<ProyectoEstudiante> proyectoEstudianteSet;
+	private List<ProyectoEstudiante> proyectoEstudianteSet;
 
 	public Status() {
 		super();
@@ -65,11 +65,11 @@ public class Status implements Serializable {
 			this.descripcion = descripcion;
 		}
 
-		public Set<ProyectoEstudiante> getProyectoEstudianteSet() {
+		public List<ProyectoEstudiante> getProyectoEstudianteSet() {
 			return proyectoEstudianteSet;
 		}
 
-		public void setProyectoEstudianteSet(Set<ProyectoEstudiante> proyectoEstudianteSet) {
+		public void setProyectoEstudianteSet(List<ProyectoEstudiante> proyectoEstudianteSet) {
 			this.proyectoEstudianteSet = proyectoEstudianteSet;
 		}
 

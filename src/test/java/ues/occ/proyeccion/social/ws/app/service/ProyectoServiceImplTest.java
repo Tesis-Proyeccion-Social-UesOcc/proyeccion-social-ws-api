@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import ues.occ.proyeccion.social.ws.app.dao.*;
 import ues.occ.proyeccion.social.ws.app.exceptions.ResourceNotFoundException;
 import ues.occ.proyeccion.social.ws.app.mappers.ProyectoMapper;
+import ues.occ.proyeccion.social.ws.app.model.EstudianteDTO;
 import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO;
 import ues.occ.proyeccion.social.ws.app.repository.ProyectoEstudianteRepository;
 import ues.occ.proyeccion.social.ws.app.repository.ProyectoRepository;
@@ -18,6 +19,7 @@ import ues.occ.proyeccion.social.ws.app.repository.ProyectoRepository;
 import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -45,11 +47,31 @@ class ProyectoServiceImplTest {
         proyecto1.setInterno(false);
         PersonalExterno personalExterno = new PersonalExterno();
         personalExterno.setNombre("text");
+        var estudiante1 = new Estudiante();
+        var estudiante2 = new Estudiante();
+
+        estudiante1.setCarnet("ZH15002");
+        estudiante1.setHorasProgreso(500);
+        estudiante1.setServicioCompleto(true);
+        estudiante2.setCarnet("AB15002");
+        estudiante2.setHorasProgreso(200);
+        estudiante2.setServicioCompleto(false);
+
+        var proyectoEstudiante1 = new ProyectoEstudiante();
+        var proyectoEstudiante2 = new ProyectoEstudiante();
+        proyectoEstudiante1.setEstudiante(estudiante1);
+        proyectoEstudiante2.setEstudiante(estudiante2);
+        proyectoEstudiante1.setProyecto(proyecto1);
+        proyectoEstudiante2.setProyecto(proyecto2);
+        Set<ProyectoEstudiante> proyectoEstudiantes = Set.of(proyectoEstudiante1, proyectoEstudiante2);
         proyecto1.setEncargadoExterno(personalExterno);
         proyecto1.setTutor(new Personal());
+        proyecto1.setProyectoEstudianteSet(proyectoEstudiantes);
         proyecto2 = new Proyecto();
         proyecto2.setInterno(true);
         proyecto2.setTutor(new Personal());
+        proyecto2.setProyectoEstudianteSet(proyectoEstudiantes);
+
     }
 
     @BeforeEach
@@ -60,14 +82,21 @@ class ProyectoServiceImplTest {
 
     @Test
     void testFindById() {
-        Proyecto proyecto = new Proyecto();
-        proyecto.setId(5);
+        var proyecto = new Proyecto();
+        proyecto.setId(101);
+        proyecto.setDuracion(500);
+        proyecto.setTutor(new Personal());
+        proyecto.setInterno(true);
+
         Optional<Proyecto> proyecto_ = Optional.of(proyecto);
         Mockito.when(this.proyectoRepository.findById(Mockito.anyInt()))
                 .thenReturn(proyecto_);
-        Proyecto resultObject = this.proyectoService.findById(1);
+
+        ProyectoCreationDTO.ProyectoDTO resultObject = this.proyectoService.findById(1);
+
         assertNotNull(resultObject);
-        assertEquals(resultObject.getId(), 5);
+        assertEquals(resultObject.getId(), 101);
+        assertEquals(resultObject.getDuracion(), 500);
     }
 
     @Test
@@ -90,12 +119,16 @@ class ProyectoServiceImplTest {
                 Mockito.times(1)
         ).findAll(captor.capture());
         Pageable captured = captor.getValue();
+
+        var estudianteDTO1 = new EstudianteDTO("ZH15002", 500, true);
+        var estudianteDTO2 = new EstudianteDTO("AB15002", 200, false);
+        var expected = Set.of(estudianteDTO1, estudianteDTO2);
+
         assertEquals(5, captured.getPageNumber());
         assertEquals(10, captured.getPageSize());
         assertNotNull(result);
-        //prueba con content
         assertEquals(2, result.getContent().size());
-
+        assertEquals(expected, result.getContent().get(0).getEstudiantes());
     }
 
     @Test
@@ -190,7 +223,7 @@ class ProyectoServiceImplTest {
         personal.setId(1);
         personal.setNombre("Steve");
 
-        ProyectoCreationDTO proyectoCreationDTO = new ProyectoCreationDTO("Project", 150, true, 1);
+        ProyectoCreationDTO proyectoCreationDTO = new ProyectoCreationDTO(1, "Project", 150, true, 1);
         Proyecto resultProject = this.proyectoMapper.proyectoCreationDTOToProyecto(proyectoCreationDTO);
         resultProject.setTutor(personal);
 

@@ -32,6 +32,7 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -168,7 +169,7 @@ class EstudianteControllerTest {
     @Test
     void createProject() throws Exception {
         String projectName = "Test project name";
-        ProyectoCreationDTO proyectoCreationDTO = new ProyectoCreationDTO(projectName, 250, true, 10);
+        ProyectoCreationDTO proyectoCreationDTO = new ProyectoCreationDTO(1, projectName, 250, true, 10);
         EstudianteDTO estudiante = new EstudianteDTO();
         estudiante.setCarnet(CARNET);
         Mockito.when(this.estudianteService.findByCarnet(CARNET)).thenReturn(estudiante);
@@ -193,8 +194,8 @@ class EstudianteControllerTest {
     @Test
     void projectsByStudentID() throws Exception{
         String status = "3";
-        ProyectoCreationDTO.ProyectoDTO dto1 = new ProyectoCreationDTO.ProyectoDTO("Project1", 100, true, "Steve Jobs");
-        ProyectoCreationDTO.ProyectoDTO dto2 = new ProyectoCreationDTO.ProyectoDTO("Project2", 200, true, "Steve Gerard");
+        ProyectoCreationDTO.ProyectoDTO dto1 = new ProyectoCreationDTO.ProyectoDTO(1, "Project1", 100, true, "Steve Jobs", Collections.emptySet());
+        ProyectoCreationDTO.ProyectoDTO dto2 = new ProyectoCreationDTO.ProyectoDTO(2, "Project2", 200, true, "Steve Gerard", Collections.emptySet());
 
         ArgumentCaptor<Integer> pageCaptor = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> sizeCaptor = ArgumentCaptor.forClass(Integer.class);
