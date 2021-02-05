@@ -1,14 +1,10 @@
 package ues.occ.proyeccion.social.ws.app;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationListener;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import ues.occ.proyeccion.social.ws.app.dao.Documento;
 import ues.occ.proyeccion.social.ws.app.dao.Estudiante;
@@ -32,9 +28,9 @@ public class ProyeccionSocialWsApiApplication {
 @Profile("test")
 class Bootstrap implements ApplicationListener<ContextRefreshedEvent>{
 
-	private EstudianteRepository estudianteRepository;
-	private RequerimientoRepository requerimientoRepository;
-	private DocumentoRepository documentoRepository;
+	private final EstudianteRepository estudianteRepository;
+	private final RequerimientoRepository requerimientoRepository;
+	private final DocumentoRepository documentoRepository;
 
 	public Bootstrap(EstudianteRepository estudianteRepository, RequerimientoRepository requerimientoRepository, DocumentoRepository documentoRepository) {
 		this.estudianteRepository = estudianteRepository;
