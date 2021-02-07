@@ -74,11 +74,11 @@ public class EstudianteController {
 
     @PostMapping("/{carnet}/proyectos")
     @ResponseStatus(HttpStatus.CREATED)
-    public ProyectoCreationDTO createProject(
+    public String createProject(
             @RequestBody ProyectoCreationDTO proyectoCreationDTO,
             @PathVariable String carnet) {
 
-        return this.proyectoService.save(carnet, proyectoCreationDTO);
+        return "deprecated";
 
     }
 

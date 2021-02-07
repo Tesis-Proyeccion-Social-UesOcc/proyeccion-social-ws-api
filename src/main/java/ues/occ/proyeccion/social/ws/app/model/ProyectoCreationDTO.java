@@ -1,6 +1,7 @@
 package ues.occ.proyeccion.social.ws.app.model;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
 import lombok.AllArgsConstructor;
@@ -19,11 +20,11 @@ public class ProyectoCreationDTO implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private Integer id;
 	private String nombre;
     private Integer duracion;
     private boolean interno;
     private int personal;
+    private List<String> estudiantes;
 
     @Data
     @Accessors(chain = true)
