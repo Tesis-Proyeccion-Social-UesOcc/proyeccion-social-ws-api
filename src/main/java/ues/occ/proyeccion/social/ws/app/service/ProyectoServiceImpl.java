@@ -92,14 +92,21 @@ public class ProyectoServiceImpl implements ProyectoService {
     }
 
     @Override
-    public ProyectoCreationDTO save(ProyectoCreationDTO proyecto) {
+    public ProyectoCreationDTO.ProyectoDTO save(ProyectoCreationDTO proyecto) {
         try {
-          // TODO: implement
+            var proyectoToSave = this.proyectoMapper.proyectoCreationDTOToProyecto(proyecto);
+            var savedProyecto = this.proyectoRepository.save(proyectoToSave);
+            var proyectoEstudianteList = proyecto.getEstudiantes().stream()
+                    .map(carnet -> this.entityManager.getReference(Estudiante.class, carnet))
+                    .map(estudiante -> new ProyectoEstudiante(estudiante, savedProyecto))
+                    .collect(Collectors.toList());
+            this.proyectoEstudianteRepository.saveAll(proyectoEstudianteList);
+            return this.proyectoMapper.proyectoToProyectoDTO(savedProyecto, cycleUtil);
         } catch (Exception e) {
             e.printStackTrace();
             throw new InternalErrorException("Something went wrong saving the data");
         }
-        return null;
+
     }
 
     private void setEncargado(Proyecto proyecto, int idPersonal) {
