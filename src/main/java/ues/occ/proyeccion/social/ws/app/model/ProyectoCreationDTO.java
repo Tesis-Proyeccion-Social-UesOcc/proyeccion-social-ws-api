@@ -9,6 +9,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import ues.occ.proyeccion.social.ws.app.validators.CarnetValidator;
+
+import javax.validation.constraints.*;
 
 @Data
 @Builder
@@ -20,11 +23,25 @@ public class ProyectoCreationDTO implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+
+    @NotBlank(message = "You need to specify a valid project name")
 	private String nombre;
+
+    @NotNull(message = "Mandatory param")
+	@Min(value = 100, message = "Minimum is 100 hours")
+    @Max(value = 500, message = "Maximum is 500 hours")
+
     private Integer duracion;
+    @NotNull(message = "Mandatory param")
+
     private boolean interno;
+    @NotNull(message = "Mandatory param")
+    @Positive(message = "Personal param must to be a valid ID")
+
     private int personal;
-    private List<String> estudiantes;
+    @NotEmpty(message = "Estudiantes list cannot be empty")
+
+    private List<@CarnetValidator String> estudiantes;
 
     @Data
     @Accessors(chain = true)
