@@ -1,5 +1,6 @@
 package ues.occ.proyeccion.social.ws.app.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,6 +28,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class ProyectoServiceImpl implements ProyectoService {
 
@@ -95,6 +97,7 @@ public class ProyectoServiceImpl implements ProyectoService {
     public ProyectoCreationDTO.ProyectoDTO save(ProyectoCreationDTO proyecto) {
         try {
             var proyectoToSave = this.proyectoMapper.proyectoCreationDTOToProyecto(proyecto);
+            this.setEncargado(proyectoToSave, proyecto.getPersonal());
             var savedProyecto = this.proyectoRepository.save(proyectoToSave);
             var proyectoEstudianteList = proyecto.getEstudiantes().stream()
                     .map(carnet -> this.entityManager.getReference(Estudiante.class, carnet))
@@ -104,6 +107,26 @@ public class ProyectoServiceImpl implements ProyectoService {
             return this.proyectoMapper.proyectoToProyectoDTO(savedProyecto, cycleUtil);
         } catch (Exception e) {
             e.printStackTrace();
+            throw new InternalErrorException("Something went wrong saving the data");
+        }
+
+    }
+
+    @Override
+    public ProyectoDTO save(ProyectoCreationDTO proyecto, int idProyecto) {
+        try{
+            var proyectoDB = this.proyectoRepository.findById(idProyecto)
+                    .map(obj -> {
+                        obj.setDuracion(proyecto.getDuracion());
+                        obj.setInterno(proyecto.isInterno());
+                        obj.setNombre(proyecto.getNombre());
+                        return obj;
+                    }).orElseThrow(() -> new ResourceNotFoundException(String.format("Project with id %d does not exist", idProyecto)));
+            this.setEncargado(proyectoDB, proyecto.getPersonal());
+            return this.proyectoMapper.proyectoToProyectoDTO(proyectoDB, cycleUtil);
+        }
+        catch (Exception e){
+            log.error(e.getMessage());
             throw new InternalErrorException("Something went wrong saving the data");
         }
 

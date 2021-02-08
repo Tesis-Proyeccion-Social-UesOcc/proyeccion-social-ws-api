@@ -11,5 +11,6 @@ public interface ProyectoService {
     PageDtoWrapper<Proyecto, ProyectoCreationDTO.ProyectoDTO> findAllPending(int page, int size);
     PageDtoWrapper<Proyecto, ProyectoCreationDTO.ProyectoDTO> findProyectosByEstudiante(int page, int size, String carnet, int status);
     ProyectoCreationDTO.ProyectoDTO save(ProyectoCreationDTO proyecto);
+    ProyectoCreationDTO.ProyectoDTO save(ProyectoCreationDTO proyecto, int idProyecto);
 }
 
