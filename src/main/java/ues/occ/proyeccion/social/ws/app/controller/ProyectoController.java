@@ -1,6 +1,7 @@
 package ues.occ.proyeccion.social.ws.app.controller;
 
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
@@ -11,10 +12,12 @@ import ues.occ.proyeccion.social.ws.app.service.ProyectoService;
 import ues.occ.proyeccion.social.ws.app.utils.PageDtoWrapper;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/proyectos")
 public class ProyectoController {
+
     private final ProyectoService service;
     private final ApplicationEventPublisher publisher;
 
@@ -26,6 +29,17 @@ public class ProyectoController {
     @GetMapping("/{projectId}")
     public ProyectoCreationDTO.ProyectoDTO getOne(@PathVariable int projectId) {
         return this.service.findById(projectId);
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ProyectoCreationDTO.ProyectoDTO create(@Valid @RequestBody ProyectoCreationDTO proyectoCreationDTO){
+        return this.service.save(proyectoCreationDTO);
+    }
+
+    @PutMapping("/{projectId}")
+    public ProyectoCreationDTO.ProyectoDTO update(@RequestBody ProyectoCreationDTO proyectoCreationDTO, @PathVariable int projectId){
+        return this.service.update(proyectoCreationDTO, projectId);
     }
 
     @GetMapping

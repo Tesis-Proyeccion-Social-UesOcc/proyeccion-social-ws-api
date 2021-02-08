@@ -36,5 +36,6 @@ public interface ProyectoMapper {
     @Mapping(source = "proyecto", target = "personal", qualifiedByName = "idChecker")
     ProyectoCreationDTO proyectoToProyectoCreationDTO(Proyecto proyecto);
 
+    @Mapping(target = "id", ignore = true)
     Proyecto proyectoCreationDTOToProyecto(ProyectoCreationDTO proyectoCreationDTO);
 }

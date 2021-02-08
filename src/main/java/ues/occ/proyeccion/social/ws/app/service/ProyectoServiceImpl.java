@@ -113,7 +113,7 @@ public class ProyectoServiceImpl implements ProyectoService {
     }
 
     @Override
-    public ProyectoDTO save(ProyectoCreationDTO proyecto, int idProyecto) {
+    public ProyectoDTO update(ProyectoCreationDTO proyecto, int idProyecto) {
         try{
             var proyectoDB = this.proyectoRepository.findById(idProyecto)
                     .map(obj -> {
