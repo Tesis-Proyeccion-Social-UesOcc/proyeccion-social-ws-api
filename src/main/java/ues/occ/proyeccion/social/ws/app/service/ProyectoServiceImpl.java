@@ -7,7 +7,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
-import ues.occ.proyeccion.social.ws.app.dao.Status;
 import ues.occ.proyeccion.social.ws.app.dao.PersonalExterno;
 import ues.occ.proyeccion.social.ws.app.dao.Estudiante;
 import ues.occ.proyeccion.social.ws.app.dao.ProyectoEstudiante;
@@ -21,6 +20,7 @@ import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO.ProyectoDTO;
 import ues.occ.proyeccion.social.ws.app.repository.ProyectoEstudianteRepository;
 import ues.occ.proyeccion.social.ws.app.repository.ProyectoRepository;
 import ues.occ.proyeccion.social.ws.app.utils.PageDtoWrapper;
+import ues.occ.proyeccion.social.ws.app.utils.StatusOption;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -75,21 +75,21 @@ public class ProyectoServiceImpl implements ProyectoService {
     @Override
     public PageDtoWrapper<Proyecto, ProyectoCreationDTO.ProyectoDTO> findAllByStatus(int page, int size, int statusId) {
         Pageable paging = this.getPageable(page, size);
-        Page<Proyecto> proyectoPage = proyectoRepository.findAllByProyectoEstudianteSet_StatusId(statusId, paging);
+        Page<Proyecto> proyectoPage = proyectoRepository.findAllByStatus(statusId, paging);
         return this.getPagedData(proyectoPage);
     }
 
     @Override
     public PageDtoWrapper<Proyecto, ProyectoCreationDTO.ProyectoDTO> findAllPending(int page, int size) {
         Pageable paging = this.getPageable(page, size);
-        Page<Proyecto> proyectoPage = proyectoRepository.findAllByProyectoEstudianteSet_Empty(paging);
+        Page<Proyecto> proyectoPage = proyectoRepository.findAllByStatus(StatusOption.PENDIENTE, paging);
         return this.getPagedData(proyectoPage);
     }
 
     @Override
     public PageDtoWrapper<Proyecto, ProyectoCreationDTO.ProyectoDTO> findProyectosByEstudiante(int page, int size, String carnet, int status) {
         Pageable paging = this.getPageable(page, size);
-        Page<Proyecto> proyectoPage = proyectoRepository.findAllByProyectoEstudianteSet_Estudiante_CarnetAndProyectoEstudianteSet_Status_id(carnet, status, paging);
+        Page<Proyecto> proyectoPage = proyectoRepository.findAllByStatusAndProyectoEstudianteSet_Estudiante_Carnet(status, carnet, paging);
         return this.getPagedData(proyectoPage);
     }
 
@@ -99,10 +99,12 @@ public class ProyectoServiceImpl implements ProyectoService {
             var proyectoToSave = this.proyectoMapper.proyectoCreationDTOToProyecto(proyecto);
             this.setEncargado(proyectoToSave, proyecto.getPersonal());
             var savedProyecto = this.proyectoRepository.save(proyectoToSave);
+
             var proyectoEstudianteList = proyecto.getEstudiantes().stream()
                     .map(carnet -> this.entityManager.getReference(Estudiante.class, carnet))
                     .map(estudiante -> new ProyectoEstudiante(estudiante, savedProyecto))
                     .collect(Collectors.toList());
+
             this.proyectoEstudianteRepository.saveAll(proyectoEstudianteList);
             return this.proyectoMapper.proyectoToProyectoDTO(savedProyecto, cycleUtil);
         } catch (Exception e) {

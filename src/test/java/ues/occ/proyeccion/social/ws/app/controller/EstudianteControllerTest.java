@@ -155,7 +155,7 @@ class EstudianteControllerTest {
     void whenBadIsCompleteValueIsGivenThenAnExceptionIsThrown() throws Exception {
         var lista1 = List.of(new EstudianteDTO(), new EstudianteDTO());
         var lista2 = List.of(new Estudiante(), new Estudiante());
-        var toReturn = new PageDtoWrapper<>(new PageImpl<>(lista2, PageRequest.of(PAGE, SIZE),  lista2.size()), lista1);
+        var toReturn = new PageDtoWrapper<>(new PageImpl<>(lista2, PageRequest.of(PAGE, SIZE), lista2.size()), lista1);
 
         Mockito.when(this.estudianteService.findAllByServicio(
                 Mockito.anyInt(), Mockito.anyInt(), Mockito.anyBoolean()))
@@ -164,31 +164,6 @@ class EstudianteControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("isComplete", "something"))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
-    }
-
-    @Test
-    void createProject() throws Exception {
-        String projectName = "Test project name";
-        ProyectoCreationDTO proyectoCreationDTO = new ProyectoCreationDTO(1, projectName, 250, true, 10);
-        EstudianteDTO estudiante = new EstudianteDTO();
-        estudiante.setCarnet(CARNET);
-        Mockito.when(this.estudianteService.findByCarnet(CARNET)).thenReturn(estudiante);
-        Mockito.when(this.proyectoService.save(CARNET, proyectoCreationDTO)).thenReturn(proyectoCreationDTO);
-        mockMvc.perform(MockMvcRequestBuilders.post("/estudiantes/".concat(CARNET).concat("/proyectos"))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(TestUtil.toJson(proyectoCreationDTO)))
-                .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.nombre", CoreMatchers.is(projectName)));
-
-        ArgumentCaptor<String> carnetCaptor = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<ProyectoCreationDTO> projectDTOCaptor = ArgumentCaptor.forClass(ProyectoCreationDTO.class);
-
-        Mockito.verify(this.proyectoService, Mockito.times(1)).save(carnetCaptor.capture(), projectDTOCaptor.capture());
-
-        assertEquals(CARNET, carnetCaptor.getValue());
-        assertEquals(proyectoCreationDTO, projectDTOCaptor.getValue());
-
     }
 
     @Test
