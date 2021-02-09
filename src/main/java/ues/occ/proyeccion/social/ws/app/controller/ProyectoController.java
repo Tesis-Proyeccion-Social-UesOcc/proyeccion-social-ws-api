@@ -38,7 +38,7 @@ public class ProyectoController {
     }
 
     @PutMapping("/{projectId}")
-    public ProyectoCreationDTO.ProyectoDTO update(@RequestBody ProyectoCreationDTO proyectoCreationDTO, @PathVariable int projectId){
+    public ProyectoCreationDTO.ProyectoDTO update(@Valid @RequestBody ProyectoCreationDTO proyectoCreationDTO, @PathVariable int projectId){
         return this.service.update(proyectoCreationDTO, projectId);
     }
 

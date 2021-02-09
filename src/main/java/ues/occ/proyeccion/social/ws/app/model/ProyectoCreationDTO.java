@@ -30,17 +30,16 @@ public class ProyectoCreationDTO implements Serializable {
     @NotNull(message = "Mandatory param")
 	@Min(value = 100, message = "Minimum is 100 hours")
     @Max(value = 500, message = "Maximum is 500 hours")
-
     private Integer duracion;
-    @NotNull(message = "Mandatory param")
 
+    @NotNull(message = "Mandatory param")
     private boolean interno;
+
     @NotNull(message = "Mandatory param")
     @Positive(message = "Personal param must to be a valid ID")
-
     private int personal;
-    @NotEmpty(message = "Estudiantes list cannot be empty")
 
+    @NotEmpty(message = "Estudiantes list cannot be empty")
     private List<@CarnetValidator String> estudiantes;
 
     @Data

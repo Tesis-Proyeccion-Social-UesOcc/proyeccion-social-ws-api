@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CarnetValidator {
     String message() default "Carnet is an alphanumeric ID with 7 characters only, i.e. AB12345";
-    // properties below are mandatory for validators
+    // the properties below are mandatory for validators
     Class<?>[] groups() default { };
     Class<? extends Payload>[] payload() default { };
 }
