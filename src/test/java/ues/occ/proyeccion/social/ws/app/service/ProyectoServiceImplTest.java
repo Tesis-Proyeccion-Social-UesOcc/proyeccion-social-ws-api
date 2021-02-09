@@ -274,4 +274,54 @@ class ProyectoServiceImplTest {
         assertEquals(List.of(expectedProyectoEstudiante), proyectoEstudianteCaptor.getValue());
 
     }
+
+    @Test
+    void testUpdate(){
+        var nombre = "Test";
+        var personal = new Personal();
+        personal.setNombre("Mario");
+        personal.setId(10);
+
+        var proyecto = new Proyecto();
+        proyecto.setId(2);
+        proyecto.setDuracion(300);
+        proyecto.setNombre(nombre);
+        proyecto.setInterno(true);
+        proyecto.setTutor(personal);
+
+        var estudiante = new Estudiante();
+        estudiante.setCarnet("ab12345");
+        estudiante.setHorasProgreso(250);
+        estudiante.setServicioCompleto(false);
+
+        var expectedProyectoEstudiante = new ProyectoEstudiante(estudiante, proyecto);
+
+        proyecto.setProyectoEstudianteSet(Set.of(expectedProyectoEstudiante));
+
+        var creationDto = new ProyectoCreationDTO("Test2", 350, true, 10, List.of("ab12345"));
+
+        ArgumentCaptor<Integer> idCaptor = ArgumentCaptor.forClass(Integer.class);
+        ArgumentCaptor<Integer> idPersonal = ArgumentCaptor.forClass(Integer.class);
+        ArgumentCaptor<Proyecto> proyectoCaptor = ArgumentCaptor.forClass(Proyecto.class);
+
+        var expected = new ProyectoCreationDTO.ProyectoDTO(2, "Test2", 350, true, "Mario", Set.of(new EstudianteDTO("ab12345", 250, false)));
+
+        Mockito.when(this.proyectoRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(proyecto));
+        Mockito.when(this.proyectoRepository.save(Mockito.any(Proyecto.class))).thenReturn(proyecto);
+        Mockito.when(this.entityManager.getReference(Personal.class, 10)).thenReturn(personal);
+
+
+        var result = this.proyectoService.update(creationDto, 5);
+
+        Mockito.verify(this.proyectoRepository, Mockito.times(1)).findById(idCaptor.capture());
+        Mockito.verify(this.proyectoRepository, Mockito.times(1)).save(proyectoCaptor.capture());
+        Mockito.verify(this.entityManager, Mockito.times(1)).getReference(ArgumentMatchers.eq(Personal.class), idPersonal.capture());
+
+        assertNotNull(result);
+        assertEquals(expected, result);
+        assertEquals(5, idCaptor.getValue());
+        assertEquals(proyecto, proyectoCaptor.getValue());
+        assertEquals(10, idPersonal.getValue());
+
+    }
 }

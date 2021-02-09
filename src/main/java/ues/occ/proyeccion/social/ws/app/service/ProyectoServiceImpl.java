@@ -125,10 +125,12 @@ public class ProyectoServiceImpl implements ProyectoService {
                         return obj;
                     }).orElseThrow(() -> new ResourceNotFoundException(String.format("Project with id %d does not exist", idProyecto)));
             this.setEncargado(proyectoDB, proyecto.getPersonal());
-            return this.proyectoMapper.proyectoToProyectoDTO(proyectoDB, cycleUtil);
+            var savedProyecto = this.proyectoRepository.save(proyectoDB);
+            return this.proyectoMapper.proyectoToProyectoDTO(savedProyecto, cycleUtil);
         }
         catch (Exception e){
             log.error(e.getMessage());
+            e.printStackTrace();
             throw new InternalErrorException("Something went wrong saving the data");
         }
 
