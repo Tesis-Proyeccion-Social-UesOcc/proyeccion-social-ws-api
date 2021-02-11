@@ -1,12 +1,12 @@
 package ues.occ.proyeccion.social.ws.app.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
-import ues.occ.proyeccion.social.ws.app.dao.Status;
 import ues.occ.proyeccion.social.ws.app.dao.PersonalExterno;
 import ues.occ.proyeccion.social.ws.app.dao.Estudiante;
 import ues.occ.proyeccion.social.ws.app.dao.ProyectoEstudiante;
@@ -20,6 +20,7 @@ import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO.ProyectoDTO;
 import ues.occ.proyeccion.social.ws.app.repository.ProyectoEstudianteRepository;
 import ues.occ.proyeccion.social.ws.app.repository.ProyectoRepository;
 import ues.occ.proyeccion.social.ws.app.utils.PageDtoWrapper;
+import ues.occ.proyeccion.social.ws.app.utils.StatusOption;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -27,6 +28,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class ProyectoServiceImpl implements ProyectoService {
 
@@ -73,42 +75,65 @@ public class ProyectoServiceImpl implements ProyectoService {
     @Override
     public PageDtoWrapper<Proyecto, ProyectoCreationDTO.ProyectoDTO> findAllByStatus(int page, int size, int statusId) {
         Pageable paging = this.getPageable(page, size);
-        Page<Proyecto> proyectoPage = proyectoRepository.findAllByProyectoEstudianteSet_StatusId(statusId, paging);
+        Page<Proyecto> proyectoPage = proyectoRepository.findAllByStatus(statusId, paging);
         return this.getPagedData(proyectoPage);
     }
 
     @Override
     public PageDtoWrapper<Proyecto, ProyectoCreationDTO.ProyectoDTO> findAllPending(int page, int size) {
         Pageable paging = this.getPageable(page, size);
-        Page<Proyecto> proyectoPage = proyectoRepository.findAllByProyectoEstudianteSet_Empty(paging);
+        Page<Proyecto> proyectoPage = proyectoRepository.findAllByStatus(StatusOption.PENDIENTE, paging);
         return this.getPagedData(proyectoPage);
     }
 
     @Override
     public PageDtoWrapper<Proyecto, ProyectoCreationDTO.ProyectoDTO> findProyectosByEstudiante(int page, int size, String carnet, int status) {
         Pageable paging = this.getPageable(page, size);
-        Page<Proyecto> proyectoPage = proyectoRepository.findAllByProyectoEstudianteSet_Estudiante_CarnetAndProyectoEstudianteSet_Status_id(carnet, status, paging);
+        Page<Proyecto> proyectoPage = proyectoRepository.findAllByStatusAndProyectoEstudianteSet_Estudiante_Carnet(status, carnet, paging);
         return this.getPagedData(proyectoPage);
     }
 
     @Override
-    public ProyectoCreationDTO save(String carnet, ProyectoCreationDTO proyecto) {
+    public ProyectoCreationDTO.ProyectoDTO save(ProyectoCreationDTO proyecto) {
         try {
-
-            Proyecto proyectoToSave = this.proyectoMapper.proyectoCreationDTOToProyecto(proyecto);
-            Estudiante estudiante = this.entityManager.getReference(Estudiante.class, carnet);
+            var proyectoToSave = this.proyectoMapper.proyectoCreationDTOToProyecto(proyecto);
             this.setEncargado(proyectoToSave, proyecto.getPersonal());
-            Proyecto savedProyecto = this.proyectoRepository.save(proyectoToSave);
-            Status status = this.entityManager.getReference(Status.class, 1);
-            ProyectoEstudiante proyectoEstudiante = new ProyectoEstudiante(
-                    estudiante, savedProyecto, status
-            );
-            this.proyectoEstudianteRepository.save(proyectoEstudiante);
-            return this.proyectoMapper.proyectoToProyectoCreationDTO(savedProyecto);
+            var savedProyecto = this.proyectoRepository.save(proyectoToSave);
+
+            var proyectoEstudianteList = proyecto.getEstudiantes().stream()
+                    .map(carnet -> this.entityManager.getReference(Estudiante.class, carnet))
+                    .map(estudiante -> new ProyectoEstudiante(estudiante, savedProyecto))
+                    .collect(Collectors.toList());
+
+            this.proyectoEstudianteRepository.saveAll(proyectoEstudianteList);
+            return this.proyectoMapper.proyectoToProyectoDTO(savedProyecto, cycleUtil);
         } catch (Exception e) {
             e.printStackTrace();
             throw new InternalErrorException("Something went wrong saving the data");
         }
+
+    }
+
+    @Override
+    public ProyectoDTO update(ProyectoCreationDTO proyecto, int idProyecto) {
+        try{
+            var proyectoDB = this.proyectoRepository.findById(idProyecto)
+                    .map(obj -> {
+                        obj.setDuracion(proyecto.getDuracion());
+                        obj.setInterno(proyecto.isInterno());
+                        obj.setNombre(proyecto.getNombre());
+                        return obj;
+                    }).orElseThrow(() -> new ResourceNotFoundException(String.format("Project with id %d does not exist", idProyecto)));
+            this.setEncargado(proyectoDB, proyecto.getPersonal());
+            var savedProyecto = this.proyectoRepository.save(proyectoDB);
+            return this.proyectoMapper.proyectoToProyectoDTO(savedProyecto, cycleUtil);
+        }
+        catch (Exception e){
+            log.error(e.getMessage());
+            e.printStackTrace();
+            throw new InternalErrorException("Something went wrong saving the data");
+        }
+
     }
 
     private void setEncargado(Proyecto proyecto, int idPersonal) {

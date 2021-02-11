@@ -26,10 +26,6 @@ public class ProyectoEstudiante implements Serializable {
     @JoinColumn(name = "id_proyecto")
     private Proyecto proyecto;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_status")
-    private Status status;
-
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "id", referencedColumnName = "id")
     private Certificado certificado;
@@ -37,10 +33,9 @@ public class ProyectoEstudiante implements Serializable {
     public ProyectoEstudiante() {
     }
 
-    public ProyectoEstudiante(Estudiante estudiante, Proyecto proyecto, Status status) {
+    public ProyectoEstudiante(Estudiante estudiante, Proyecto proyecto) {
         this.estudiante = estudiante;
         this.proyecto = proyecto;
-        this.status = status;
     }
 
     public Integer getId() {
@@ -67,14 +62,6 @@ public class ProyectoEstudiante implements Serializable {
         this.proyecto = proyecto;
     }
 
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
     public Certificado getCertificado() {
         return certificado;
     }
@@ -91,12 +78,11 @@ public class ProyectoEstudiante implements Serializable {
         return Objects.equals(id, that.id) &&
                 Objects.equals(estudiante, that.estudiante) &&
                 Objects.equals(proyecto, that.proyecto) &&
-                Objects.equals(status, that.status) &&
                 Objects.equals(certificado, that.certificado);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, estudiante, proyecto, status);
+        return Objects.hash(id, estudiante, proyecto);
     }
 }

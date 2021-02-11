@@ -1,4 +1,4 @@
-	package ues.occ.proyeccion.social.ws.app.dao;
+package ues.occ.proyeccion.social.ws.app.dao;
 
 import java.io.Serializable;
 import java.util.List;
@@ -10,82 +10,82 @@ import javax.persistence.*;
 @Table(name = "status")
 public class Status implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
-	private Integer id;
-	
-	@Column(name = "status", nullable = false, length = 50)
-	private String status;
-	
-	@Column(name = "descripcion", nullable = false, length = 200)
-	private String descripcion;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Integer id;
 
-	@OneToMany(mappedBy = "status", fetch = FetchType.LAZY)
-	private List<ProyectoEstudiante> proyectoEstudianteSet;
+    @Column(name = "status", nullable = false, length = 50)
+    private String status;
 
-	public Status() {
-		super();
-	}
+    @Column(name = "descripcion", nullable = false, length = 200)
+    private String descripcion;
 
-		public Status(Integer id, String status, String descripcion) {
-			this.id = id;
-			this.status = status;
-			this.descripcion = descripcion;
-		}
+    @OneToMany(mappedBy = "status", fetch = FetchType.LAZY)
+    private List<Proyecto> proyectos;
 
-		public Status(Integer id, String descripcion) {
-			this.id = id;
-			this.descripcion = descripcion;
-		}
+    public Status() {
+        super();
+    }
 
-		public Integer getId() {
-			return id;
-		}
+    public Status(Integer id, String status, String descripcion) {
+        this.id = id;
+        this.status = status;
+        this.descripcion = descripcion;
+    }
 
-		public void setId(Integer id) {
-			this.id = id;
-		}
+    public Status(Integer id, String descripcion) {
+        this.id = id;
+        this.descripcion = descripcion;
+    }
 
-		public String getStatus() {
-			return status;
-		}
+    public Integer getId() {
+        return id;
+    }
 
-		public void setStatus(String status) {
-			this.status = status;
-		}
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-		public String getDescripcion() {
-			return descripcion;
-		}
+    public String getStatus() {
+        return status;
+    }
 
-		public void setDescripcion(String descripcion) {
-			this.descripcion = descripcion;
-		}
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
-		public List<ProyectoEstudiante> getProyectoEstudianteSet() {
-			return proyectoEstudianteSet;
-		}
+    public String getDescripcion() {
+        return descripcion;
+    }
 
-		public void setProyectoEstudianteSet(List<ProyectoEstudiante> proyectoEstudianteSet) {
-			this.proyectoEstudianteSet = proyectoEstudianteSet;
-		}
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
 
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-			Status status1 = (Status) o;
-			return Objects.equals(this.id, status1.id) &&
-					Objects.equals(status, status1.status) &&
-					Objects.equals(descripcion, status1.descripcion) &&
-					Objects.equals(proyectoEstudianteSet, status1.proyectoEstudianteSet);
-		}
+    public List<Proyecto> getProyectos() {
+        return proyectos;
+    }
 
-		@Override
-		public int hashCode() {
-			return Objects.hash(id, status, descripcion, proyectoEstudianteSet);
-		}
-	}
+    public void setProyectos(List<Proyecto> proyectos) {
+        this.proyectos = proyectos;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Status status1 = (Status) o;
+        return Objects.equals(this.id, status1.id) &&
+                Objects.equals(status, status1.status) &&
+                Objects.equals(descripcion, status1.descripcion) &&
+                Objects.equals(proyectos, status1.proyectos);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, status, descripcion, proyectos);
+    }
+}

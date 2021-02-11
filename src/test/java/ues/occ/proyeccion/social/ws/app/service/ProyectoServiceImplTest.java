@@ -31,10 +31,15 @@ class ProyectoServiceImplTest {
 
     @Mock
     private ProyectoRepository proyectoRepository;
+
     @Mock
     private ProyectoEstudianteRepository proyectoEstudianteRepository;
+
     @Mock
     EntityManager entityManager;
+
+    @Captor
+    ArgumentCaptor<List<ProyectoEstudiante>> proyectoEstudianteCaptor;
 
     private ProyectoServiceImpl proyectoService;
     private final ProyectoMapper proyectoMapper = ProyectoMapper.INSTANCE;
@@ -139,12 +144,12 @@ class ProyectoServiceImplTest {
         ArgumentCaptor<Pageable> pageableArgumentCaptor = ArgumentCaptor.forClass(Pageable.class);
         ArgumentCaptor<Integer> statusCaptor = ArgumentCaptor.forClass(Integer.class);
 
-        Mockito.when(this.proyectoRepository.findAllByProyectoEstudianteSet_StatusId(Mockito.anyInt(), Mockito.any(Pageable.class))).thenReturn(page);
+        Mockito.when(this.proyectoRepository.findAllByStatus(Mockito.anyInt(), Mockito.any(Pageable.class))).thenReturn(page);
 
         var result = this.proyectoService.findAllByStatus(5, 10, 1);
 
         Mockito.verify(this.proyectoRepository, Mockito.times(1))
-                .findAllByProyectoEstudianteSet_StatusId(statusCaptor.capture(), pageableArgumentCaptor.capture());
+                .findAllByStatus(statusCaptor.capture(), pageableArgumentCaptor.capture());
 
         assertNotNull(result);
         assertEquals(PAGE, pageableArgumentCaptor.getValue().getPageNumber());
@@ -163,23 +168,25 @@ class ProyectoServiceImplTest {
         List<Proyecto> data = List.of(proyecto1, proyecto2);
         Pageable pageable = PageRequest.of(5, 10);
         Page<Proyecto> page = new PageImpl<>(data, pageable, data.size());
-        ArgumentCaptor<Pageable> pageableArgumentCaptor = ArgumentCaptor.forClass(Pageable.class);
 
-        Mockito.when(this.proyectoRepository.findAllByProyectoEstudianteSet_Empty(Mockito.any(Pageable.class))).thenReturn(page);
+        ArgumentCaptor<Pageable> pageableArgumentCaptor = ArgumentCaptor.forClass(Pageable.class);
+        ArgumentCaptor<Integer> statusCaptor = ArgumentCaptor.forClass(Integer.class);
+
+        Mockito.when(this.proyectoRepository.findAllByStatus(Mockito.anyInt(), Mockito.any(Pageable.class))).thenReturn(page);
 
         var result = this.proyectoService.findAllPending(5, 10);
 
         Mockito.verify(this.proyectoRepository, Mockito.times(1))
-                .findAllByProyectoEstudianteSet_Empty(pageableArgumentCaptor.capture());
+                .findAllByStatus(statusCaptor.capture(), pageableArgumentCaptor.capture());
 
         assertNotNull(result);
         assertEquals(PAGE, pageableArgumentCaptor.getValue().getPageNumber());
         assertEquals(SIZE, pageableArgumentCaptor.getValue().getPageSize());
-        // prueba con content
         assertEquals(2, result.getContent().size());
         assertFalse(result.getContent().get(0).isInterno());
         assertEquals(result.getContent().get(0).getPersonal(), "text");
         assertTrue(result.getContent().get(1).isInterno());
+        assertEquals(1, statusCaptor.getValue());
 
     }
 
@@ -193,14 +200,14 @@ class ProyectoServiceImplTest {
         ArgumentCaptor<Integer> statusArgumentCaptor = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<String> carnetArgumentCaptor = ArgumentCaptor.forClass(String.class);
 
-        Mockito.when(this.proyectoRepository.findAllByProyectoEstudianteSet_Estudiante_CarnetAndProyectoEstudianteSet_Status_id(
-                Mockito.anyString(), Mockito.anyInt(), Mockito.any(Pageable.class))).thenReturn(page);
+        Mockito.when(this.proyectoRepository.findAllByStatusAndProyectoEstudianteSet_Estudiante_Carnet(
+                Mockito.anyInt(), Mockito.anyString(), Mockito.any(Pageable.class))).thenReturn(page);
 
         var result = this.proyectoService.findProyectosByEstudiante(5, 10, "zh", 3);
 
         Mockito.verify(this.proyectoRepository, Mockito.times(1))
-                .findAllByProyectoEstudianteSet_Estudiante_CarnetAndProyectoEstudianteSet_Status_id(
-                        carnetArgumentCaptor.capture(), statusArgumentCaptor.capture(), pageableArgumentCaptor.capture()
+                .findAllByStatusAndProyectoEstudianteSet_Estudiante_Carnet(
+                        statusArgumentCaptor.capture(), carnetArgumentCaptor.capture(), pageableArgumentCaptor.capture()
                 );
 
         assertNotNull(result);
@@ -223,46 +230,98 @@ class ProyectoServiceImplTest {
         personal.setId(1);
         personal.setNombre("Steve");
 
-        ProyectoCreationDTO proyectoCreationDTO = new ProyectoCreationDTO(1, "Project", 150, true, 1);
+        var carnets = List.of(carnet);
+
+        ProyectoCreationDTO proyectoCreationDTO = new ProyectoCreationDTO("Project", 150, true, 1, carnets);
         Proyecto resultProject = this.proyectoMapper.proyectoCreationDTOToProyecto(proyectoCreationDTO);
         resultProject.setTutor(personal);
 
+
         Estudiante estudiante = new Estudiante();
         estudiante.setCarnet(carnet);
+        estudiante.setHorasProgreso(250);
 
-        Status status = new Status();
-        status.setId(1);
+        var expectedProyectoEstudiante = new ProyectoEstudiante(estudiante, resultProject);
+        resultProject.setProyectoEstudianteSet(Set.of(expectedProyectoEstudiante));
+        resultProject.setId(1);
 
-        ProyectoEstudiante proyectoEstudiante = new ProyectoEstudiante(estudiante, resultProject, status);
 
         ArgumentCaptor<String> carnetCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<Integer> personalIdCaptor = ArgumentCaptor.forClass(Integer.class);
-        ArgumentCaptor<Integer> statusIdCaptor = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Proyecto> proyectoCaptor = ArgumentCaptor.forClass(Proyecto.class);
-        ArgumentCaptor<ProyectoEstudiante> proyectoEstudianteCaptor = ArgumentCaptor.forClass(ProyectoEstudiante.class);
-
 
         Mockito.when(this.entityManager.getReference(ArgumentMatchers.<Class<Estudiante>>any(), Mockito.anyString())).thenReturn(estudiante);
         Mockito.when(this.entityManager.getReference(Personal.class, 1)).thenReturn(personal);
-        Mockito.when(this.entityManager.getReference(Status.class, 1)).thenReturn(status);
         Mockito.when(this.proyectoRepository.save(Mockito.any(Proyecto.class))).thenReturn(resultProject);
-        Mockito.when(this.proyectoEstudianteRepository.save(Mockito.any(ProyectoEstudiante.class))).thenReturn(null);
+        Mockito.when(this.proyectoEstudianteRepository.saveAll(Mockito.anyList())).thenReturn(null);
 
-        ProyectoCreationDTO result = this.proyectoService.save(carnet, proyectoCreationDTO);
+        var result = this.proyectoService.save(proyectoCreationDTO);
 
         Mockito.verify(this.entityManager, Mockito.times(1)).getReference(ArgumentMatchers.eq(Estudiante.class), carnetCaptor.capture());
         Mockito.verify(this.entityManager, Mockito.times(1)).getReference(ArgumentMatchers.eq(Personal.class), personalIdCaptor.capture());
-        Mockito.verify(this.entityManager, Mockito.times(1)).getReference(ArgumentMatchers.eq(Status.class), statusIdCaptor.capture());
         Mockito.verify(this.proyectoRepository, Mockito.times(1)).save(proyectoCaptor.capture());
-        Mockito.verify(this.proyectoEstudianteRepository, Mockito.times(1)).save(proyectoEstudianteCaptor.capture());
+        Mockito.verify(this.proyectoEstudianteRepository, Mockito.times(1)).saveAll(proyectoEstudianteCaptor.capture());
+
+        var expectedDto = new ProyectoCreationDTO.ProyectoDTO(1, "Project", 150,
+                true, "Steve", Set.of(new EstudianteDTO("ZH15002", 250, false)));
 
         assertNotNull(result);
-        assertEquals(result, proyectoCreationDTO);
+        assertEquals(result, expectedDto);
+        resultProject.setId(null);
+        assertEquals(resultProject, proyectoCaptor.getValue());
         assertEquals(carnet, carnetCaptor.getValue());
         assertEquals(1, personalIdCaptor.getValue());
-        assertEquals(1, statusIdCaptor.getValue());
-        assertEquals(resultProject, proyectoCaptor.getValue());
-        assertEquals(proyectoEstudiante, proyectoEstudianteCaptor.getValue());
+        assertEquals(List.of(expectedProyectoEstudiante), proyectoEstudianteCaptor.getValue());
+
+    }
+
+    @Test
+    void testUpdate(){
+        var nombre = "Test";
+        var personal = new Personal();
+        personal.setNombre("Mario");
+        personal.setId(10);
+
+        var proyecto = new Proyecto();
+        proyecto.setId(2);
+        proyecto.setDuracion(300);
+        proyecto.setNombre(nombre);
+        proyecto.setInterno(true);
+        proyecto.setTutor(personal);
+
+        var estudiante = new Estudiante();
+        estudiante.setCarnet("ab12345");
+        estudiante.setHorasProgreso(250);
+        estudiante.setServicioCompleto(false);
+
+        var expectedProyectoEstudiante = new ProyectoEstudiante(estudiante, proyecto);
+
+        proyecto.setProyectoEstudianteSet(Set.of(expectedProyectoEstudiante));
+
+        var creationDto = new ProyectoCreationDTO("Test2", 350, true, 10, List.of("ab12345"));
+
+        ArgumentCaptor<Integer> idCaptor = ArgumentCaptor.forClass(Integer.class);
+        ArgumentCaptor<Integer> idPersonal = ArgumentCaptor.forClass(Integer.class);
+        ArgumentCaptor<Proyecto> proyectoCaptor = ArgumentCaptor.forClass(Proyecto.class);
+
+        var expected = new ProyectoCreationDTO.ProyectoDTO(2, "Test2", 350, true, "Mario", Set.of(new EstudianteDTO("ab12345", 250, false)));
+
+        Mockito.when(this.proyectoRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(proyecto));
+        Mockito.when(this.proyectoRepository.save(Mockito.any(Proyecto.class))).thenReturn(proyecto);
+        Mockito.when(this.entityManager.getReference(Personal.class, 10)).thenReturn(personal);
+
+
+        var result = this.proyectoService.update(creationDto, 5);
+
+        Mockito.verify(this.proyectoRepository, Mockito.times(1)).findById(idCaptor.capture());
+        Mockito.verify(this.proyectoRepository, Mockito.times(1)).save(proyectoCaptor.capture());
+        Mockito.verify(this.entityManager, Mockito.times(1)).getReference(ArgumentMatchers.eq(Personal.class), idPersonal.capture());
+
+        assertNotNull(result);
+        assertEquals(expected, result);
+        assertEquals(5, idCaptor.getValue());
+        assertEquals(proyecto, proyectoCaptor.getValue());
+        assertEquals(10, idPersonal.getValue());
 
     }
 }

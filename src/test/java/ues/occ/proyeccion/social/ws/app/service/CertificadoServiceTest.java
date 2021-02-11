@@ -52,7 +52,7 @@ class CertificadoServiceTest {
         ArgumentCaptor<Integer> integerArgumentCaptor = ArgumentCaptor.forClass(Integer.class);
 
         ProyectoEstudiante proyectoEstudiante = new ProyectoEstudiante();
-        proyectoEstudiante.setProyecto(new Proyecto(proyecto, null, false, null, null, null));
+        proyectoEstudiante.setProyecto(new Proyecto(proyecto, null, false, null, null, null, null));
         proyectoEstudiante.setId(102);
         Optional<ProyectoEstudiante> proyectoEstudianteOptional = Optional.of(proyectoEstudiante);
         Certificado certificado = new Certificado();
@@ -95,10 +95,10 @@ class CertificadoServiceTest {
         Pageable pageable = PageRequest.of(PAGE, SIZE);
 
         ProyectoEstudiante proyectoEstudiante1 = new ProyectoEstudiante();
-        proyectoEstudiante1.setProyecto(new Proyecto(projectName1, null, false, null, null, null));
+        proyectoEstudiante1.setProyecto(new Proyecto(projectName1, null, false, null, null, null, null));
 
         ProyectoEstudiante proyectoEstudiante2 = new ProyectoEstudiante();
-        proyectoEstudiante2.setProyecto(new Proyecto(projectName2, null, false, null, null, null));
+        proyectoEstudiante2.setProyecto(new Proyecto(projectName2, null, false, null, null, null, null));
 
         Certificado certificado1 = new Certificado();
         certificado1.setProyectoEstudiante(proyectoEstudiante1);
