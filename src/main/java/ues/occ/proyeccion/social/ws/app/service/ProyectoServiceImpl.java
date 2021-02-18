@@ -35,7 +35,6 @@ public class ProyectoServiceImpl implements ProyectoService {
     private final ProyectoRepository proyectoRepository;
     private final ProyectoEstudianteRepository proyectoEstudianteRepository;
     private final ProyectoMapper proyectoMapper;
-    private static final CycleUtil cycleUtil = new CycleUtil();
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -61,7 +60,7 @@ public class ProyectoServiceImpl implements ProyectoService {
     @Override
     public ProyectoDTO findById(int id) {
         return this.proyectoRepository.findById(id)
-                .map(proyecto -> this.proyectoMapper.proyectoToProyectoDTO(proyecto, cycleUtil))
+                .map(proyecto -> this.proyectoMapper.proyectoToProyectoDTO(proyecto, new CycleUtil()))
                 .orElseThrow(ResourceNotFoundException::new);
     }
 
@@ -75,21 +74,22 @@ public class ProyectoServiceImpl implements ProyectoService {
     @Override
     public PageDtoWrapper<Proyecto, ProyectoCreationDTO.ProyectoDTO> findAllByStatus(int page, int size, int statusId) {
         Pageable paging = this.getPageable(page, size);
-        Page<Proyecto> proyectoPage = proyectoRepository.findAllByStatus(statusId, paging);
+        Page<Proyecto> proyectoPage = proyectoRepository.findAllByStatus_Id(statusId, paging);
         return this.getPagedData(proyectoPage);
     }
 
     @Override
     public PageDtoWrapper<Proyecto, ProyectoCreationDTO.ProyectoDTO> findAllPending(int page, int size) {
         Pageable paging = this.getPageable(page, size);
-        Page<Proyecto> proyectoPage = proyectoRepository.findAllByStatus(StatusOption.PENDIENTE, paging);
+        Page<Proyecto> proyectoPage = proyectoRepository.findAllByStatus_Id(StatusOption.PENDIENTE, paging);
         return this.getPagedData(proyectoPage);
     }
 
     @Override
     public PageDtoWrapper<Proyecto, ProyectoCreationDTO.ProyectoDTO> findProyectosByEstudiante(int page, int size, String carnet, int status) {
         Pageable paging = this.getPageable(page, size);
-        Page<Proyecto> proyectoPage = proyectoRepository.findAllByStatusAndProyectoEstudianteSet_Estudiante_Carnet(status, carnet, paging);
+        Page<Proyecto> proyectoPage = proyectoRepository
+                .findAllByStatus_IdAndProyectoEstudianteSet_Estudiante_CarnetIgnoreCase(status, carnet, paging);
         return this.getPagedData(proyectoPage);
     }
 
@@ -106,7 +106,7 @@ public class ProyectoServiceImpl implements ProyectoService {
                     .collect(Collectors.toList());
 
             this.proyectoEstudianteRepository.saveAll(proyectoEstudianteList);
-            return this.proyectoMapper.proyectoToProyectoDTO(savedProyecto, cycleUtil);
+            return this.proyectoMapper.proyectoToProyectoDTO(savedProyecto, new CycleUtil());
         } catch (Exception e) {
             e.printStackTrace();
             throw new InternalErrorException("Something went wrong saving the data");
@@ -126,7 +126,7 @@ public class ProyectoServiceImpl implements ProyectoService {
                     }).orElseThrow(() -> new ResourceNotFoundException(String.format("Project with id %d does not exist", idProyecto)));
             this.setEncargado(proyectoDB, proyecto.getPersonal());
             var savedProyecto = this.proyectoRepository.save(proyectoDB);
-            return this.proyectoMapper.proyectoToProyectoDTO(savedProyecto, cycleUtil);
+            return this.proyectoMapper.proyectoToProyectoDTO(savedProyecto, new CycleUtil());
         }
         catch (Exception e){
             log.error(e.getMessage());
@@ -150,7 +150,7 @@ public class ProyectoServiceImpl implements ProyectoService {
         List<ProyectoDTO> content;
         if (data.hasContent()) {
             content = data.getContent().stream()
-                    .map(proyecto -> this.proyectoMapper.proyectoToProyectoDTO(proyecto, cycleUtil))
+                    .map(proyecto -> this.proyectoMapper.proyectoToProyectoDTO(proyecto, new CycleUtil()))
                     .collect(Collectors.toList());
         } else {
             content = Collections.emptyList();
