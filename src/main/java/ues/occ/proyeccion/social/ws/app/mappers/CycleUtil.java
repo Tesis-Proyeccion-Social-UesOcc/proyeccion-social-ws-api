@@ -5,15 +5,18 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.TargetType;
 import org.springframework.stereotype.Component;
 
+import ues.occ.proyeccion.social.ws.app.model.EstudianteDTO;
+import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO.ProyectoDTO;
+
 import java.util.IdentityHashMap;
 import java.util.Map;
 
-public class CycleUtil {
+public class CycleUtil <T> {
         private final Map<Object, Object> knownInstances = new IdentityHashMap<>();
 
         @BeforeMapping
-        public <T> T getMappedInstance(Object source, @TargetType Class<T> targetType) {
-            return (T) knownInstances.get( source );
+        public <T> EstudianteDTO getMappedInstance(Object source, @TargetType Class<T> targetType) {
+            return  (EstudianteDTO) knownInstances.get( source );
         }
 
         @BeforeMapping

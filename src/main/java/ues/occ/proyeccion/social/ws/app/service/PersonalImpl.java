@@ -1,5 +1,8 @@
 package ues.occ.proyeccion.social.ws.app.service;
 
+import java.util.stream.Collectors;
+
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import ues.occ.proyeccion.social.ws.app.dao.ServiceResponse;
+import ues.occ.proyeccion.social.ws.app.dto.PersonalExternoDto;
+import ues.occ.proyeccion.social.ws.app.repository.PersonaExternoRepository;
 import ues.occ.proyeccion.social.ws.app.repository.PersonalRepository;
 
 @Service
@@ -17,6 +22,10 @@ public class PersonalImpl implements PersonalService {
 	
 	@Autowired
 	private PersonalRepository personalRepository;
+	@Autowired
+	private PersonaExternoRepository personaExternoRepository;
+
+	private ModelMapper modelMapper;
 	
 	@Override
 	public ResponseEntity<ServiceResponse> findByTipoPersonalId(int idTipoPersonal) {
@@ -33,9 +42,19 @@ public class PersonalImpl implements PersonalService {
 	}
 
 	@Override
-	public ResponseEntity<ServiceResponse> findAll() {
-		return new ResponseEntity<ServiceResponse>(new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk,
-				 personalRepository.findAll()), HttpStatus.OK);
+	public ResponseEntity<ServiceResponse> findAll(int interno) {
+		modelMapper = new ModelMapper();
+		if(interno == 1) {
+			return new ResponseEntity<ServiceResponse>(new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk,
+					 personalRepository.findAll()), HttpStatus.OK);
+		} else {
+			return new ResponseEntity<ServiceResponse>(new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk,
+					 personaExternoRepository.findAll().stream().
+					 map(element -> modelMapper.map(element, PersonalExternoDto.class)).collect(Collectors.toList())
+			), HttpStatus.OK);
+			
+		}
+	
 	}
 
 	@Override
