@@ -47,7 +47,7 @@ public class Personal implements Serializable {
 	@OneToMany(mappedBy = "tutor", fetch = FetchType.LAZY)
 	private Set<Proyecto> proyectos;
 
-	@OneToOne(mappedBy = "personal", cascade = CascadeType.ALL)
+	@OneToOne(mappedBy = "personal", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private PersonalEncargado personalEncargado;
 
 
