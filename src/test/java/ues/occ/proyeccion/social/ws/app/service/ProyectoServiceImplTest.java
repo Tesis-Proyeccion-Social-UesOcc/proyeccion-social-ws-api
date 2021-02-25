@@ -144,12 +144,12 @@ class ProyectoServiceImplTest {
         ArgumentCaptor<Pageable> pageableArgumentCaptor = ArgumentCaptor.forClass(Pageable.class);
         ArgumentCaptor<Integer> statusCaptor = ArgumentCaptor.forClass(Integer.class);
 
-        Mockito.when(this.proyectoRepository.findAllByStatus(Mockito.anyInt(), Mockito.any(Pageable.class))).thenReturn(page);
+        Mockito.when(this.proyectoRepository.findAllByStatus_Id(Mockito.anyInt(), Mockito.any(Pageable.class))).thenReturn(page);
 
         var result = this.proyectoService.findAllByStatus(5, 10, 1);
 
         Mockito.verify(this.proyectoRepository, Mockito.times(1))
-                .findAllByStatus(statusCaptor.capture(), pageableArgumentCaptor.capture());
+                .findAllByStatus_Id(statusCaptor.capture(), pageableArgumentCaptor.capture());
 
         assertNotNull(result);
         assertEquals(PAGE, pageableArgumentCaptor.getValue().getPageNumber());
@@ -172,12 +172,12 @@ class ProyectoServiceImplTest {
         ArgumentCaptor<Pageable> pageableArgumentCaptor = ArgumentCaptor.forClass(Pageable.class);
         ArgumentCaptor<Integer> statusCaptor = ArgumentCaptor.forClass(Integer.class);
 
-        Mockito.when(this.proyectoRepository.findAllByStatus(Mockito.anyInt(), Mockito.any(Pageable.class))).thenReturn(page);
+        Mockito.when(this.proyectoRepository.findAllByStatus_Id(Mockito.anyInt(), Mockito.any(Pageable.class))).thenReturn(page);
 
         var result = this.proyectoService.findAllPending(5, 10);
 
         Mockito.verify(this.proyectoRepository, Mockito.times(1))
-                .findAllByStatus(statusCaptor.capture(), pageableArgumentCaptor.capture());
+                .findAllByStatus_Id(statusCaptor.capture(), pageableArgumentCaptor.capture());
 
         assertNotNull(result);
         assertEquals(PAGE, pageableArgumentCaptor.getValue().getPageNumber());
@@ -200,13 +200,13 @@ class ProyectoServiceImplTest {
         ArgumentCaptor<Integer> statusArgumentCaptor = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<String> carnetArgumentCaptor = ArgumentCaptor.forClass(String.class);
 
-        Mockito.when(this.proyectoRepository.findAllByStatusAndProyectoEstudianteSet_Estudiante_Carnet(
+        Mockito.when(this.proyectoRepository.findAllByStatus_IdAndProyectoEstudianteSet_Estudiante_CarnetIgnoreCase(
                 Mockito.anyInt(), Mockito.anyString(), Mockito.any(Pageable.class))).thenReturn(page);
 
         var result = this.proyectoService.findProyectosByEstudiante(5, 10, "zh", 3);
 
         Mockito.verify(this.proyectoRepository, Mockito.times(1))
-                .findAllByStatusAndProyectoEstudianteSet_Estudiante_Carnet(
+                .findAllByStatus_IdAndProyectoEstudianteSet_Estudiante_CarnetIgnoreCase(
                         statusArgumentCaptor.capture(), carnetArgumentCaptor.capture(), pageableArgumentCaptor.capture()
                 );
 

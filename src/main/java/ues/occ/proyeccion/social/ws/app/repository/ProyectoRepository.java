@@ -18,8 +18,8 @@ import java.util.List;
 @Repository
 public interface ProyectoRepository extends PagingAndSortingRepository<Proyecto, Integer> {
   
-    Page<Proyecto> findAllByStatus(int statusId, Pageable pageable);
-    Page<Proyecto> findAllByStatusAndProyectoEstudianteSet_Estudiante_Carnet(int status, String carnet, Pageable pageable);
+    Page<Proyecto> findAllByStatus_Id(int statusId, Pageable pageable);
+    Page<Proyecto> findAllByStatus_IdAndProyectoEstudianteSet_Estudiante_CarnetIgnoreCase(int status, String carnet, Pageable pageable);
 
     @Query(value="SELECT p.id, p.nombre, p.duracion, p.interno, p.id_tutor, p.id_encargado_externo, p.fecha_creacion\r\n" +
 			"FROM chatbot_db.proyecto p\r\n" +
