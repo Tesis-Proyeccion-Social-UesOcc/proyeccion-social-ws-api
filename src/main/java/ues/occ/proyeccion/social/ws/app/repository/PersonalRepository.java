@@ -17,6 +17,6 @@ public interface PersonalRepository extends CrudRepository<Personal, Integer> {
 
 	List<Personal> findByNombreOrApellidoContaining(String nombre, String Apellido);
 
-	Optional<Personal> findByPersonalEncargadoExistsAndDepartamento_NombreContainingIgnoreCase(String departamentoCharSequence);
+	Optional<Personal> findByDepartamento_NombreContainingIgnoreCase(String departamentoCharSequence);
 
 }

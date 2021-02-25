@@ -35,7 +35,7 @@ public class Personal implements Serializable {
 	private String apellido;
 
 	@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_departamento", referencedColumnName = "id")
 	private Departamento departamento;
 
@@ -55,7 +55,6 @@ public class Personal implements Serializable {
 		super();
 	}
 
-
 	public Personal(Integer id, String nombre, String apellido, Departamento departamento, TipoPersonal tipoPersonal) {
 		super();
 		this.id = id;
@@ -63,6 +62,17 @@ public class Personal implements Serializable {
 		this.apellido = apellido;
 		this.departamento = departamento;
 		this.tipoPersonal = tipoPersonal;
+	}
+
+	public Personal(Integer id, String nombre, String apellido, Departamento departamento, TipoPersonal tipoPersonal, PersonalEncargado encargado) {
+		super();
+		this.id = id;
+		this.nombre = nombre;
+		this.apellido = apellido;
+		this.departamento = departamento;
+		this.tipoPersonal = tipoPersonal;
+		this.personalEncargado = encargado;
+		personalEncargado.setPersonal(this);
 	}
 
 	public Personal(Integer id, String nombre, String apellido){
