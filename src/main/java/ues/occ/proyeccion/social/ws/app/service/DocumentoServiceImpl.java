@@ -1,21 +1,16 @@
 package ues.occ.proyeccion.social.ws.app.service;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.google.cloud.storage.Acl;
 import com.google.cloud.storage.Blob;
@@ -36,15 +31,16 @@ public class DocumentoServiceImpl implements DocumentoService {
 
 	private static final Logger log = LoggerFactory.getLogger(DocumentoServiceImpl.class);
 
-	@Autowired
-	private DocumentoRepository documentoRepository;
+	private final DocumentoRepository documentoRepository;
+	private final  Storage storage;
 
-	@Autowired
-	private Storage storage;
+	public DocumentoServiceImpl(DocumentoRepository documentoRepository, Storage storage) {
+		this.documentoRepository = documentoRepository;
+		this.storage = storage;
+	}
 
 	@Override
 	public ResponseEntity<ServiceResponse> findAll() {
-		// TODO Auto-generated method stub
 		return new ResponseEntity<ServiceResponse>(
 				new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk, documentoRepository.findAll()),
 				HttpStatus.OK);
@@ -72,7 +68,6 @@ public class DocumentoServiceImpl implements DocumentoService {
 					new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk, documento), HttpStatus.OK);
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			log.error("No se logro guardar el documento en el bucket", e);
 			return new ResponseEntity<ServiceResponse>(
@@ -87,7 +82,6 @@ public class DocumentoServiceImpl implements DocumentoService {
 	}
 
 	public ResponseEntity<ServiceResponse> findById(int id) {
-		// TODO Auto-generated method stub
 		Optional<Documento> documento = Optional.of(
 				documentoRepository.findById(id).orElseThrow(() -> new RuntimeException("Documento no encontrado")));
 		return new ResponseEntity<ServiceResponse>(
@@ -97,7 +91,7 @@ public class DocumentoServiceImpl implements DocumentoService {
 
 	public ResponseEntity<ServiceResponse> findDocumentoByNombre(String nombre) {
 		try {
-			List<Documento> documentos = documentoRepository.findByNombreContainsOrderByFechaDocumento(nombre);
+			List<Documento> documentos = documentoRepository.findByNombreContainingIgnoreCaseOrderByFechaDocumento(nombre);
 			return new ResponseEntity<ServiceResponse>(
 					new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk, documentos), HttpStatus.OK);
 
