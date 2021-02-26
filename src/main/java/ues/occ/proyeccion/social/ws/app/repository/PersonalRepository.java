@@ -3,6 +3,7 @@ package ues.occ.proyeccion.social.ws.app.repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -17,6 +18,10 @@ public interface PersonalRepository extends CrudRepository<Personal, Integer> {
 
 	List<Personal> findByNombreOrApellidoContaining(String nombre, String Apellido);
 
-	Optional<Personal> findByDepartamento_NombreContainingIgnoreCase(String departamentoCharSequence);
+	/**
+	 * @param areaCharSequence area/department name or null if the head is needed
+	 * */
+	@Query("SELECT p FROM Personal p INNER JOIN p.departamento d INNER JOIN p.personalEncargado p2 WHERE p.head = TRUE OR lower(d.nombre) LIKE lower(concat('%', ?1,'%'))")
+	Optional<Personal> getPersonalEncargadoByDepartmentName(String areaCharSequence);
 
 }

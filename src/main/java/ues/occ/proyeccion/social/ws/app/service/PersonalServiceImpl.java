@@ -100,7 +100,7 @@ public class PersonalServiceImpl implements PersonalService {
 	
 	@Override
 	public PersonalEncargadoDTO findByDepartmentName(String departmentName) {
-		var personalOptional = this.personalRepository.findByDepartamento_NombreContainingIgnoreCase(departmentName);
+		var personalOptional = this.personalRepository.getPersonalEncargadoByDepartmentName(departmentName);
 		return personalOptional.map(mapper::personalToEncangadoDTO)
 				.orElseThrow(() -> new ResourceNotFoundException(String.format("There's no personal for department %s", departmentName)));
 	}

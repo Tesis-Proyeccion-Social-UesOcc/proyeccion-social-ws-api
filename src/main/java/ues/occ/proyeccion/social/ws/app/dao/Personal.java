@@ -34,6 +34,9 @@ public class Personal implements Serializable {
 	@Column(name = "apellido", nullable = false, length = 200)
 	private String apellido;
 
+	@Column(name = "head", nullable = true, columnDefinition = "bit default 0")
+	private Boolean head;
+
 	@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_departamento", referencedColumnName = "id")
@@ -64,7 +67,8 @@ public class Personal implements Serializable {
 		this.tipoPersonal = tipoPersonal;
 	}
 
-	public Personal(Integer id, String nombre, String apellido, Departamento departamento, TipoPersonal tipoPersonal, PersonalEncargado encargado) {
+	public Personal(Integer id, String nombre, String apellido, boolean head, Departamento departamento,
+					TipoPersonal tipoPersonal, PersonalEncargado encargado) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
@@ -72,6 +76,7 @@ public class Personal implements Serializable {
 		this.departamento = departamento;
 		this.tipoPersonal = tipoPersonal;
 		this.personalEncargado = encargado;
+		this.head = head;
 		personalEncargado.setPersonal(this);
 	}
 
@@ -123,6 +128,13 @@ public class Personal implements Serializable {
 		this.apellido = apellido;
 	}
 
+	public Boolean getHead() {
+		return head;
+	}
+
+	public void setHead(Boolean head) {
+		this.head = head;
+	}
 
 	public Departamento getDepartamento() {
 		return departamento;

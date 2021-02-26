@@ -35,16 +35,16 @@ class PersonalRepositoryIT {
      encargado.setId(1);
      encargado.setHorario("1-5");
      encargado.setUbicacion("ues");
-     var personal = new Personal(1, "Jose", "Salazar", departamento, tipo, encargado);
+     var personal = new Personal(1, "Jose", "Salazar",true, departamento, tipo, encargado);
      tipoPersonalRepository.save(tipo);
      departamentoRepository.save(departamento);
      personalRepository.save(personal);
      personalEncargadoRepository.save(encargado);
-
         var result = personalRepository
-             .findByDepartamento_NombreContainingIgnoreCase("quimica")
+             .getPersonalEncargadoByDepartmentName(null)
              .get();
         assertEquals(1, personalRepository.count());
+        System.out.println(result.getNombre());
      assertNotNull(result);
      assertEquals(result.getDepartamento().getNombre(), departamento.getNombre());
      assertEquals(result.getNombre(), personal.getNombre());
