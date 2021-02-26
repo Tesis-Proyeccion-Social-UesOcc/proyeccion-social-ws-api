@@ -2,14 +2,17 @@ package ues.occ.proyeccion.social.ws.app.service;
 import org.springframework.http.ResponseEntity;
 
 import ues.occ.proyeccion.social.ws.app.dao.ServiceResponse;
+import ues.occ.proyeccion.social.ws.app.model.PersonalEncargadoDTO;
 
 public interface PersonalService {
 
-	public abstract ResponseEntity<ServiceResponse> findAll();
+	ResponseEntity<ServiceResponse> findAll();
 
-	public abstract ResponseEntity<ServiceResponse> findByTipoPersonalId(int idTipoPersonal);
+	ResponseEntity<ServiceResponse> findByTipoPersonalId(int idTipoPersonal);
 	
-	public abstract ResponseEntity<ServiceResponse> findByDepartamentoId(int idDepartamento);
+	ResponseEntity<ServiceResponse> findByDepartamentoId(int idDepartamento);
 	
-	public abstract ResponseEntity<ServiceResponse> findByNombre(String nombre, String apellido);
+	ResponseEntity<ServiceResponse> findByNombre(String nombre, String apellido);
+
+	PersonalEncargadoDTO findByDepartmentName(String departmentName);
 }
