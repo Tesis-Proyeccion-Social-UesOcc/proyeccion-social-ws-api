@@ -39,14 +39,14 @@ class PersonalControllerTest {
     @Test
     void findByDepartmentName() throws Exception{
         var dto = new PersonalEncargadoDTO("Jose", "Salazar", "ciencia", "5-10", "ues");
-        Mockito.when(service.findByDepartmentName(Mockito.anyString())).thenReturn(dto);
+        Mockito.when(service.findByDepartmentName(ArgumentMatchers.nullable(String.class))).thenReturn(dto);
 
         var captor = ArgumentCaptor.forClass(String.class);
 
         mvc.perform(MockMvcRequestBuilders.get("/personal/encargado")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-                .param("department", "something"))
+                .param("area", "general"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.nombre", CoreMatchers.is("Jose")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.apellido", CoreMatchers.is("Salazar")))
@@ -56,7 +56,7 @@ class PersonalControllerTest {
 
         Mockito.verify(service, Mockito.times(1)).findByDepartmentName(captor.capture());
 
-        assertEquals(captor.getValue(), "something");
+        assertNull(captor.getValue());
     }
 
     @Test
@@ -68,7 +68,7 @@ class PersonalControllerTest {
         mvc.perform(MockMvcRequestBuilders.get("/personal/encargado")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-                .param("department", "something"))
+                .param("area", "something"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message", CoreMatchers.is("error")));
 
