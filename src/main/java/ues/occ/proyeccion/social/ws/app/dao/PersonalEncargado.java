@@ -62,6 +62,10 @@ public class PersonalEncargado implements Serializable{
 		this.ubicacion = ubicacion;
 	}
 
+	public void setPersonal(Personal personal) {
+		this.personal = personal;
+//		personal.setPersonalEncargado(this);
+	}
 
 	@Override
 	public boolean equals(Object o) {

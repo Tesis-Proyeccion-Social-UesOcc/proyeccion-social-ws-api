@@ -1,8 +1,5 @@
 package ues.occ.proyeccion.social.ws.app.controller;
 
-import javax.websocket.server.PathParam;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,14 +8,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import ues.occ.proyeccion.social.ws.app.dao.ServiceResponse;
+import ues.occ.proyeccion.social.ws.app.model.PersonalEncargadoDTO;
 import ues.occ.proyeccion.social.ws.app.service.PersonalService;
 
 @RequestMapping(value = "/personal")
 @RestController
 public class PersonalController {
 
-	@Autowired
-	private PersonalService personalService;
+	private final PersonalService personalService;
+
+	public PersonalController(PersonalService personalService) {
+		this.personalService = personalService;
+	}
 
 	@GetMapping
 	public ResponseEntity<ServiceResponse> findAll(
@@ -41,6 +42,12 @@ public class PersonalController {
 	@GetMapping(value = "/findByIdDepartamento/{idDepartamento}")
 	public ResponseEntity<ServiceResponse> findByDepartamentoId(@PathVariable("idDepartamento") int idDepartamento) {
 		return personalService.findByDepartamentoId(idDepartamento);
+	}
+
+
+	@GetMapping("/encargado")
+	public PersonalEncargadoDTO findByDepartmentName(@RequestParam(value = "department", required = true) String department){
+		return this.personalService.findByDepartmentName(department);
 	}
 
 
