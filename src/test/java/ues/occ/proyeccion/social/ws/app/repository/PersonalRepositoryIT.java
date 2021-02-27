@@ -30,18 +30,19 @@ class PersonalRepositoryIT {
     @Test
     void findByPersonalEncargadoExistsAndDepartamento_NombreContainingIgnoreCase() {
      var encargado = new PersonalEncargado();
-     var tipo = new TipoPersonal(1, "docente", "something");
+     var tipo = new TipoPersonal(3, "docente", "something");
      var departamento = new Departamento(1, "Quimica");
      encargado.setId(1);
      encargado.setHorario("1-5");
      encargado.setUbicacion("ues");
-     var personal = new Personal(1, "Jose", "Salazar",true, departamento, tipo, encargado);
+     var personal = new Personal(1, "Jose", "Salazar", departamento, tipo, encargado);
      tipoPersonalRepository.save(tipo);
      departamentoRepository.save(departamento);
+     tipoPersonalRepository.findAll().forEach(System.out::println);
      personalRepository.save(personal);
      personalEncargadoRepository.save(encargado);
         var result = personalRepository
-             .getPersonalEncargadoByDepartmentName(true, null)
+             .getPersonalEncargadoByDepartmentName(null)
              .get();
         assertEquals(1, personalRepository.count());
         System.out.println(result.getNombre());

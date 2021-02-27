@@ -39,10 +39,9 @@ class PersonalControllerTest {
     @Test
     void findByDepartmentName() throws Exception{
         var dto = new PersonalEncargadoDTO("Jose", "Salazar", "ciencia", "5-10", "ues");
-        Mockito.when(service.findByDepartmentName(Mockito.anyBoolean(), ArgumentMatchers.nullable(String.class))).thenReturn(dto);
+        Mockito.when(service.findByDepartmentName(ArgumentMatchers.nullable(String.class))).thenReturn(dto);
 
         var captor = ArgumentCaptor.forClass(String.class);
-        var flagCaptor = ArgumentCaptor.forClass(Boolean.class);
 
         mvc.perform(MockMvcRequestBuilders.get("/personal/encargado")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -55,18 +54,16 @@ class PersonalControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.horario", CoreMatchers.is("5-10")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.ubicacion", CoreMatchers.is("ues")));
 
-        Mockito.verify(service, Mockito.times(1)).findByDepartmentName(flagCaptor.capture(), captor.capture());
+        Mockito.verify(service, Mockito.times(1)).findByDepartmentName(captor.capture());
 
         assertNull(captor.getValue());
-        assertTrue(flagCaptor.getValue());
     }
 
     @Test
     void findByDepartmentNameWithEmptyObject() throws Exception{
-        Mockito.when(service.findByDepartmentName(Mockito.anyBoolean(), Mockito.anyString())).thenThrow(new ResourceNotFoundException("error"));
+        Mockito.when(service.findByDepartmentName(Mockito.anyString())).thenThrow(new ResourceNotFoundException("error"));
 
         var captor = ArgumentCaptor.forClass(String.class);
-        var flagCaptor = ArgumentCaptor.forClass(Boolean.class);
 
         mvc.perform(MockMvcRequestBuilders.get("/personal/encargado")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -75,9 +72,8 @@ class PersonalControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message", CoreMatchers.is("error")));
 
-        Mockito.verify(service, Mockito.times(1)).findByDepartmentName(flagCaptor.capture(), captor.capture());
+        Mockito.verify(service, Mockito.times(1)).findByDepartmentName(captor.capture());
 
         assertEquals(captor.getValue(), "something");
-        assertFalse(flagCaptor.getValue());
     }
 }

@@ -49,10 +49,10 @@ class PersonalServiceImplTest {
         personal.setDepartamento(department);
 
        Mockito.when(repository
-               .getPersonalEncargadoByDepartmentName(Mockito.anyBoolean(), Mockito.anyString()))
+               .getPersonalEncargadoByDepartmentName(Mockito.anyString()))
                .thenReturn(Optional.of(personal));
 
-       var result = personalService.findByDepartmentName(true, "Anything");
+       var result = personalService.findByDepartmentName("Anything");
 
        assertNotNull(result);
        assertEquals("Jose", result.getNombre());
@@ -67,10 +67,10 @@ class PersonalServiceImplTest {
 
 
         Mockito.when(repository
-                .getPersonalEncargadoByDepartmentName(Mockito.anyBoolean(), Mockito.anyString()))
+                .getPersonalEncargadoByDepartmentName(Mockito.anyString()))
                 .thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> personalService.findByDepartmentName(true, "Anything"));
+        assertThrows(ResourceNotFoundException.class, () -> personalService.findByDepartmentName("Anything"));
 
     }
 }
