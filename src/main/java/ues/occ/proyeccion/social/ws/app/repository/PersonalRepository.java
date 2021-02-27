@@ -19,9 +19,9 @@ public interface PersonalRepository extends CrudRepository<Personal, Integer> {
 	List<Personal> findByNombreOrApellidoContaining(String nombre, String Apellido);
 
 	/**
-	 * @param areaCharSequence area/department name or null if the head is needed
+	 * @param areaCharSequence area/department name
 	 * */
-	@Query("SELECT p FROM Personal p INNER JOIN p.departamento d INNER JOIN p.personalEncargado p2 INNER JOIN p.tipoPersonal tp WHERE tp.id = 3 OR lower(d.nombre) LIKE lower(concat('%', ?1,'%'))")
-	Optional<Personal> getPersonalEncargadoByDepartmentName(String areaCharSequence);
+	Optional<Personal> findByDepartamento_NombreContainingIgnoreCase(String areaCharSequence);
 
+	Optional<Personal> findByTipoPersonal_Id(int typeId);
 }

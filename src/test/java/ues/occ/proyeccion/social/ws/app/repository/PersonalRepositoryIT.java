@@ -1,5 +1,6 @@
 package ues.occ.proyeccion.social.ws.app.repository;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,8 @@ import ues.occ.proyeccion.social.ws.app.dao.Departamento;
 import ues.occ.proyeccion.social.ws.app.dao.Personal;
 import ues.occ.proyeccion.social.ws.app.dao.PersonalEncargado;
 import ues.occ.proyeccion.social.ws.app.dao.TipoPersonal;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -28,29 +31,51 @@ class PersonalRepositoryIT {
     @Autowired TipoPersonalRepository tipoPersonalRepository;
 
     @Test
-    void findByPersonalEncargadoExistsAndDepartamento_NombreContainingIgnoreCase() {
+    void findByDepartamento_NombreContainingIgnoreCase() {
      var encargado = new PersonalEncargado();
-     var tipo = new TipoPersonal(3, "docente", "something");
+     var tipo = new TipoPersonal(1, "docente", "something");
      var departamento = new Departamento(1, "Quimica");
-     encargado.setId(1);
+     encargado.setId(2);
      encargado.setHorario("1-5");
      encargado.setUbicacion("ues");
-     var personal = new Personal(1, "Jose", "Salazar", departamento, tipo, encargado);
+     var personal = new Personal(2, "Jose", "Salazar", departamento, tipo, encargado);
      tipoPersonalRepository.save(tipo);
      departamentoRepository.save(departamento);
-     tipoPersonalRepository.findAll().forEach(System.out::println);
      personalRepository.save(personal);
      personalEncargadoRepository.save(encargado);
         var result = personalRepository
-             .getPersonalEncargadoByDepartmentName(null)
+             .findByDepartamento_NombreContainingIgnoreCase("quimica")
              .get();
         assertEquals(1, personalRepository.count());
-        System.out.println(result.getNombre());
      assertNotNull(result);
-     assertEquals(result.getDepartamento().getNombre(), departamento.getNombre());
      assertEquals(result.getNombre(), personal.getNombre());
      assertEquals(result.getApellido(), personal.getApellido());
      assertEquals(result.getPersonalEncargado().getHorario(), encargado.getHorario());
      assertEquals(result.getPersonalEncargado().getUbicacion(), encargado.getUbicacion());
+    }
+
+    @Test
+    void findByTipoPersonal_Id(){
+        var encargado = new PersonalEncargado();
+        var tipo = new TipoPersonal(3, "docente", "something");
+        var departamento = new Departamento(1, "Quimica");
+        encargado.setId(1);
+        encargado.setHorario("1-5");
+        encargado.setUbicacion("ues");
+        var personal = new Personal(1, "Bruce", "Wayne", departamento, tipo, encargado);
+        tipoPersonalRepository.save(tipo);
+        departamentoRepository.save(departamento);
+        personalRepository.save(personal);
+        personalEncargadoRepository.save(encargado);
+        var result = personalRepository
+                .findByTipoPersonal_Id(3)
+                .get();
+        assertEquals(1, personalRepository.count());
+        assertNotNull(result);
+        assertEquals(result.getNombre(), personal.getNombre());
+        assertEquals(result.getApellido(), personal.getApellido());
+        assertEquals(result.getPersonalEncargado().getHorario(), encargado.getHorario());
+        assertEquals(result.getPersonalEncargado().getUbicacion(), encargado.getUbicacion());
+
     }
 }

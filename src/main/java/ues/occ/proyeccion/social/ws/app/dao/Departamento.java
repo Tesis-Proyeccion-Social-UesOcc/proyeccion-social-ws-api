@@ -20,7 +20,7 @@ public class Departamento implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+//	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Integer id;
 	
@@ -55,5 +55,11 @@ public class Departamento implements Serializable{
 		this.nombre = nombre;
 	}
 
-
+	@Override
+	public String toString() {
+		return "Departamento{" +
+				"id=" + id +
+				", nombre='" + nombre + '\'' +
+				'}';
+	}
 }
