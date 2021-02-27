@@ -16,6 +16,6 @@ public interface PersonalService {
 
 	ResponseEntity<ServiceResponse> findByNombre(String nombre, String apellido);
 
-	PersonalEncargadoDTO findByDepartmentName(String departmentName);
+	PersonalEncargadoDTO findByDepartmentName(boolean isHead, String departmentName);
 
 }

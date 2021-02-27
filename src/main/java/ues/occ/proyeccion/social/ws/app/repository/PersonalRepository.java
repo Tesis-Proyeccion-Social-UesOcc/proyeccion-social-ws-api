@@ -21,7 +21,7 @@ public interface PersonalRepository extends CrudRepository<Personal, Integer> {
 	/**
 	 * @param areaCharSequence area/department name or null if the head is needed
 	 * */
-	@Query("SELECT p FROM Personal p INNER JOIN p.departamento d INNER JOIN p.personalEncargado p2 WHERE p.head = TRUE OR lower(d.nombre) LIKE lower(concat('%', ?1,'%'))")
-	Optional<Personal> getPersonalEncargadoByDepartmentName(String areaCharSequence);
+	@Query("SELECT p FROM Personal p INNER JOIN p.departamento d INNER JOIN p.personalEncargado p2 WHERE p.head = ?1 OR lower(d.nombre) LIKE lower(concat('%', ?2,'%'))")
+	Optional<Personal> getPersonalEncargadoByDepartmentName(boolean isHead, String areaCharSequence);
 
 }

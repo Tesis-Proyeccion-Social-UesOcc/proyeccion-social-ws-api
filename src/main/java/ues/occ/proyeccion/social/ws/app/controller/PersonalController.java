@@ -47,8 +47,13 @@ public class PersonalController {
 
 	@GetMapping("/encargado")
 	public PersonalEncargadoDTO findByDepartmentName(@RequestParam(value = "area") String area){
-		var evaluatedArea = area.equalsIgnoreCase("general") ? null: area;
-		return this.personalService.findByDepartmentName(evaluatedArea);
+		var isHead = false;
+		String evaluatedArea = null;
+
+		if(area.equalsIgnoreCase("general")) isHead = true;
+		else evaluatedArea = area;
+
+		return this.personalService.findByDepartmentName(isHead, evaluatedArea);
 	}
 
 

@@ -11,6 +11,7 @@ import ues.occ.proyeccion.social.ws.app.dao.Personal;
 import ues.occ.proyeccion.social.ws.app.dao.PersonalEncargado;
 import ues.occ.proyeccion.social.ws.app.exceptions.ResourceNotFoundException;
 import ues.occ.proyeccion.social.ws.app.mappers.PersonalEncargadoMapper;
+import ues.occ.proyeccion.social.ws.app.repository.PersonalExternoRepository;
 import ues.occ.proyeccion.social.ws.app.repository.PersonalRepository;
 
 import java.util.Optional;
@@ -22,12 +23,15 @@ class PersonalServiceImplTest {
     @Mock
     PersonalRepository repository;
 
+    @Mock
+    PersonalExternoRepository personalExternoRepository;
+
     PersonalService personalService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        personalService = new PersonalServiceImpl(repository, Mappers.getMapper(PersonalEncargadoMapper.class));
+        personalService = new PersonalServiceImpl(repository, personalExternoRepository, Mappers.getMapper(PersonalEncargadoMapper.class));
     }
 
     @Test
@@ -45,10 +49,10 @@ class PersonalServiceImplTest {
         personal.setDepartamento(department);
 
        Mockito.when(repository
-               .getPersonalEncargadoByDepartmentName(Mockito.anyString()))
+               .getPersonalEncargadoByDepartmentName(Mockito.anyBoolean(), Mockito.anyString()))
                .thenReturn(Optional.of(personal));
 
-       var result = personalService.findByDepartmentName("Anything");
+       var result = personalService.findByDepartmentName(true, "Anything");
 
        assertNotNull(result);
        assertEquals("Jose", result.getNombre());
@@ -63,10 +67,10 @@ class PersonalServiceImplTest {
 
 
         Mockito.when(repository
-                .getPersonalEncargadoByDepartmentName(Mockito.anyString()))
+                .getPersonalEncargadoByDepartmentName(Mockito.anyBoolean(), Mockito.anyString()))
                 .thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> personalService.findByDepartmentName("Anything"));
+        assertThrows(ResourceNotFoundException.class, () -> personalService.findByDepartmentName(true, "Anything"));
 
     }
 }

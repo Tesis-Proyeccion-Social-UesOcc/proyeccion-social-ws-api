@@ -41,7 +41,7 @@ class PersonalRepositoryIT {
      personalRepository.save(personal);
      personalEncargadoRepository.save(encargado);
         var result = personalRepository
-             .getPersonalEncargadoByDepartmentName(null)
+             .getPersonalEncargadoByDepartmentName(true, null)
              .get();
         assertEquals(1, personalRepository.count());
         System.out.println(result.getNombre());
