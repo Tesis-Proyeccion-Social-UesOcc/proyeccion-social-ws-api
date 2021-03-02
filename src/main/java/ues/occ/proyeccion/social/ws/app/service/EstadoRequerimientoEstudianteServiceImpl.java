@@ -57,6 +57,17 @@ public class EstadoRequerimientoEstudianteServiceImpl
 
         return this.getPagedData(estadoRequerimientoEstudiantes);
     }
+    
+	@Override
+	public PageDtoWrapper<EstadoRequerimientoEstudiante, EstadoRequerimientoEstudianteDTO> findAllByCarnet(int page,
+			int size, String carnet) {
+
+        Pageable requerimientoEstudiantePageable = this.getPageable(page, size);
+        Page<EstadoRequerimientoEstudiante> estadoRequerimientoEstudiantes =
+                this.repository.findAllByEstudiante_Carnet(carnet, requerimientoEstudiantePageable);
+
+        return this.getPagedData(estadoRequerimientoEstudiantes);
+	}
 
     @Override
     public Optional<EstadoRequerimientoEstudianteDTO> save(String carnet, int requerimientoId) {
@@ -83,4 +94,6 @@ public class EstadoRequerimientoEstudianteServiceImpl
     protected Function<EstadoRequerimientoEstudiante, EstadoRequerimientoEstudianteDTO> getMapperFunction() {
         return this.mapper::estadoRequerimientoEstudianteToDTO;
     }
+
+
 }

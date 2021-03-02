@@ -3,10 +3,12 @@ package ues.occ.proyeccion.social.ws.app.controller;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 import ues.occ.proyeccion.social.ws.app.dao.Certificado;
 import ues.occ.proyeccion.social.ws.app.dao.Estudiante;
+import ues.occ.proyeccion.social.ws.app.dao.ServiceResponse;
 import ues.occ.proyeccion.social.ws.app.events.PaginatedResultsRetrievedEvent;
 import ues.occ.proyeccion.social.ws.app.exceptions.InternalErrorException;
 import ues.occ.proyeccion.social.ws.app.model.*;
@@ -138,6 +140,11 @@ public class EstudianteController {
         publisher.publishEvent(new PaginatedResultsRetrievedEvent<>(this.getClass(), builder, response, page,
                 result.getOriginalPage().getTotalPages(), size));
         return new PageDTO<>(result);
+    }
+    
+    @GetMapping("/{carnet}/estadoRequerimiento")
+    public ResponseEntity<ServiceResponse> getRequirementStatusByCardId(@PathVariable String carnet){
+    	return estudianteService.getRequirementStatusByCardId(carnet);
     }
 
 }
