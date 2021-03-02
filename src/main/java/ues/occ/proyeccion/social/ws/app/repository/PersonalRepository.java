@@ -3,6 +3,7 @@ package ues.occ.proyeccion.social.ws.app.repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -17,6 +18,10 @@ public interface PersonalRepository extends CrudRepository<Personal, Integer> {
 
 	List<Personal> findByNombreOrApellidoContaining(String nombre, String Apellido);
 
-	Optional<Personal> findByDepartamento_NombreContainingIgnoreCase(String departamentoCharSequence);
+	/**
+	 * @param areaCharSequence area/department name
+	 * */
+	Optional<Personal> findByDepartamento_NombreContainingIgnoreCase(String areaCharSequence);
 
+	Optional<Personal> findByTipoPersonal_Id(int typeId);
 }

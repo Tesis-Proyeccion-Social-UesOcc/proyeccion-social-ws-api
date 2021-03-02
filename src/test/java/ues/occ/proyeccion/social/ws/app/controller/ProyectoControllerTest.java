@@ -1,6 +1,7 @@
 package ues.occ.proyeccion.social.ws.app.controller;
 
 import org.hamcrest.CoreMatchers;
+import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsCollectionWithSize;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -252,8 +253,9 @@ class ProyectoControllerTest {
                 .content(TestUtil.toJson(body)))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andDo(MockMvcResultHandlers.print())
-                .andExpect(jsonPath("$.violations[0].message", CoreMatchers.containsString("7 characters only")))
-                .andExpect(jsonPath("violations[1].message", containsString("Mandatory")));
+                .andExpect(jsonPath("$.violations[*].message", Matchers
+                        .containsInAnyOrder("Carnet is an alphanumeric ID with 7 characters only, i.e. AB12345",
+                                "Mandatory param")));
 
         Mockito.verify(this.proyectoService, Mockito.never()).update(Mockito.any(ProyectoCreationDTO.class), Mockito.anyInt());
     }

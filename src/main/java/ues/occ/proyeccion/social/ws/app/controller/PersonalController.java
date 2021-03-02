@@ -46,8 +46,8 @@ public class PersonalController {
 
 
 	@GetMapping("/encargado")
-	public PersonalEncargadoDTO findByDepartmentName(@RequestParam(value = "department", required = true) String department){
-		return this.personalService.findByDepartmentName(department);
+	public PersonalEncargadoDTO findByDepartmentName(@RequestParam(value = "area") String area){
+		return this.personalService.findByDepartmentName(area);
 	}
 
 
