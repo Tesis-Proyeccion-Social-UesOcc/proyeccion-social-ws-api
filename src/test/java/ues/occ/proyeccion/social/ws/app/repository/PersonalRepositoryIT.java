@@ -38,7 +38,7 @@ class PersonalRepositoryIT {
      encargado.setId(2);
      encargado.setHorario("1-5");
      encargado.setUbicacion("ues");
-     var personal = new Personal(2, "Jose", "Salazar", departamento, tipo, encargado);
+     var personal = new Personal(2, "Jose", "Salazar", "some@gmail.com", departamento, tipo, encargado);
      tipoPersonalRepository.save(tipo);
      departamentoRepository.save(departamento);
      personalRepository.save(personal);
@@ -50,6 +50,7 @@ class PersonalRepositoryIT {
      assertNotNull(result);
      assertEquals(result.getNombre(), personal.getNombre());
      assertEquals(result.getApellido(), personal.getApellido());
+     assertEquals(result.getEmail(), personal.getEmail());
      assertEquals(result.getPersonalEncargado().getHorario(), encargado.getHorario());
      assertEquals(result.getPersonalEncargado().getUbicacion(), encargado.getUbicacion());
     }
@@ -62,7 +63,7 @@ class PersonalRepositoryIT {
         encargado.setId(1);
         encargado.setHorario("1-5");
         encargado.setUbicacion("ues");
-        var personal = new Personal(1, "Bruce", "Wayne", departamento, tipo, encargado);
+        var personal = new Personal(1, "Bruce", "Wayne", "some@gmail.com", departamento, tipo, encargado);
         tipoPersonalRepository.save(tipo);
         departamentoRepository.save(departamento);
         personalRepository.save(personal);
@@ -74,6 +75,7 @@ class PersonalRepositoryIT {
         assertNotNull(result);
         assertEquals(result.getNombre(), personal.getNombre());
         assertEquals(result.getApellido(), personal.getApellido());
+        assertEquals(result.getEmail(), personal.getEmail());
         assertEquals(result.getPersonalEncargado().getHorario(), encargado.getHorario());
         assertEquals(result.getPersonalEncargado().getUbicacion(), encargado.getUbicacion());
 

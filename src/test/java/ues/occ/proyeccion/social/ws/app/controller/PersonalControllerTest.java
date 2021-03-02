@@ -38,7 +38,7 @@ class PersonalControllerTest {
 
     @Test
     void findByDepartmentName() throws Exception{
-        var dto = new PersonalEncargadoDTO("Jose", "Salazar", "ciencia", "5-10", "ues");
+        var dto = new PersonalEncargadoDTO("Jose", "Salazar", "some@gmail.com", "ciencia", "5-10", "ues");
         Mockito.when(service.findByDepartmentName(ArgumentMatchers.nullable(String.class))).thenReturn(dto);
 
         var captor = ArgumentCaptor.forClass(String.class);
@@ -51,12 +51,13 @@ class PersonalControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.nombre", CoreMatchers.is("Jose")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.apellido", CoreMatchers.is("Salazar")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.departamento", CoreMatchers.is("ciencia")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.email", CoreMatchers.is("some@gmail.com")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.horario", CoreMatchers.is("5-10")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.ubicacion", CoreMatchers.is("ues")));
 
         Mockito.verify(service, Mockito.times(1)).findByDepartmentName(captor.capture());
 
-        assertNull(captor.getValue());
+        assertEquals("general", captor.getValue());
     }
 
     @Test
