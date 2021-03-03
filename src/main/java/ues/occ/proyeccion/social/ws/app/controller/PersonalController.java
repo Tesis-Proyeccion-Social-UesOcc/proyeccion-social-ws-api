@@ -11,6 +11,9 @@ import ues.occ.proyeccion.social.ws.app.dao.ServiceResponse;
 import ues.occ.proyeccion.social.ws.app.model.PersonalEncargadoDTO;
 import ues.occ.proyeccion.social.ws.app.service.PersonalService;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+
 @RequestMapping(value = "/personal")
 @RestController
 public class PersonalController {
@@ -47,7 +50,10 @@ public class PersonalController {
 
 	@GetMapping("/encargado")
 	public PersonalEncargadoDTO findByDepartmentName(@RequestParam(value = "area") String area){
-		return this.personalService.findByDepartmentName(area);
+
+		var decodedArea = URLDecoder.decode(area, StandardCharsets.UTF_8);
+
+		return this.personalService.findByDepartmentName(decodedArea);
 	}
 
 

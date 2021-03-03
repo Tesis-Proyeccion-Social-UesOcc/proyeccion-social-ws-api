@@ -99,7 +99,8 @@ public class PersonalServiceImpl implements PersonalService {
 	public PersonalEncargadoDTO findByDepartmentName(String departmentName) {
 		var personal = departmentName.equalsIgnoreCase("general")
 				? this.personalRepository.findByTipoPersonal_Id(3)
-				: this.personalRepository.findByDepartamento_NombreContainingIgnoreCase(departmentName);
+				: this.personalRepository.getPersonalByDepartmentName(departmentName);
+
 		return personal.map(mapper::personalToEncangadoDTO)
 				.orElseThrow(() -> new ResourceNotFoundException(String.format("No hay datos sobre el encargado del area %s", departmentName)));
 	}
