@@ -8,6 +8,7 @@ import lombok.Data;
 public class PersonalEncargadoDTO {
     private String nombre;
     private String apellido;
+    private String email;
     private String departamento;
     private String horario;
     private String ubicacion;

@@ -34,6 +34,9 @@ public class Personal implements Serializable {
 	@Column(name = "apellido", nullable = false, length = 200)
 	private String apellido;
 
+	@Column(name = "email", nullable = false, length = 254)
+	private String email;
+
 	@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "id_departamento", referencedColumnName = "id")
@@ -64,17 +67,31 @@ public class Personal implements Serializable {
 		this.tipoPersonal = tipoPersonal;
 	}
 
-	public Personal(Integer id, String nombre, String apellido, Departamento departamento,
+	public Personal(Integer id, String nombre, String apellido, String email, Departamento departamento,
 					TipoPersonal tipoPersonal, PersonalEncargado encargado) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
 		this.apellido = apellido;
+		this.email = email;
 		this.departamento = departamento;
 		this.tipoPersonal = tipoPersonal;
 		this.personalEncargado = encargado;
 		personalEncargado.setPersonal(this);
 	}
+
+	public Personal(Integer id, String nombre, String apellido, String email, Departamento departamento,
+					TipoPersonal tipoPersonal) {
+		super();
+		this.id = id;
+		this.nombre = nombre;
+		this.apellido = apellido;
+		this.email = email;
+		this.departamento = departamento;
+		this.tipoPersonal = tipoPersonal;
+	}
+
+
 
 	public Personal(Integer id, String nombre, String apellido){
 		super();
@@ -119,6 +136,13 @@ public class Personal implements Serializable {
 		return apellido;
 	}
 
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
 	public void setApellido(String apellido) {
 		this.apellido = apellido;

@@ -49,7 +49,7 @@ class PersonalServiceImplTest {
         personal.setDepartamento(department);
 
        Mockito.when(repository
-               .findByDepartamento_NombreContainingIgnoreCase(Mockito.anyString()))
+               .getPersonalByDepartmentName(Mockito.anyString()))
                .thenReturn(Optional.of(personal));
 
        var result = personalService.findByDepartmentName("Anything");
@@ -67,7 +67,7 @@ class PersonalServiceImplTest {
 
 
         Mockito.when(repository
-                .findByDepartamento_NombreContainingIgnoreCase(Mockito.anyString()))
+                .getPersonalByDepartmentName(Mockito.anyString()))
                 .thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> personalService.findByDepartmentName("Anything"));
