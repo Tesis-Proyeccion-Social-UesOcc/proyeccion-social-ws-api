@@ -41,6 +41,10 @@ public class Proyecto implements Serializable {
     @JoinColumn(name = "id_status")
     private Status status;
 
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "id", referencedColumnName = "id")
+    private Certificado certificado;
+
     @OneToMany(mappedBy = "proyecto", fetch = FetchType.LAZY)
     private Set<ProyectoEstudiante> proyectoEstudianteSet;
 
@@ -140,6 +144,14 @@ public class Proyecto implements Serializable {
         this.proyectoEstudianteSet = proyectoEstudianteSet;
     }
 
+    public Certificado getCertificado() {
+        return certificado;
+    }
+
+    public void setCertificado(Certificado certificado) {
+        this.certificado = certificado;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -151,6 +163,7 @@ public class Proyecto implements Serializable {
                 Objects.equals(duracion, proyecto.duracion) &&
                 Objects.equals(tutor, proyecto.tutor) &&
                 Objects.equals(status, proyecto.status) &&
+                Objects.equals(certificado, proyecto.certificado) &&
                 Objects.equals(encargadoExterno, proyecto.encargadoExterno);
     }
 
