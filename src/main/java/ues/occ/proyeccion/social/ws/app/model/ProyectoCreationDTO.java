@@ -1,6 +1,7 @@
 package ues.occ.proyeccion.social.ws.app.model;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -9,6 +10,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import ues.occ.proyeccion.social.ws.app.dao.Status;
 import ues.occ.proyeccion.social.ws.app.validators.CarnetValidator;
 
 import javax.validation.constraints.*;
@@ -41,6 +43,10 @@ public class ProyectoCreationDTO implements Serializable {
 
     @NotEmpty(message = "Estudiantes list cannot be empty")
     private List<@CarnetValidator String> estudiantes;
+    
+    private LocalDateTime fechaCreacion;
+    
+    private StatusDTO status;
 
     @Data
     @Accessors(chain = true)
@@ -58,6 +64,10 @@ public class ProyectoCreationDTO implements Serializable {
         private boolean interno;
         private String personal;
         private Set<EstudianteDTO> estudiantes;
+        private LocalDateTime fechaCreacion;
+        private String status;
+
+     
     }
 }
 

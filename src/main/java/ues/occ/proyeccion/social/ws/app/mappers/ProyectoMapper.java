@@ -9,7 +9,7 @@ import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO;
 
 import java.util.Set;
 
-@Mapper(uses = {EstudianteMapper.class})
+@Mapper(uses = {EstudianteMapper.class, StatusMapper.class})
 public interface ProyectoMapper {
     ProyectoMapper INSTANCE = Mappers.getMapper(ProyectoMapper.class);
     EstudianteMapper MAPPER = Mappers.getMapper(EstudianteMapper.class);
@@ -31,6 +31,7 @@ public interface ProyectoMapper {
 
     @Mapping(source = "proyecto", target = "personal", qualifiedByName = "nombreChecker")
     @Mapping(source = "proyecto.proyectoEstudianteSet", target = "estudiantes", qualifiedByName = "estudiantesBuilder")
+    @Mapping(source = "proyecto.status.status", target ="status")
     ProyectoCreationDTO.ProyectoDTO proyectoToProyectoDTO(Proyecto proyecto, @Context CycleUtil cycleUtil);
 
     @Mapping(source = "proyecto", target = "personal", qualifiedByName = "idChecker")
