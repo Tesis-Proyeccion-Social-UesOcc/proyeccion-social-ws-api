@@ -77,7 +77,15 @@ public class CertificadoServiceImpl extends PageableResource<Certificado, Certif
         }
     }
 
-    @Override
+	@Override
+	public CertificadoCreationDTO.CertificadoDTO getCertificate(String carnet, String projectName) {
+		return this.certificadoRepository
+				.findByProyectoEstudiante_Estudiante_CarnetAndProyectoEstudiante_Proyecto_NombreContainingIgnoreCase(carnet, projectName)
+				.map(this.certificadoMapper::certificadoToCertificadoDTO)
+				.orElseThrow(() -> new ResourceNotFoundException("Certificado no encontrado"));
+	}
+
+	@Override
     public PageDtoWrapper<Certificado, CertificadoCreationDTO.CertificadoDTO> findAll(int page, int size) {
         Pageable pageable = this.getPageable(page, size);
         Page<Certificado> certificadoPage = this.certificadoRepository.findAll(pageable);
