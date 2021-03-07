@@ -46,6 +46,8 @@ public class ProyectoCreationDTO implements Serializable {
     
     private LocalDateTime fechaCreacion;
     
+    private LocalDateTime fechaModificacion;
+    
     private StatusDTO status;
 
     @Data
@@ -65,6 +67,7 @@ public class ProyectoCreationDTO implements Serializable {
         private String personal;
         private Set<EstudianteDTO> estudiantes;
         private LocalDateTime fechaCreacion;
+        private LocalDateTime fechaModificacion;
         private String status;
 
      

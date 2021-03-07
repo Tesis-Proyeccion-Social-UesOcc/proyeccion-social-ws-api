@@ -13,150 +13,160 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Table(name = "proyecto")
 public class Proyecto implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer id;
 
-    @Column(name = "nombre", nullable = false)
-    private String nombre;
+	@Column(name = "nombre", nullable = false)
+	private String nombre;
 
-    @Column(name = "duracion", nullable = false)
-    private Integer duracion;
+	@Column(name = "duracion", nullable = false)
+	private Integer duracion;
 
-    @Column(name = "interno", nullable = false)
-    private boolean interno;
+	@Column(name = "interno", nullable = false)
+	private boolean interno;
 
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_tutor")
-    private Personal tutor;
+	@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "id_tutor")
+	private Personal tutor;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_encargado_externo")
-    private PersonalExterno encargadoExterno;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "id_encargado_externo")
+	private PersonalExterno encargadoExterno;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_status")
-    private Status status;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "id_status")
+	private Status status;
 
-    @OneToMany(mappedBy = "proyecto", fetch = FetchType.LAZY)
-    private Set<ProyectoEstudiante> proyectoEstudianteSet;
+	@OneToMany(mappedBy = "proyecto", fetch = FetchType.LAZY)
+	private Set<ProyectoEstudiante> proyectoEstudianteSet;
 
-    @Column(name = "fecha_creacion")
-    private LocalDateTime fechaCreacion;
+	@Column(name = "fecha_creacion")
+	private LocalDateTime fechaCreacion;
 
-    public Proyecto() {
-        super();
-    }
+	@Column(name = "fecha_modificacion")
+	private LocalDateTime fechaModificacion;
 
-    public Proyecto(String nombre, Integer duracion, boolean interno, Personal tutor, PersonalExterno encargadoExterno, Status status, Set<ProyectoEstudiante> proyectoEstudianteSet) {
-        this.nombre = nombre;
-        this.duracion = duracion;
-        this.interno = interno;
-        this.tutor = tutor;
-        this.status = status;
-        this.encargadoExterno = encargadoExterno;
-    }
+	public Proyecto() {
+		super();
+	}
 
-    public Proyecto(int id, String nombre, int j, boolean interno, LocalDateTime now) {
-        this.id = id;
-        this.nombre = nombre;
-        this.interno = interno;
-        this.fechaCreacion = now;
+	public Proyecto(String nombre, Integer duracion, boolean interno, Personal tutor, PersonalExterno encargadoExterno,
+			Status status, Set<ProyectoEstudiante> proyectoEstudianteSet) {
+		this.nombre = nombre;
+		this.duracion = duracion;
+		this.interno = interno;
+		this.tutor = tutor;
+		this.status = status;
+		this.encargadoExterno = encargadoExterno;
+	}
 
-    }
+	public Proyecto(int id, String nombre, int j, boolean interno, LocalDateTime now) {
+		this.id = id;
+		this.nombre = nombre;
+		this.interno = interno;
+		this.fechaCreacion = now;
 
-    public LocalDateTime getFechaCreacion() {
-        return fechaCreacion;
-    }
+	}
 
-    public void setFechaCreacion(LocalDateTime fechaCreacion) {
-        this.fechaCreacion = fechaCreacion;
-    }
+	public LocalDateTime getFechaModificacion() {
+		return fechaModificacion;
+	}
 
-    public Integer getId() {
-        return id;
-    }
+	public void setFechaModificacion(LocalDateTime fechaModificacion) {
+		this.fechaModificacion = fechaModificacion;
+	}
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+	public LocalDateTime getFechaCreacion() {
+		return fechaCreacion;
+	}
 
-    public String getNombre() {
-        return nombre;
-    }
+	public void setFechaCreacion(LocalDateTime fechaCreacion) {
+		this.fechaCreacion = fechaCreacion;
+	}
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
+	public Integer getId() {
+		return id;
+	}
 
-    public Integer getDuracion() {
-        return duracion;
-    }
+	public void setId(Integer id) {
+		this.id = id;
+	}
 
-    public void setDuracion(Integer duracion) {
-        this.duracion = duracion;
-    }
+	public String getNombre() {
+		return nombre;
+	}
 
-    public boolean isInterno() {
-        return interno;
-    }
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
 
-    public void setInterno(boolean interno) {
-        this.interno = interno;
-    }
+	public Integer getDuracion() {
+		return duracion;
+	}
 
-    public Personal getTutor() {
-        return tutor;
-    }
+	public void setDuracion(Integer duracion) {
+		this.duracion = duracion;
+	}
 
-    public void setTutor(Personal tutor) {
-        this.tutor = tutor;
-    }
+	public boolean isInterno() {
+		return interno;
+	}
 
-    public Status getStatus() {
-        return status;
-    }
+	public void setInterno(boolean interno) {
+		this.interno = interno;
+	}
 
-    public void setStatus(Status status) {
-        this.status = status;
-    }
+	public Personal getTutor() {
+		return tutor;
+	}
 
-    public PersonalExterno getEncargadoExterno() {
-        return encargadoExterno;
-    }
+	public void setTutor(Personal tutor) {
+		this.tutor = tutor;
+	}
 
-    public void setEncargadoExterno(PersonalExterno encargadoExterno) {
-        this.encargadoExterno = encargadoExterno;
-    }
+	public Status getStatus() {
+		return status;
+	}
 
-    public Set<ProyectoEstudiante> getProyectoEstudianteSet() {
-        return proyectoEstudianteSet;
-    }
+	public void setStatus(Status status) {
+		this.status = status;
+	}
 
-    public void setProyectoEstudianteSet(Set<ProyectoEstudiante> proyectoEstudianteSet) {
-        this.proyectoEstudianteSet = proyectoEstudianteSet;
-    }
+	public PersonalExterno getEncargadoExterno() {
+		return encargadoExterno;
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Proyecto proyecto = (Proyecto) o;
-        return interno == proyecto.interno &&
-                Objects.equals(id, proyecto.id) &&
-                Objects.equals(nombre, proyecto.nombre) &&
-                Objects.equals(duracion, proyecto.duracion) &&
-                Objects.equals(tutor, proyecto.tutor) &&
-                Objects.equals(status, proyecto.status) &&
-                Objects.equals(encargadoExterno, proyecto.encargadoExterno);
-    }
+	public void setEncargadoExterno(PersonalExterno encargadoExterno) {
+		this.encargadoExterno = encargadoExterno;
+	}
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, nombre, duracion, interno, status);
-    }
+	public Set<ProyectoEstudiante> getProyectoEstudianteSet() {
+		return proyectoEstudianteSet;
+	}
+
+	public void setProyectoEstudianteSet(Set<ProyectoEstudiante> proyectoEstudianteSet) {
+		this.proyectoEstudianteSet = proyectoEstudianteSet;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		Proyecto proyecto = (Proyecto) o;
+		return interno == proyecto.interno && Objects.equals(id, proyecto.id) && Objects.equals(nombre, proyecto.nombre)
+				&& Objects.equals(duracion, proyecto.duracion) && Objects.equals(tutor, proyecto.tutor)
+				&& Objects.equals(status, proyecto.status)
+				&& Objects.equals(encargadoExterno, proyecto.encargadoExterno);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, nombre, duracion, interno, status);
+	}
 }
-
