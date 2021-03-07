@@ -40,6 +40,10 @@ public class Status implements Serializable {
         this.id = id;
         this.descripcion = descripcion;
     }
+    
+    public Status(Integer id) {
+        this.id = id;
+    }
 
     public Integer getId() {
         return id;

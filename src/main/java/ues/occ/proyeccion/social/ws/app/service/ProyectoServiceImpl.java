@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,6 +22,8 @@ import ues.occ.proyeccion.social.ws.app.dao.Personal;
 import ues.occ.proyeccion.social.ws.app.dao.PersonalExterno;
 import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
 import ues.occ.proyeccion.social.ws.app.dao.ProyectoEstudiante;
+import ues.occ.proyeccion.social.ws.app.dao.Status;
+import ues.occ.proyeccion.social.ws.app.dto.ProyectoChangeStatusDto;
 import ues.occ.proyeccion.social.ws.app.exceptions.InternalErrorException;
 import ues.occ.proyeccion.social.ws.app.exceptions.ResourceNotFoundException;
 import ues.occ.proyeccion.social.ws.app.mappers.CycleUtil;
@@ -35,6 +38,7 @@ import ues.occ.proyeccion.social.ws.app.utils.StatusOption;
 
 @Slf4j
 @Service
+@Transactional(rollbackOn = Exception.class)
 public class ProyectoServiceImpl implements ProyectoService {
 
     private final ProyectoRepository proyectoRepository;
@@ -169,4 +173,14 @@ public class ProyectoServiceImpl implements ProyectoService {
     private Pageable getPageable(int page, int size){
         return PageRequest.of(page, size);
     }
+
+	@Override
+	public ProyectoDTO changeStatus(ProyectoChangeStatusDto proyectoDto) {
+		
+		Proyecto proyecto = proyectoRepository.findById(proyectoDto.getIdProyecto())
+				.orElseThrow(()-> new ResourceNotFoundException("No se encontro el proyecto con id: "+proyectoDto.getIdProyecto())); 
+		proyecto.setStatus(new Status(proyectoDto.getStatus().ordinal()+1));
+		proyecto = proyectoRepository.save(proyecto);
+		return this.proyectoMapper.proyectoToProyectoDTO(proyecto, new CycleUtil());
+	}
 }
