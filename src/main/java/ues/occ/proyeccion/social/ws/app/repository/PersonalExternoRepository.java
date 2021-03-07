@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import ues.occ.proyeccion.social.ws.app.dao.PersonalExterno;
 
 @Repository
-public interface PersonaExternoRepository extends CrudRepository<PersonalExterno, Integer>{
+public interface PersonalExternoRepository extends CrudRepository<PersonalExterno, Integer>{
 
 	List<PersonalExterno> findAll();
 }

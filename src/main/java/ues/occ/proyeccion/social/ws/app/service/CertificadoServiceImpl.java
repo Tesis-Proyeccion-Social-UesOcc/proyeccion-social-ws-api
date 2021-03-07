@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDateTime;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -25,13 +24,13 @@ import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 
 import ues.occ.proyeccion.social.ws.app.dao.Certificado;
-import ues.occ.proyeccion.social.ws.app.dao.ProyectoEstudiante;
+import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
 import ues.occ.proyeccion.social.ws.app.dao.ServiceResponse;
 import ues.occ.proyeccion.social.ws.app.exceptions.ResourceNotFoundException;
 import ues.occ.proyeccion.social.ws.app.mappers.CertificadoMapper;
 import ues.occ.proyeccion.social.ws.app.model.CertificadoCreationDTO;
 import ues.occ.proyeccion.social.ws.app.repository.CertificadoRepository;
-import ues.occ.proyeccion.social.ws.app.repository.ProyectoEstudianteRepository;
+import ues.occ.proyeccion.social.ws.app.repository.ProyectoRepository;
 import ues.occ.proyeccion.social.ws.app.utils.PageDtoWrapper;
 import ues.occ.proyeccion.social.ws.app.utils.PageableResource;
 
@@ -44,26 +43,26 @@ public class CertificadoServiceImpl extends PageableResource<Certificado, Certif
 	private String bucketName;
 	private final Storage storage;
 	private final CertificadoRepository certificadoRepository;
-    private final ProyectoEstudianteRepository proyectoEstudianteRepository;
+    private final ProyectoRepository proyectoRepository;
     private final CertificadoMapper certificadoMapper;
 
     public CertificadoServiceImpl(CertificadoRepository certificadoRepository,
-                                  ProyectoEstudianteRepository proyectoEstudianteRepository,
+                                  ProyectoRepository proyectoRepository,
                                   CertificadoMapper certificadoMapper, Storage storage) {
         this.certificadoRepository = certificadoRepository;
-        this.proyectoEstudianteRepository = proyectoEstudianteRepository;
+        this.proyectoRepository = proyectoRepository;
         this.certificadoMapper = certificadoMapper;
         this.storage = storage;
     }
 
     @Override
     public Optional<CertificadoCreationDTO.CertificadoDTO> save(CertificadoCreationDTO dto) {
-        ProyectoEstudiante proyectoEstudiante =
-                this.proyectoEstudianteRepository.findByProyecto_Id(dto.getProyectoId())
+        Proyecto proyecto =
+                this.proyectoRepository.findById(dto.getProyectoId())
                 .orElseThrow(() -> new ResourceNotFoundException("Project does not exists or is not assigned yet"));
         try{
             URL url = new URL(dto.getUri());
-            Certificado certificado = new Certificado(proyectoEstudiante.getId(), url.toString(), LocalDateTime.now(), proyectoEstudiante);
+            Certificado certificado = new Certificado(proyecto.getId(), url.toString(), LocalDateTime.now(), proyecto);
             Certificado result = this.certificadoRepository.save(certificado);
             return Optional.of(this.certificadoMapper.certificadoToCertificadoDTO(result));
         }
@@ -88,7 +87,7 @@ public class CertificadoServiceImpl extends PageableResource<Certificado, Certif
     @Override
     public PageDtoWrapper<Certificado, CertificadoCreationDTO.CertificadoDTO> findAllByCarnet(int page, int size, String carnet) {
         Pageable pageable = this.getPageable(page, size);
-        Page<Certificado> certificadoPage = this.certificadoRepository.findAllByProyectoEstudiante_Estudiante_Carnet(carnet, pageable);
+        Page<Certificado> certificadoPage = this.certificadoRepository.findAllByProyecto_ProyectoEstudianteSet_Estudiante_Carnet(carnet, pageable);
         return this.getPagedData(certificadoPage);
     }
 

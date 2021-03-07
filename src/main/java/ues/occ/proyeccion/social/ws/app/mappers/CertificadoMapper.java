@@ -10,6 +10,6 @@ import ues.occ.proyeccion.social.ws.app.model.CertificadoCreationDTO;
 public interface CertificadoMapper {
     public static CertificadoMapper INSTANCE = Mappers.getMapper(CertificadoMapper.class);
 
-    @Mapping(source = "certificado.proyectoEstudiante.proyecto.nombre", target = "proyecto")
+    @Mapping(source = "certificado.proyecto.nombre", target = "proyecto")
     CertificadoCreationDTO.CertificadoDTO certificadoToCertificadoDTO(Certificado certificado);
 }

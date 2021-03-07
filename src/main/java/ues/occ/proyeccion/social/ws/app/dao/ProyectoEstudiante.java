@@ -26,10 +26,6 @@ public class ProyectoEstudiante implements Serializable {
     @JoinColumn(name = "id_proyecto")
     private Proyecto proyecto;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "id", referencedColumnName = "id")
-    private Certificado certificado;
-
     public ProyectoEstudiante() {
     }
 
@@ -62,14 +58,6 @@ public class ProyectoEstudiante implements Serializable {
         this.proyecto = proyecto;
     }
 
-    public Certificado getCertificado() {
-        return certificado;
-    }
-
-    public void setCertificado(Certificado certificado) {
-        this.certificado = certificado;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -77,8 +65,7 @@ public class ProyectoEstudiante implements Serializable {
         ProyectoEstudiante that = (ProyectoEstudiante) o;
         return Objects.equals(id, that.id) &&
                 Objects.equals(estudiante, that.estudiante) &&
-                Objects.equals(proyecto, that.proyecto) &&
-                Objects.equals(certificado, that.certificado);
+                Objects.equals(proyecto, that.proyecto);
     }
 
     @Override

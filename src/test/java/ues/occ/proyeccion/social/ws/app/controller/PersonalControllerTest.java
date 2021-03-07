@@ -38,25 +38,26 @@ class PersonalControllerTest {
 
     @Test
     void findByDepartmentName() throws Exception{
-        var dto = new PersonalEncargadoDTO("Jose", "Salazar", "ciencia", "5-10", "ues");
-        Mockito.when(service.findByDepartmentName(Mockito.anyString())).thenReturn(dto);
+        var dto = new PersonalEncargadoDTO("Jose", "Salazar", "some@gmail.com", "ciencia", "5-10", "ues");
+        Mockito.when(service.findByDepartmentName(ArgumentMatchers.nullable(String.class))).thenReturn(dto);
 
         var captor = ArgumentCaptor.forClass(String.class);
 
         mvc.perform(MockMvcRequestBuilders.get("/personal/encargado")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-                .param("department", "something"))
+                .param("area", "general"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.nombre", CoreMatchers.is("Jose")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.apellido", CoreMatchers.is("Salazar")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.departamento", CoreMatchers.is("ciencia")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.email", CoreMatchers.is("some@gmail.com")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.horario", CoreMatchers.is("5-10")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.ubicacion", CoreMatchers.is("ues")));
 
         Mockito.verify(service, Mockito.times(1)).findByDepartmentName(captor.capture());
 
-        assertEquals(captor.getValue(), "something");
+        assertEquals("general", captor.getValue());
     }
 
     @Test
@@ -68,7 +69,7 @@ class PersonalControllerTest {
         mvc.perform(MockMvcRequestBuilders.get("/personal/encargado")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-                .param("department", "something"))
+                .param("area", "something"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message", CoreMatchers.is("error")));
 

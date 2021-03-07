@@ -1,6 +1,7 @@
 package ues.occ.proyeccion.social.ws.app.dao;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -19,7 +20,6 @@ public class TipoPersonal implements Serializable{
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Integer id;
 	
@@ -29,8 +29,8 @@ public class TipoPersonal implements Serializable{
 	@Column(name = "descripcion", nullable = false, length = 1000)
 	private String descripcion;
 	
-	@OneToMany(mappedBy = "tipoPersonal", fetch = FetchType.LAZY)
-	private Set<Personal> personal;
+//	@OneToMany(mappedBy = "tipoPersonal", fetch = FetchType.LAZY)
+//	private Set<Personal> personal;
 	
 	public TipoPersonal() {
 		super();

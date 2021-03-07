@@ -25,6 +25,9 @@ public class PersonalExterno implements Serializable {
 	@Column(name = "descripcion", nullable = false, length = 500)
 	private String descripcion;
 
+	@Column(name = "email", nullable = false, length = 254)
+	private String email;
+
 	@OneToMany(mappedBy = "encargadoExterno", fetch = FetchType.LAZY)
 	private List<Proyecto> proyectos;
 	
@@ -32,11 +35,12 @@ public class PersonalExterno implements Serializable {
 		super();
 	}
 
-	public PersonalExterno(Integer id, String nombre, String apellido, String descripcion, List<Proyecto> proyectos) {
+	public PersonalExterno(Integer id, String nombre, String apellido, String descripcion, String email, List<Proyecto> proyectos) {
 		this.id = id;
 		this.nombre = nombre;
 		this.apellido = apellido;
 		this.descripcion = descripcion;
+		this.email = email;
 		this.proyectos = proyectos;
 	}
 
@@ -89,11 +93,12 @@ public class PersonalExterno implements Serializable {
 				Objects.equals(nombre, that.nombre) &&
 				Objects.equals(apellido, that.apellido) &&
 				Objects.equals(descripcion, that.descripcion) &&
+				Objects.equals(email, that.email) &&
 				Objects.equals(proyectos, that.proyectos);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, nombre, apellido, descripcion, proyectos);
+		return Objects.hash(id, nombre, apellido, descripcion, email, proyectos);
 	}
 }

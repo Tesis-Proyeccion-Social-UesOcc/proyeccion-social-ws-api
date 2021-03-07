@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -15,7 +14,7 @@ import ues.occ.proyeccion.social.ws.app.dto.PersonalExternoDto;
 import ues.occ.proyeccion.social.ws.app.exceptions.ResourceNotFoundException;
 import ues.occ.proyeccion.social.ws.app.mappers.PersonalEncargadoMapper;
 import ues.occ.proyeccion.social.ws.app.model.PersonalEncargadoDTO;
-import ues.occ.proyeccion.social.ws.app.repository.PersonaExternoRepository;
+import ues.occ.proyeccion.social.ws.app.repository.PersonalExternoRepository;
 import ues.occ.proyeccion.social.ws.app.repository.PersonalRepository;
 
 @Service
@@ -23,18 +22,16 @@ public class PersonalServiceImpl implements PersonalService {
 
 	private static final Logger log = LoggerFactory.getLogger(PersonalServiceImpl.class);
 	
-	@Autowired
-	private PersonalRepository personalRepository;
-	@Autowired
-	private PersonaExternoRepository personaExternoRepository;
-
+	private final PersonalRepository personalRepository;
+	private final PersonalExternoRepository personalExternoRepository;
 	private final PersonalEncargadoMapper mapper;
-	
-	public PersonalServiceImpl(PersonalRepository personalRepository, PersonalEncargadoMapper mapper) {
+
+	public PersonalServiceImpl(PersonalRepository personalRepository, PersonalExternoRepository personalExternoRepository, PersonalEncargadoMapper mapper) {
 		this.personalRepository = personalRepository;
+		this.personalExternoRepository = personalExternoRepository;
 		this.mapper = mapper;
 	}
-	
+
 	private ModelMapper modelMapper;
 	
 	@Override
@@ -59,7 +56,7 @@ public class PersonalServiceImpl implements PersonalService {
 					 personalRepository.findAll()), HttpStatus.OK);
 		} else {
 			return new ResponseEntity<ServiceResponse>(new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk,
-					 personaExternoRepository.findAll().stream().
+					 personalExternoRepository.findAll().stream().
 					 map(element -> modelMapper.map(element, PersonalExternoDto.class)).collect(Collectors.toList())
 			), HttpStatus.OK);
 			
@@ -100,9 +97,12 @@ public class PersonalServiceImpl implements PersonalService {
 	
 	@Override
 	public PersonalEncargadoDTO findByDepartmentName(String departmentName) {
-		var personalOptional = this.personalRepository.findByDepartamento_NombreContainingIgnoreCase(departmentName);
-		return personalOptional.map(mapper::personalToEncangadoDTO)
-				.orElseThrow(() -> new ResourceNotFoundException(String.format("There's no personal for department %s", departmentName)));
+		var personal = departmentName.equalsIgnoreCase("general")
+				? this.personalRepository.findByTipoPersonal_Id(3)
+				: this.personalRepository.getPersonalByDepartmentName(departmentName);
+
+		return personal.map(mapper::personalToEncangadoDTO)
+				.orElseThrow(() -> new ResourceNotFoundException(String.format("No hay datos sobre el encargado del area %s", departmentName)));
 	}
 	
 }

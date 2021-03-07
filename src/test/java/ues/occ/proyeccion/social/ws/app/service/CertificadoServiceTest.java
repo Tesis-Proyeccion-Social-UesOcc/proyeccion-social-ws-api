@@ -13,11 +13,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import ues.occ.proyeccion.social.ws.app.dao.Certificado;
 import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
-import ues.occ.proyeccion.social.ws.app.dao.ProyectoEstudiante;
 import ues.occ.proyeccion.social.ws.app.mappers.CertificadoMapper;
 import ues.occ.proyeccion.social.ws.app.model.CertificadoCreationDTO;
 import ues.occ.proyeccion.social.ws.app.repository.CertificadoRepository;
-import ues.occ.proyeccion.social.ws.app.repository.ProyectoEstudianteRepository;
+import ues.occ.proyeccion.social.ws.app.repository.ProyectoRepository;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -32,7 +32,7 @@ class CertificadoServiceTest {
     Storage storage;
 
     @Mock
-    ProyectoEstudianteRepository proyectoEstudianteRepository;
+    ProyectoRepository proyectoRepository;
 
     CertificadoService service;
     public static final int PAGE = 5;
@@ -41,7 +41,7 @@ class CertificadoServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        service = new CertificadoServiceImpl(certificadoRepository, proyectoEstudianteRepository, CertificadoMapper.INSTANCE, storage);
+        service = new CertificadoServiceImpl(certificadoRepository, proyectoRepository, CertificadoMapper.INSTANCE, storage);
     }
 
     @Test
@@ -51,22 +51,21 @@ class CertificadoServiceTest {
         ArgumentCaptor<Certificado> certificadoArgumentCaptor = ArgumentCaptor.forClass(Certificado.class);
         ArgumentCaptor<Integer> integerArgumentCaptor = ArgumentCaptor.forClass(Integer.class);
 
-        ProyectoEstudiante proyectoEstudiante = new ProyectoEstudiante();
-        proyectoEstudiante.setProyecto(new Proyecto(proyecto, null, false, null, null, null, null));
-        proyectoEstudiante.setId(102);
-        Optional<ProyectoEstudiante> proyectoEstudianteOptional = Optional.of(proyectoEstudiante);
+        Proyecto proyecto1 = new Proyecto(proyecto, null, false, null, null, null, null);
+        proyecto1.setId(102);
+        Optional<Proyecto> proyectoOptional = Optional.of(proyecto1);
         Certificado certificado = new Certificado();
-        certificado.setProyectoEstudiante(proyectoEstudiante);
+        certificado.setProyecto(proyecto1);
         certificado.setId(certificadoId);
         CertificadoCreationDTO certificadoCreationDTO = new CertificadoCreationDTO(proyectoId, "http://gcp.com");
 
-        Mockito.when(proyectoEstudianteRepository.findByProyecto_Id(proyectoId)).thenReturn(proyectoEstudianteOptional);
+        Mockito.when(proyectoRepository.findById(proyectoId)).thenReturn(proyectoOptional);
         Mockito.when(certificadoRepository.save(Mockito.any(Certificado.class))).thenReturn(certificado);
 
         Optional<CertificadoCreationDTO.CertificadoDTO> certificadoDTO = service.save(certificadoCreationDTO);
 
         Mockito.verify(this.certificadoRepository, Mockito.times(1)).save(certificadoArgumentCaptor.capture());
-        Mockito.verify(this.proyectoEstudianteRepository, Mockito.times(1)).findByProyecto_Id(integerArgumentCaptor.capture());
+        Mockito.verify(this.proyectoRepository, Mockito.times(1)).findById(integerArgumentCaptor.capture());
 
         assertTrue(certificadoDTO.isPresent());
         CertificadoCreationDTO.CertificadoDTO certificadoResult = certificadoDTO.get();
@@ -84,7 +83,7 @@ class CertificadoServiceTest {
 
         CertificadoCreationDTO certificadoCreationDTO = new CertificadoCreationDTO(proyectoId, "gcp.com");
 
-        Mockito.when(proyectoEstudianteRepository.findByProyecto_Id(Mockito.anyInt())).thenReturn(Optional.of(new ProyectoEstudiante()));
+        Mockito.when(proyectoRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(new Proyecto()));
         Mockito.when(certificadoRepository.save(Mockito.any())).thenReturn(new Certificado());
         assertThrows(IllegalArgumentException.class, () -> service.save(certificadoCreationDTO));
     }
@@ -94,16 +93,14 @@ class CertificadoServiceTest {
         String projectName1 = "Test1", projectName2 = "Test2";
         Pageable pageable = PageRequest.of(PAGE, SIZE);
 
-        ProyectoEstudiante proyectoEstudiante1 = new ProyectoEstudiante();
-        proyectoEstudiante1.setProyecto(new Proyecto(projectName1, null, false, null, null, null, null));
+        var proyecto1 = new Proyecto(projectName1, null, false, null, null, null, null);
 
-        ProyectoEstudiante proyectoEstudiante2 = new ProyectoEstudiante();
-        proyectoEstudiante2.setProyecto(new Proyecto(projectName2, null, false, null, null, null, null));
+        var proyecto2 = new Proyecto(projectName2, null, false, null, null, null, null);
 
         Certificado certificado1 = new Certificado();
-        certificado1.setProyectoEstudiante(proyectoEstudiante1);
+        certificado1.setProyecto(proyecto1);
         Certificado certificado2 = new Certificado();
-        certificado2.setProyectoEstudiante(proyectoEstudiante2);
+        certificado2.setProyecto(proyecto2);
 
         List<Certificado> data = List.of(certificado1, certificado2);
         Page<Certificado> certificadoPage = new PageImpl<>(data, pageable, data.size());
@@ -136,13 +133,13 @@ class CertificadoServiceTest {
         ArgumentCaptor<Pageable> pageableArgumentCaptor = ArgumentCaptor.forClass(Pageable.class);
         ArgumentCaptor<String> carnetArgumentCaptor = ArgumentCaptor.forClass(String.class);
 
-        Mockito.when(this.certificadoRepository.findAllByProyectoEstudiante_Estudiante_Carnet(
+        Mockito.when(this.certificadoRepository.findAllByProyecto_ProyectoEstudianteSet_Estudiante_Carnet(
                 Mockito.anyString(), Mockito.any(Pageable.class))).thenReturn(certificadoPage);
 
         var result = this.service.findAllByCarnet(PAGE, SIZE, carnet);
 
         Mockito.verify(this.certificadoRepository, Mockito.times(1))
-                .findAllByProyectoEstudiante_Estudiante_Carnet(carnetArgumentCaptor.capture(), pageableArgumentCaptor.capture());
+                .findAllByProyecto_ProyectoEstudianteSet_Estudiante_Carnet(carnetArgumentCaptor.capture(), pageableArgumentCaptor.capture());
         assertNotNull(pageableArgumentCaptor.getValue());
         assertNotNull(carnetArgumentCaptor.getValue());
         assertEquals(PAGE, pageableArgumentCaptor.getValue().getPageNumber());
