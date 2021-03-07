@@ -13,7 +13,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-// activate test profile to test it ===> spring.profiles.active=test
+// activate the test profile to test it ===> spring.profiles.active=test
 @DataJpaTest
 @Profile("test")
 class PersonalRepositoryIT {
@@ -39,16 +39,16 @@ class PersonalRepositoryIT {
          departamentoRepository.save(departamento);
          personalRepository.saveAll(List.of(personal2, personal));
 //       personalEncargadoRepository.save(encargado);
-         var result = personalRepository
-             .getPersonalByDepartmentName("quimica")
-             .get();
+         var result = personalRepository.getPersonalByDepartmentName("quimica");
+         assertTrue(result.isPresent());
+         var personalResult = result.get();
          assertEquals(2, personalRepository.count());
-         assertNotNull(result);
-         assertEquals(result.getNombre(), personal.getNombre());
-         assertEquals(result.getApellido(), personal.getApellido());
-         assertEquals(result.getEmail(), personal.getEmail());
-         assertEquals(result.getPersonalEncargado().getHorario(), encargado.getHorario());
-         assertEquals(result.getPersonalEncargado().getUbicacion(), encargado.getUbicacion());
+         assertNotNull(personalResult);
+         assertEquals(personalResult.getNombre(), personal.getNombre());
+         assertEquals(personalResult.getApellido(), personal.getApellido());
+         assertEquals(personalResult.getEmail(), personal.getEmail());
+         assertEquals(personalResult.getPersonalEncargado().getHorario(), encargado.getHorario());
+         assertEquals(personalResult.getPersonalEncargado().getUbicacion(), encargado.getUbicacion());
     }
 
     @Test

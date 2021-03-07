@@ -1,14 +1,9 @@
 package ues.occ.proyeccion.social.ws.app.controller;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
 import org.springframework.web.util.UriComponentsBuilder;
 import ues.occ.proyeccion.social.ws.app.dao.Certificado;
 import ues.occ.proyeccion.social.ws.app.events.PaginatedResultsRetrievedEvent;
@@ -16,7 +11,9 @@ import ues.occ.proyeccion.social.ws.app.exceptions.InternalErrorException;
 import ues.occ.proyeccion.social.ws.app.model.CertificadoCreationDTO;
 import ues.occ.proyeccion.social.ws.app.model.PageDTO;
 import ues.occ.proyeccion.social.ws.app.service.CertificadoService;
-import ues.occ.proyeccion.social.ws.app.validators.CarnetValidator;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 
 @RestController
@@ -56,9 +53,9 @@ public class CertificadoController {
     }
 
 
-    @GetMapping("/{carnet}/")
-    public CertificadoCreationDTO.CertificadoDTO getCertificateByProjectName(@PathVariable @CarnetValidator String carnet,
-                                                                             @RequestParam(name = "projectName") @NotBlank String projectName){
+    @GetMapping("/{carnet}")
+    public CertificadoCreationDTO.CertificadoDTO getCertificateByProjectName(@PathVariable String carnet,
+                                                                             @RequestParam(name = "projectName") String projectName){
         return this.certificadoService.getCertificate(carnet, projectName);
     }
 

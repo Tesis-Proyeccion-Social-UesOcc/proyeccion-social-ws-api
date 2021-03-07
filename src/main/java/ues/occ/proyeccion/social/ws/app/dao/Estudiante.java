@@ -41,6 +41,12 @@ public class Estudiante implements Serializable {
 		this.proyectoEstudianteSet = proyectoEstudianteSet;
 	}
 
+	public Estudiante(String carnet, Integer horasProgreso, boolean servicioCompleto){
+		this.carnet = carnet;
+		this.horasProgreso = horasProgreso;
+		this.servicioCompleto = servicioCompleto;
+	}
+
 	public String getCarnet() {
 		return carnet;
 	}

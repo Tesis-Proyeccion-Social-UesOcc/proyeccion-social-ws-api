@@ -60,7 +60,7 @@ public class Proyecto implements Serializable {
         this.encargadoExterno = encargadoExterno;
     }
 
-    public Proyecto(int id, String nombre, int j, boolean interno, LocalDateTime now) {
+    public Proyecto(int id, String nombre, boolean interno, LocalDateTime now) {
         this.id = id;
         this.nombre = nombre;
         this.interno = interno;
