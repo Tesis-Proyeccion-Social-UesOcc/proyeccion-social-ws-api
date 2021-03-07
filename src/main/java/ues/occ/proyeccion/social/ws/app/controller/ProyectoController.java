@@ -1,21 +1,28 @@
 package ues.occ.proyeccion.social.ws.app.controller;
 
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
+
 import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
-import ues.occ.proyeccion.social.ws.app.dao.Status;
 import ues.occ.proyeccion.social.ws.app.dto.ProyectoChangeStatusDto;
-import ues.occ.proyeccion.social.ws.app.dto.StatusEnum;
 import ues.occ.proyeccion.social.ws.app.events.PaginatedResultsRetrievedEvent;
 import ues.occ.proyeccion.social.ws.app.model.PageDTO;
 import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO;
 import ues.occ.proyeccion.social.ws.app.service.ProyectoService;
 import ues.occ.proyeccion.social.ws.app.utils.PageDtoWrapper;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/proyectos")
