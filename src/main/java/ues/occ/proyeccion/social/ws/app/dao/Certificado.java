@@ -24,17 +24,18 @@ public class Certificado implements Serializable {
 
 	// Indica que la columna id de proyecto_estudiante se usara como PK y FK
 
-	@OneToOne(mappedBy = "certificado", fetch = FetchType.LAZY)
-	private ProyectoEstudiante proyectoEstudiante;
+	@OneToOne(mappedBy = "certificado", fetch = FetchType.EAGER)
+	private Proyecto proyecto;
 
 	public Certificado() {
 	}
 
-	public Certificado(Integer id, String uri, LocalDateTime fechaExpedicion, ProyectoEstudiante proyectoEstudiante) {
+	public Certificado(Integer id, String uri, LocalDateTime fechaExpedicion, Proyecto proyecto) {
 		this.id = id;
 		this.uri = uri;
-		this.proyectoEstudiante = proyectoEstudiante;
+		this.proyecto = proyecto;
 		this.fechaExpedicion = fechaExpedicion;
+		proyecto.setCertificado(this);
 	}
 
 	public Integer getId() {
@@ -61,12 +62,12 @@ public class Certificado implements Serializable {
 		this.fechaExpedicion = fecha_expedicion;
 	}
 
-	public ProyectoEstudiante getProyectoEstudiante() {
-		return proyectoEstudiante;
+	public Proyecto getProyecto() {
+		return proyecto;
 	}
 
-	public void setProyectoEstudiante(ProyectoEstudiante proyectoEstudiante) {
-		this.proyectoEstudiante = proyectoEstudiante;
+	public void setProyecto(Proyecto proyecto) {
+		this.proyecto = proyecto;
 	}
 
 	@Override
@@ -76,8 +77,7 @@ public class Certificado implements Serializable {
 		Certificado that = (Certificado) o;
 		return Objects.equals(id, that.id) &&
 				Objects.equals(uri, that.uri) &&
-				Objects.equals(fechaExpedicion, that.fechaExpedicion) &&
-				Objects.equals(proyectoEstudiante, that.proyectoEstudiante);
+				Objects.equals(fechaExpedicion, that.fechaExpedicion);
 	}
 
 	@Override
@@ -87,7 +87,6 @@ public class Certificado implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Certificado [id=" + id + ", uri=" + uri + ", fecha_expedicion=" + fechaExpedicion
-				+ ", proyectoEstudiante=" + proyectoEstudiante + "]";
+		return "Certificado [id=" + id + ", uri=" + uri + ", fecha_expedicion=" + fechaExpedicion;
 	}
 }

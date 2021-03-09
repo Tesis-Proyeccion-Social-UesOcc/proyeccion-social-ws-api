@@ -12,10 +12,11 @@ import java.util.Optional;
 
 @Repository
 public interface CertificadoRepository extends PagingAndSortingRepository<Certificado, Integer> {
-	Page<Certificado> findAllByProyectoEstudiante_Estudiante_Carnet(String carnet, Pageable pageable);
+	Page<Certificado> findAllByProyecto_ProyectoEstudianteSet_Estudiante_Carnet(String carnet, Pageable pageable);
 
     @Query(value = "SELECT p.carnet FROM proyecto_estudiante p where p.id = ?1", nativeQuery = true)
     String findCarnet(int id);
 
-    Optional<Certificado> findByProyectoEstudiante_Estudiante_CarnetAndProyectoEstudiante_Proyecto_NombreContainingIgnoreCase(String carnet, String projectName);
+    Optional<Certificado> findByProyecto_ProyectoEstudianteSet_Estudiante_CarnetAndProyecto_NombreContainingIgnoreCase(String carnet, String projectName);
+
 }
