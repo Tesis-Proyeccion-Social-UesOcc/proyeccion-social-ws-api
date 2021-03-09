@@ -14,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import ues.occ.proyeccion.social.ws.app.dao.Certificado;
 import ues.occ.proyeccion.social.ws.app.dao.Estudiante;
 import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
-import ues.occ.proyeccion.social.ws.app.dao.ProyectoEstudiante;
 import ues.occ.proyeccion.social.ws.app.exceptions.ResourceNotFoundException;
 import ues.occ.proyeccion.social.ws.app.mappers.CertificadoMapper;
 import ues.occ.proyeccion.social.ws.app.model.CertificadoCreationDTO;

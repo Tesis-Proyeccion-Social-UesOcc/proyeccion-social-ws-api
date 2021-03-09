@@ -14,12 +14,10 @@ public class ProyectoEstudiante implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("studentId")
-    @JoinColumn(name = "carnet")
     private Estudiante estudiante;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("projectId")
-    @JoinColumn(name = "id_proyecto")
     private Proyecto proyecto;
 
     @Column(name = "activo")
