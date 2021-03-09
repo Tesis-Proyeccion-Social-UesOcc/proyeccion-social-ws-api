@@ -30,24 +30,31 @@ class CertificadoRepositoryIT {
         var status = new Status(1, "completado", "some description");
         statusRepository.save(status);
         var estudiante = new Estudiante(carnet, 300, false);
-        var proyecto = new Proyecto(1, projectName, true, LocalDateTime.now());
-        proyecto.setDuracion(250);
         estudianteRepository.save(estudiante);
+
+        var proyecto = new Proyecto(1, projectName, 250, true, LocalDateTime.now());
+        proyecto.registerStudent(estudiante);
+
         proyectoRepository.save(proyecto);
-        var proyectoEstudiante = new ProyectoEstudiante(estudiante, proyecto);
-        proyectoEstudianteRepository.save(proyectoEstudiante);
-        var certificado = new Certificado(1, uri, LocalDateTime.now(), proyectoEstudiante);
+
+        var certificado = new Certificado(1, uri, LocalDateTime.now(), proyecto);
         certificadoRepository.save(certificado);
 
         // then
-        var result = certificadoRepository
-                .findByProyectoEstudiante_Estudiante_CarnetAndProyectoEstudiante_Proyecto_NombreContainingIgnoreCase(carnet, "test proj"); //char sequence to test case insensitive query
-        assertTrue(result.isPresent());
 
+        var result = certificadoRepository
+                .findByProyecto_ProyectoEstudianteSet_Estudiante_CarnetAndProyecto_NombreContainingIgnoreCase(carnet, "test proj"); //char sequence to test case insensitive query
+        assertTrue(result.isPresent());
         var certificadoResult = result.get();
-        assertEquals(certificadoResult.getProyectoEstudiante().getEstudiante().getCarnet(), carnet);
-        assertEquals(certificadoResult.getProyectoEstudiante().getProyecto().getNombre(), projectName);
+
+        assertEquals(data(certificadoResult.getProyecto()).getCarnet(), carnet);
+        assertEquals(certificadoResult.getProyecto().getNombre(), projectName);
         assertEquals(certificadoResult.getUri(), uri);
 
+    }
+    private Estudiante data(Proyecto proyecto){
+        var data = proyecto.getProyectoEstudianteSet();
+        var array = data.toArray(new ProyectoEstudiante[0]);
+        return array[0].getEstudiante();
     }
 }
