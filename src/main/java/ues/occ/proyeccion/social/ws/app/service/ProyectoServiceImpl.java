@@ -10,7 +10,11 @@ import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
 import ues.occ.proyeccion.social.ws.app.dao.PersonalExterno;
 import ues.occ.proyeccion.social.ws.app.dao.Estudiante;
 import ues.occ.proyeccion.social.ws.app.dao.ProyectoEstudiante;
+import ues.occ.proyeccion.social.ws.app.dao.Status;
+import ues.occ.proyeccion.social.ws.app.dto.ProyectoChangeStatusDto;
+import ues.occ.proyeccion.social.ws.app.dto.StatusEnum;
 import ues.occ.proyeccion.social.ws.app.dao.Personal;
+import ues.occ.proyeccion.social.ws.app.exceptions.ChangeStatusProjectException;
 import ues.occ.proyeccion.social.ws.app.exceptions.InternalErrorException;
 import ues.occ.proyeccion.social.ws.app.exceptions.ResourceNotFoundException;
 import ues.occ.proyeccion.social.ws.app.mappers.CycleUtil;
@@ -24,6 +28,9 @@ import ues.occ.proyeccion.social.ws.app.utils.StatusOption;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -149,5 +156,47 @@ public class ProyectoServiceImpl implements ProyectoService {
     private Pageable getPageable(int page, int size){
         return PageRequest.of(page, size);
     }
+
+    @Override
+	public ProyectoDTO changeStatus(ProyectoChangeStatusDto proyectoDto) {
+
+		Proyecto proyecto = proyectoRepository.findById(proyectoDto.getIdProyecto())
+				.orElseThrow(() -> new ChangeStatusProjectException(
+						"No se encontro el proyecto con id: " + proyectoDto.getIdProyecto()));
+
+		var proyectoStatus = this.proyectoMapper.proyectoToProyectoDTO(proyecto, new CycleUtil());
+
+		if (proyecto.getStatus().equals("Pendiente")) {
+			if (proyectoDto.getStatus() == StatusEnum.Pendiente) {
+				throw new ChangeStatusProjectException(
+						"El proyecto ya esta en estado pendiente. Podria  asignar estado rechazado o en proceso");
+			} else if (proyectoDto.getStatus() == StatusEnum.Completado) {
+				throw new ChangeStatusProjectException(
+						"No se puede asignar el estado completado, porque el proyecto esta pendiente. Podria asignar estado rechazado o en proceso porfavor");
+			}
+		}
+
+		if (proyecto.getStatus().equals("En proceso")) {
+			if (proyectoDto.getStatus() == StatusEnum.Pendiente) {
+				throw new ChangeStatusProjectException(
+						"El proyecto ya esta en proceso, no se puede asginar el estado pendiente. Podria asignar estado completado o retiro porfavor");
+			} else if (proyectoDto.getStatus() == StatusEnum.Rechazado) {
+				throw new ChangeStatusProjectException(
+						"El proyecto ya esta en proceso, no se puede rechazar, solamente retirar");
+			}
+		}
+
+		if (proyecto.getStatus().equals("Completado") || proyecto.getStatus().getStatus().equalsIgnoreCase("Retiro")
+				|| proyecto.getStatus().getStatus().equalsIgnoreCase("Rechazado")) {
+			throw new ChangeStatusProjectException("Estado de proyecto: " + proyecto.getStatus().getStatus()
+					+ ", el proyecto ya esta en un estado definitivo, este no se puede cambiar.");
+		}
+
+		proyecto.setStatus(new Status(proyectoDto.getStatus().ordinal() + 1));
+		ZoneId zid = ZoneId.of("America/Guatemala");
+		proyecto.setFechaModificacion(LocalDateTime.now(zid));
+		proyecto = proyectoRepository.save(proyecto);
+		return this.proyectoMapper.proyectoToProyectoDTO(proyecto, new CycleUtil());
+	}
 }
 
