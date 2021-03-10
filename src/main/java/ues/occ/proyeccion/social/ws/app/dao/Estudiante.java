@@ -1,6 +1,7 @@
 package ues.occ.proyeccion.social.ws.app.dao;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -26,8 +27,10 @@ public class Estudiante implements Serializable {
 	@OneToMany(mappedBy = "estudiante", fetch = FetchType.LAZY)
 	private List<EstadoRequerimientoEstudiante> estadoRequerimientoEstudiantes;
 
-	@OneToMany(mappedBy = "estudiante", fetch = FetchType.LAZY)
-	private List<ProyectoEstudiante> proyectoEstudianteSet;
+	@OneToMany(mappedBy = "estudiante", fetch = FetchType.LAZY,
+			cascade = CascadeType.ALL,
+			orphanRemoval = true)
+	private List<ProyectoEstudiante> proyectoEstudianteSet = new ArrayList<>();
 
 	public Estudiante() {
 		super();
@@ -39,6 +42,12 @@ public class Estudiante implements Serializable {
 		this.servicioCompleto = servicioCompleto;
 		this.estadoRequerimientoEstudiantes = estadoRequerimientoEstudiantes;
 		this.proyectoEstudianteSet = proyectoEstudianteSet;
+	}
+
+	public Estudiante(String carnet, Integer horasProgreso, boolean servicioCompleto){
+		this.carnet = carnet;
+		this.horasProgreso = horasProgreso;
+		this.servicioCompleto = servicioCompleto;
 	}
 
 	public String getCarnet() {

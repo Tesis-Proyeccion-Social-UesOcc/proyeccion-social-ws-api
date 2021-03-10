@@ -14,6 +14,7 @@ import ues.occ.proyeccion.social.ws.app.utils.PageDtoWrapper;
 
 public interface CertificadoService {
     Optional<CertificadoCreationDTO.CertificadoDTO> save(CertificadoCreationDTO dto);
+    CertificadoCreationDTO.CertificadoDTO getCertificate(String carnet, String projectName);
     PageDtoWrapper<Certificado, CertificadoCreationDTO.CertificadoDTO> findAll(int page, int size);
     PageDtoWrapper<Certificado, CertificadoCreationDTO.CertificadoDTO> findAllByCarnet(int page, int size, String carnet);
 

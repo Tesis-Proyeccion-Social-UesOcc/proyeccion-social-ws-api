@@ -1,19 +1,9 @@
 package ues.occ.proyeccion.social.ws.app.controller;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 import ues.occ.proyeccion.social.ws.app.dao.Certificado;
 import ues.occ.proyeccion.social.ws.app.events.PaginatedResultsRetrievedEvent;
@@ -21,6 +11,9 @@ import ues.occ.proyeccion.social.ws.app.exceptions.InternalErrorException;
 import ues.occ.proyeccion.social.ws.app.model.CertificadoCreationDTO;
 import ues.occ.proyeccion.social.ws.app.model.PageDTO;
 import ues.occ.proyeccion.social.ws.app.service.CertificadoService;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 
 @RestController
@@ -58,4 +51,12 @@ public class CertificadoController {
 
         return new PageDTO<CertificadoCreationDTO.CertificadoDTO>(result);
     }
+
+
+    @GetMapping("/{carnet}")
+    public CertificadoCreationDTO.CertificadoDTO getCertificateByProjectName(@PathVariable String carnet,
+                                                                             @RequestParam(name = "projectName") String projectName){
+        return this.certificadoService.getCertificate(carnet, projectName);
+    }
+
 }

@@ -5,20 +5,16 @@ import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsCollectionWithSize;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ues.occ.proyeccion.social.ws.app.dao.Certificado;
@@ -26,14 +22,13 @@ import ues.occ.proyeccion.social.ws.app.model.CertificadoCreationDTO;
 import ues.occ.proyeccion.social.ws.app.service.CertificadoService;
 import ues.occ.proyeccion.social.ws.app.utils.PageDtoWrapper;
 
-import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CertificadoControllerTest {
 
@@ -158,5 +153,30 @@ class CertificadoControllerTest {
 
         assertEquals(page, pageCaptor.getValue());
         assertEquals(size, sizeCaptor.getValue());
+    }
+
+    @Test
+    void getCertificateByProjectName() throws Exception{
+        var carnet = "zh150021";
+        var projectName = "project";
+        var dto = new CertificadoCreationDTO.CertificadoDTO(10, "Test project", "www.google.com", LocalDateTime.of(2020, 12, 1, 1, 1));
+        Mockito.when(this.certificadoService.getCertificate(Mockito.anyString(), Mockito.anyString())).thenReturn(dto);
+
+        var carnetCaptor = ArgumentCaptor.forClass(String.class);
+        var projectCaptor = ArgumentCaptor.forClass(String.class);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/certificados/".concat(carnet))
+                .param("projectName", projectName))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id", CoreMatchers.is(10)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.proyecto", CoreMatchers.is("Test project")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.uri", CoreMatchers.is("www.google.com")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.fechaExpedicion", CoreMatchers.is("2020-12-01")));
+
+        Mockito.verify(this.certificadoService, Mockito.times(1)).getCertificate(carnetCaptor.capture(), projectCaptor.capture());
+
+        assertEquals(carnet, carnetCaptor.getValue());
+        assertEquals(projectName, projectCaptor.getValue());
+
     }
 }

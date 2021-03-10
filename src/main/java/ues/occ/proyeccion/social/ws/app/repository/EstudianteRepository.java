@@ -13,6 +13,6 @@ import java.util.Optional;
 @Repository
 public interface EstudianteRepository extends PagingAndSortingRepository<Estudiante, String> {
 
-    public Optional<Estudiante> findByCarnetIgnoreCase(String carnet);
-    public Page<Estudiante> findAllByServicioCompleto(Pageable pageable, boolean isComplete);
+    Optional<Estudiante> findByCarnetIgnoreCase(String carnet);
+    Page<Estudiante> findAllByServicioCompleto(Pageable pageable, boolean isComplete);
 }

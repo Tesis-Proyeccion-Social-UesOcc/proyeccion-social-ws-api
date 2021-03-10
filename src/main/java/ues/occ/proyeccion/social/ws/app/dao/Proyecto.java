@@ -2,6 +2,7 @@ package ues.occ.proyeccion.social.ws.app.dao;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -45,14 +46,17 @@ public class Proyecto implements Serializable {
 	@JoinColumn(name = "id", referencedColumnName = "id")
 	private Certificado certificado;
 
-	@OneToMany(mappedBy = "proyecto", fetch = FetchType.LAZY)
-	private Set<ProyectoEstudiante> proyectoEstudianteSet;
+    @OneToMany(mappedBy = "proyecto", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private Set<ProyectoEstudiante> proyectoEstudianteSet = new HashSet<>();
 
 	@Column(name = "fecha_creacion")
 	private LocalDateTime fechaCreacion;
 
 	@Column(name = "fecha_modificacion")
 	private LocalDateTime fechaModificacion;
+
 
 	public Proyecto() {
 		super();
