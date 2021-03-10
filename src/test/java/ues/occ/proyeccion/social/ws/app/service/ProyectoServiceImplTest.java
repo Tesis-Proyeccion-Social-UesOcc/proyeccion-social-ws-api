@@ -33,13 +33,8 @@ class ProyectoServiceImplTest {
     private ProyectoRepository proyectoRepository;
 
     @Mock
-    private ProyectoEstudianteRepository proyectoEstudianteRepository;
-
-    @Mock
     EntityManager entityManager;
 
-    @Captor
-    ArgumentCaptor<List<ProyectoEstudiante>> proyectoEstudianteCaptor;
 
     private ProyectoServiceImpl proyectoService;
     private final ProyectoMapper proyectoMapper = ProyectoMapper.INSTANCE;
@@ -82,7 +77,7 @@ class ProyectoServiceImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        proyectoService = new ProyectoServiceImpl(proyectoRepository, proyectoEstudianteRepository, proyectoMapper, entityManager);
+        proyectoService = new ProyectoServiceImpl(proyectoRepository, proyectoMapper, entityManager);
     }
 
     @Test
@@ -241,7 +236,7 @@ class ProyectoServiceImplTest {
         estudiante.setCarnet(carnet);
         estudiante.setHorasProgreso(250);
 
-        var expectedProyectoEstudiante = new ProyectoEstudiante(estudiante, resultProject);
+        var expectedProyectoEstudiante = new ProyectoEstudiante(estudiante, resultProject, false);
         resultProject.setProyectoEstudianteSet(Set.of(expectedProyectoEstudiante));
         resultProject.setId(1);
 
@@ -253,14 +248,12 @@ class ProyectoServiceImplTest {
         Mockito.when(this.entityManager.getReference(ArgumentMatchers.<Class<Estudiante>>any(), Mockito.anyString())).thenReturn(estudiante);
         Mockito.when(this.entityManager.getReference(Personal.class, 1)).thenReturn(personal);
         Mockito.when(this.proyectoRepository.save(Mockito.any(Proyecto.class))).thenReturn(resultProject);
-        Mockito.when(this.proyectoEstudianteRepository.saveAll(Mockito.anyList())).thenReturn(null);
 
         var result = this.proyectoService.save(proyectoCreationDTO);
 
         Mockito.verify(this.entityManager, Mockito.times(1)).getReference(ArgumentMatchers.eq(Estudiante.class), carnetCaptor.capture());
         Mockito.verify(this.entityManager, Mockito.times(1)).getReference(ArgumentMatchers.eq(Personal.class), personalIdCaptor.capture());
         Mockito.verify(this.proyectoRepository, Mockito.times(1)).save(proyectoCaptor.capture());
-        Mockito.verify(this.proyectoEstudianteRepository, Mockito.times(1)).saveAll(proyectoEstudianteCaptor.capture());
 
         var expectedDto = new ProyectoCreationDTO.ProyectoDTO(1, "Project", 150,
                 true, "Steve", Set.of(new EstudianteDTO("ZH15002", 250, false)));
@@ -271,7 +264,6 @@ class ProyectoServiceImplTest {
         assertEquals(resultProject, proyectoCaptor.getValue());
         assertEquals(carnet, carnetCaptor.getValue());
         assertEquals(1, personalIdCaptor.getValue());
-        assertEquals(List.of(expectedProyectoEstudiante), proyectoEstudianteCaptor.getValue());
 
     }
 
@@ -294,7 +286,7 @@ class ProyectoServiceImplTest {
         estudiante.setHorasProgreso(250);
         estudiante.setServicioCompleto(false);
 
-        var expectedProyectoEstudiante = new ProyectoEstudiante(estudiante, proyecto);
+        var expectedProyectoEstudiante = new ProyectoEstudiante(estudiante, proyecto, false);
 
         proyecto.setProyectoEstudianteSet(Set.of(expectedProyectoEstudiante));
 

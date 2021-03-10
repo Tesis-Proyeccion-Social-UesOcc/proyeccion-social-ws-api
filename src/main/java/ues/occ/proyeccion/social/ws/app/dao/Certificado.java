@@ -24,7 +24,7 @@ public class Certificado implements Serializable {
 
 	// Indica que la columna id de proyecto_estudiante se usara como PK y FK
 
-	@OneToOne(mappedBy = "certificado", fetch = FetchType.LAZY)
+	@OneToOne(mappedBy = "certificado", fetch = FetchType.EAGER)
 	private Proyecto proyecto;
 
 	public Certificado() {
@@ -35,6 +35,7 @@ public class Certificado implements Serializable {
 		this.uri = uri;
 		this.proyecto = proyecto;
 		this.fechaExpedicion = fechaExpedicion;
+		proyecto.setCertificado(this);
 	}
 
 	public Integer getId() {

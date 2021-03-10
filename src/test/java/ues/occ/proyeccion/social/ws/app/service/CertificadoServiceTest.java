@@ -12,12 +12,15 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import ues.occ.proyeccion.social.ws.app.dao.Certificado;
+import ues.occ.proyeccion.social.ws.app.dao.Estudiante;
 import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
+import ues.occ.proyeccion.social.ws.app.exceptions.ResourceNotFoundException;
 import ues.occ.proyeccion.social.ws.app.mappers.CertificadoMapper;
 import ues.occ.proyeccion.social.ws.app.model.CertificadoCreationDTO;
 import ues.occ.proyeccion.social.ws.app.repository.CertificadoRepository;
 import ues.occ.proyeccion.social.ws.app.repository.ProyectoRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -147,5 +150,34 @@ class CertificadoServiceTest {
         // there is no way to assert student carnet with the given one because its not part of CertificadoDTO
         assertEquals(carnet, carnetArgumentCaptor.getValue());
         assertEquals(2, result.getContent().size());
+    }
+
+    @Test
+    void getCertificate(){
+        var projectName = "MyProject";
+        var uri = "www.google.com";
+        var estudiante = new Estudiante();
+        var proyecto = new Proyecto(1, projectName, true, LocalDateTime.now());
+        var certificado = new Certificado(10, uri, LocalDateTime.now(), proyecto);
+
+        Mockito.when(this.certificadoRepository
+                .findByProyecto_ProyectoEstudianteSet_Estudiante_CarnetAndProyecto_NombreContainingIgnoreCase(Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(Optional.of(certificado));
+
+        var result = this.service.getCertificate("zh15002", projectName);
+
+        assertEquals(10, result.getId());
+        assertEquals(projectName, result.getProyecto());
+        assertEquals(uri, result.getUri());
+        assertNotNull(result.getFechaExpedicion());
+    }
+
+    @Test
+    void whenEmptyOptionalIsReturnedThanAnExceptionIsRaised(){
+        Mockito.when(this.certificadoRepository
+                .findByProyecto_ProyectoEstudianteSet_Estudiante_CarnetAndProyecto_NombreContainingIgnoreCase(Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> this.service.getCertificate("zh15002", "SomeProjectName"));
     }
 }

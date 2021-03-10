@@ -2,6 +2,7 @@ package ues.occ.proyeccion.social.ws.app.dao;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -45,8 +46,10 @@ public class Proyecto implements Serializable {
     @JoinColumn(name = "id", referencedColumnName = "id")
     private Certificado certificado;
 
-    @OneToMany(mappedBy = "proyecto", fetch = FetchType.LAZY)
-    private Set<ProyectoEstudiante> proyectoEstudianteSet;
+    @OneToMany(mappedBy = "proyecto", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private Set<ProyectoEstudiante> proyectoEstudianteSet = new HashSet<>();
 
     @Column(name = "fecha_creacion")
     private LocalDateTime fechaCreacion;
@@ -64,8 +67,17 @@ public class Proyecto implements Serializable {
         this.encargadoExterno = encargadoExterno;
     }
 
-    public Proyecto(int id, String nombre, int j, boolean interno, LocalDateTime now) {
+    public Proyecto(Integer id, String nombre, boolean interno, LocalDateTime now) {
         this.id = id;
+        this.nombre = nombre;
+        this.interno = interno;
+        this.fechaCreacion = now;
+
+    }
+
+    public Proyecto(Integer id, String nombre, Integer duracion, boolean interno, LocalDateTime now) {
+        this.id = id;
+        this.duracion = duracion;
         this.nombre = nombre;
         this.interno = interno;
         this.fechaCreacion = now;
@@ -142,6 +154,12 @@ public class Proyecto implements Serializable {
 
     public void setProyectoEstudianteSet(Set<ProyectoEstudiante> proyectoEstudianteSet) {
         this.proyectoEstudianteSet = proyectoEstudianteSet;
+    }
+
+    public void registerStudent(Estudiante estudiante){
+        var proyectoEstudiante = new ProyectoEstudiante(estudiante, this, true);
+        this.proyectoEstudianteSet.add(proyectoEstudiante);
+        estudiante.getProyectoEstudianteSet().add(proyectoEstudiante);
     }
 
     public Certificado getCertificado() {

@@ -33,26 +33,14 @@ import java.util.stream.Collectors;
 public class ProyectoServiceImpl implements ProyectoService {
 
     private final ProyectoRepository proyectoRepository;
-    private final ProyectoEstudianteRepository proyectoEstudianteRepository;
     private final ProyectoMapper proyectoMapper;
 
     @PersistenceContext
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
 
-    @Autowired
-    public ProyectoServiceImpl(ProyectoRepository proyectoRepository, ProyectoEstudianteRepository proyectoEstudianteRepository,
-                               ProyectoMapper proyectoMapper) {
+    public ProyectoServiceImpl(ProyectoRepository proyectoRepository, ProyectoMapper proyectoMapper, EntityManager entityManager) {
 
         this.proyectoRepository = proyectoRepository;
-        this.proyectoEstudianteRepository = proyectoEstudianteRepository;
-        this.proyectoMapper = proyectoMapper;
-    }
-
-    public ProyectoServiceImpl(ProyectoRepository proyectoRepository, ProyectoEstudianteRepository proyectoEstudianteRepository,
-                               ProyectoMapper proyectoMapper, EntityManager entityManager) {
-
-        this.proyectoRepository = proyectoRepository;
-        this.proyectoEstudianteRepository = proyectoEstudianteRepository;
         this.proyectoMapper = proyectoMapper;
         this.entityManager = entityManager;
     }
@@ -98,14 +86,14 @@ public class ProyectoServiceImpl implements ProyectoService {
         try {
             var proyectoToSave = this.proyectoMapper.proyectoCreationDTOToProyecto(proyecto);
             this.setEncargado(proyectoToSave, proyecto.getPersonal());
+
+            proyecto.getEstudiantes().forEach(carnet -> {
+                var studentProxy = this.entityManager.getReference(Estudiante.class, carnet);
+                proyectoToSave.registerStudent(studentProxy);
+            });
+
             var savedProyecto = this.proyectoRepository.save(proyectoToSave);
 
-            var proyectoEstudianteList = proyecto.getEstudiantes().stream()
-                    .map(carnet -> this.entityManager.getReference(Estudiante.class, carnet))
-                    .map(estudiante -> new ProyectoEstudiante(estudiante, savedProyecto))
-                    .collect(Collectors.toList());
-
-            this.proyectoEstudianteRepository.saveAll(proyectoEstudianteList);
             return this.proyectoMapper.proyectoToProyectoDTO(savedProyecto, new CycleUtil());
         } catch (Exception e) {
             e.printStackTrace();
