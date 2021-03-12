@@ -99,6 +99,7 @@ public class ProyectoServiceImpl implements ProyectoService {
                 proyectoToSave.registerStudent(studentProxy);
             });
 
+            proyectoToSave.setStatus(this.entityManager.getReference(Status.class, proyecto.getStatus().getId()));
             var savedProyecto = this.proyectoRepository.save(proyectoToSave);
 
             return this.proyectoMapper.proyectoToProyectoDTO(savedProyecto, new CycleUtil());

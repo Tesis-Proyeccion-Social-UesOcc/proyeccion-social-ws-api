@@ -2,9 +2,12 @@ package ues.occ.proyeccion.social.ws.app.model;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -43,9 +46,11 @@ public class ProyectoCreationDTO implements Serializable {
 
     @NotEmpty(message = "Estudiantes list cannot be empty")
     private List<@CarnetValidator String> estudiantes;
-    
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime fechaCreacion;
-    
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime fechaModificacion;
     
     private StatusDTO status;
@@ -70,7 +75,22 @@ public class ProyectoCreationDTO implements Serializable {
         private LocalDateTime fechaModificacion;
         private String status;
 
-     
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            ProyectoDTO that = (ProyectoDTO) o;
+            return interno == that.interno && Objects.equals(id, that.id) && Objects.equals(nombre, that.nombre)
+                    && Objects.equals(duracion, that.duracion) && Objects.equals(personal, that.personal)
+                    && Objects.equals(estudiantes, that.estudiantes) && Objects.equals(fechaCreacion.truncatedTo(ChronoUnit.SECONDS), that.fechaCreacion.truncatedTo(ChronoUnit.SECONDS))
+                    && Objects.equals(fechaModificacion.truncatedTo(ChronoUnit.SECONDS), that.fechaModificacion.truncatedTo(ChronoUnit.SECONDS))
+                    && Objects.equals(status, that.status);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(id, nombre, duracion, interno, personal, estudiantes, fechaCreacion, fechaModificacion, status);
+        }
     }
 }
 

@@ -62,8 +62,7 @@ public class Proyecto implements Serializable {
 		super();
 	}
 
-	public Proyecto(String nombre, Integer duracion, boolean interno, Personal tutor, PersonalExterno encargadoExterno,
-			Status status, Set<ProyectoEstudiante> proyectoEstudianteSet) {
+	public Proyecto(String nombre, Integer duracion, boolean interno, Personal tutor, PersonalExterno encargadoExterno, Status status, Set<ProyectoEstudiante> proyectoEstudianteSet) {
 		this.nombre = nombre;
 		this.duracion = duracion;
 		this.interno = interno;
@@ -72,8 +71,17 @@ public class Proyecto implements Serializable {
 		this.encargadoExterno = encargadoExterno;
 	}
 
-	public Proyecto(int id, String nombre, int j, boolean interno, LocalDateTime now) {
+	public Proyecto(Integer id, String nombre, boolean interno, LocalDateTime now) {
 		this.id = id;
+		this.nombre = nombre;
+		this.interno = interno;
+		this.fechaCreacion = now;
+
+	}
+
+	public Proyecto(Integer id, String nombre, Integer duracion, boolean interno, LocalDateTime now) {
+		this.id = id;
+		this.duracion = duracion;
 		this.nombre = nombre;
 		this.interno = interno;
 		this.fechaCreacion = now;
@@ -160,6 +168,12 @@ public class Proyecto implements Serializable {
 		this.proyectoEstudianteSet = proyectoEstudianteSet;
 	}
 
+	public void registerStudent(Estudiante estudiante){
+		var proyectoEstudiante = new ProyectoEstudiante(estudiante, this, true);
+		this.proyectoEstudianteSet.add(proyectoEstudiante);
+		estudiante.getProyectoEstudianteSet().add(proyectoEstudiante);
+	}
+
 	public Certificado getCertificado() {
 		return certificado;
 	}
@@ -178,12 +192,30 @@ public class Proyecto implements Serializable {
 		return interno == proyecto.interno && Objects.equals(id, proyecto.id) && Objects.equals(nombre, proyecto.nombre)
 				&& Objects.equals(duracion, proyecto.duracion) && Objects.equals(tutor, proyecto.tutor)
 				&& Objects.equals(status, proyecto.status) && Objects.equals(certificado, proyecto.certificado)
-				&& Objects.equals(encargadoExterno, proyecto.encargadoExterno);
+				&& Objects.equals(encargadoExterno, proyecto.encargadoExterno)
+				&& Objects.equals(fechaCreacion.withNano(0), proyecto.fechaCreacion.withNano(0))
+				&& Objects.equals(fechaModificacion.withNano(0), proyecto.fechaModificacion.withNano(0));
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, nombre, duracion, interno, status);
+		return Objects.hash(id, nombre, duracion, interno, status, fechaCreacion, fechaModificacion);
 	}
 
+	@Override
+	public String toString() {
+		return "Proyecto{" +
+				"id=" + id +
+				", nombre='" + nombre + '\'' +
+				", duracion=" + duracion +
+				", interno=" + interno +
+				", tutor=" + tutor +
+				", encargadoExterno=" + encargadoExterno +
+				", status=" + status +
+				", certificado=" + certificado +
+				", proyectoEstudianteSet=" + proyectoEstudianteSet +
+				", fechaCreacion=" + fechaCreacion +
+				", fechaModificacion=" + fechaModificacion +
+				'}';
+	}
 }
