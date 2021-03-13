@@ -161,7 +161,7 @@ class CertificadoServiceTest {
         var certificado = new Certificado(10, uri, LocalDateTime.now(), proyecto);
 
         Mockito.when(this.certificadoRepository
-                .findByProyecto_ProyectoEstudianteSet_Estudiante_CarnetAndProyecto_NombreContainingIgnoreCase(Mockito.anyString(), Mockito.anyString()))
+                .findByProyecto_ProyectoEstudianteSet_Estudiante_CarnetIgnoreCaseAndProyecto_NombreIgnoreCase(Mockito.anyString(), Mockito.anyString()))
                 .thenReturn(Optional.of(certificado));
 
         var result = this.service.getCertificate("zh15002", projectName);
@@ -175,7 +175,7 @@ class CertificadoServiceTest {
     @Test
     void whenEmptyOptionalIsReturnedThanAnExceptionIsRaised(){
         Mockito.when(this.certificadoRepository
-                .findByProyecto_ProyectoEstudianteSet_Estudiante_CarnetAndProyecto_NombreContainingIgnoreCase(Mockito.anyString(), Mockito.anyString()))
+                .findByProyecto_ProyectoEstudianteSet_Estudiante_CarnetIgnoreCaseAndProyecto_NombreIgnoreCase(Mockito.anyString(), Mockito.anyString()))
                 .thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> this.service.getCertificate("zh15002", "SomeProjectName"));

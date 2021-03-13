@@ -17,7 +17,7 @@ public interface CertificadoRepository extends PagingAndSortingRepository<Certif
     @Query(value = "SELECT p.carnet FROM proyecto_estudiante p where p.id = ?1", nativeQuery = true)
     String findCarnet(int id);
 
-    Optional<Certificado> findByProyecto_ProyectoEstudianteSet_Estudiante_CarnetAndProyecto_NombreContainingIgnoreCase(String carnet, String projectName);
+    Optional<Certificado> findByProyecto_ProyectoEstudianteSet_Estudiante_CarnetIgnoreCaseAndProyecto_NombreIgnoreCase(String carnet, String projectName);
 
 }
 
