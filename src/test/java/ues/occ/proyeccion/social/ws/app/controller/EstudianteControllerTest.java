@@ -18,10 +18,7 @@ import ues.occ.proyeccion.social.ws.app.dao.Certificado;
 import ues.occ.proyeccion.social.ws.app.dao.EstadoRequerimientoEstudiante;
 import ues.occ.proyeccion.social.ws.app.dao.Estudiante;
 import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
-import ues.occ.proyeccion.social.ws.app.model.CertificadoCreationDTO;
-import ues.occ.proyeccion.social.ws.app.model.EstadoRequerimientoEstudianteDTO;
-import ues.occ.proyeccion.social.ws.app.model.EstudianteDTO;
-import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO;
+import ues.occ.proyeccion.social.ws.app.model.*;
 import ues.occ.proyeccion.social.ws.app.service.CertificadoService;
 import ues.occ.proyeccion.social.ws.app.service.EstadoRequerimientoEstudianteService;
 import ues.occ.proyeccion.social.ws.app.service.EstudianteService;
@@ -169,8 +166,8 @@ class EstudianteControllerTest {
     @Test
     void projectsByStudentID() throws Exception{
         String status = "3";
-        ProyectoCreationDTO.ProyectoDTO dto1 = new ProyectoCreationDTO.ProyectoDTO(1, "Project1", 100, true, "Steve Jobs", Collections.emptySet());
-        ProyectoCreationDTO.ProyectoDTO dto2 = new ProyectoCreationDTO.ProyectoDTO(2, "Project2", 200, true, "Steve Gerard", Collections.emptySet());
+        ProyectoCreationDTO.ProyectoDTO dto1 = new ProyectoCreationDTO.ProyectoDTO(1, "Project1", 100, true, "Steve Jobs", Collections.emptySet(), LocalDateTime.now(), LocalDateTime.now(), "dummy");
+        ProyectoCreationDTO.ProyectoDTO dto2 = new ProyectoCreationDTO.ProyectoDTO(2, "Project2", 200, true, "Steve Gerard", Collections.emptySet(), LocalDateTime.now(), LocalDateTime.now(), "dummy");
 
         ArgumentCaptor<Integer> pageCaptor = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> sizeCaptor = ArgumentCaptor.forClass(Integer.class);

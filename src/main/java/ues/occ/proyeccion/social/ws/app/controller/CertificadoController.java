@@ -14,6 +14,8 @@ import ues.occ.proyeccion.social.ws.app.service.CertificadoService;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 
 @RestController
@@ -56,7 +58,9 @@ public class CertificadoController {
     @GetMapping("/{carnet}")
     public CertificadoCreationDTO.CertificadoDTO getCertificateByProjectName(@PathVariable String carnet,
                                                                              @RequestParam(name = "projectName") String projectName){
-        return this.certificadoService.getCertificate(carnet, projectName);
+        var decodedProjectName = URLDecoder.decode(projectName, StandardCharsets.UTF_8);
+
+        return this.certificadoService.getCertificate(carnet, decodedProjectName);
     }
 
 }

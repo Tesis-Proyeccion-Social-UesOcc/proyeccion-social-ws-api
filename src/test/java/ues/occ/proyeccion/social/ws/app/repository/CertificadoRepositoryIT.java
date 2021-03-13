@@ -43,7 +43,7 @@ class CertificadoRepositoryIT {
         // then
 
         var result = certificadoRepository
-                .findByProyecto_ProyectoEstudianteSet_Estudiante_CarnetAndProyecto_NombreContainingIgnoreCase(carnet, "test proj"); //char sequence to test case insensitive query
+                .findByProyecto_ProyectoEstudianteSet_Estudiante_CarnetIgnoreCaseAndProyecto_NombreIgnoreCase(carnet, "test project"); //char sequence to test case insensitive query
         assertTrue(result.isPresent());
         var certificadoResult = result.get();
 

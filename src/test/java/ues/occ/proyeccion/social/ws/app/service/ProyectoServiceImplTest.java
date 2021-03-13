@@ -13,10 +13,11 @@ import ues.occ.proyeccion.social.ws.app.exceptions.ResourceNotFoundException;
 import ues.occ.proyeccion.social.ws.app.mappers.ProyectoMapper;
 import ues.occ.proyeccion.social.ws.app.model.EstudianteDTO;
 import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO;
-import ues.occ.proyeccion.social.ws.app.repository.ProyectoEstudianteRepository;
+import ues.occ.proyeccion.social.ws.app.model.StatusDTO;
 import ues.occ.proyeccion.social.ws.app.repository.ProyectoRepository;
 
 import javax.persistence.EntityManager;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -225,12 +226,15 @@ class ProyectoServiceImplTest {
         personal.setId(1);
         personal.setNombre("Steve");
 
+        var status = new Status(1, "DummyStatus", "DummyDesc");
+
         var carnets = List.of(carnet);
 
-        ProyectoCreationDTO proyectoCreationDTO = new ProyectoCreationDTO("Project", 150, true, 1, carnets);
+        ProyectoCreationDTO proyectoCreationDTO = new ProyectoCreationDTO("Project", 150, true, 1, carnets, LocalDateTime.now(), LocalDateTime.now(), new StatusDTO(1, "DummyStatus", "DummyDesc"));
         Proyecto resultProject = this.proyectoMapper.proyectoCreationDTOToProyecto(proyectoCreationDTO);
         resultProject.setTutor(personal);
 
+        resultProject.setStatus(status);
 
         Estudiante estudiante = new Estudiante();
         estudiante.setCarnet(carnet);
@@ -244,19 +248,23 @@ class ProyectoServiceImplTest {
         ArgumentCaptor<String> carnetCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<Integer> personalIdCaptor = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Proyecto> proyectoCaptor = ArgumentCaptor.forClass(Proyecto.class);
+        ArgumentCaptor<Integer> statusCaptor = ArgumentCaptor.forClass(Integer.class);
 
         Mockito.when(this.entityManager.getReference(ArgumentMatchers.<Class<Estudiante>>any(), Mockito.anyString())).thenReturn(estudiante);
         Mockito.when(this.entityManager.getReference(Personal.class, 1)).thenReturn(personal);
+        Mockito.when(this.entityManager.getReference(Status.class, 1)).thenReturn(status);
         Mockito.when(this.proyectoRepository.save(Mockito.any(Proyecto.class))).thenReturn(resultProject);
 
         var result = this.proyectoService.save(proyectoCreationDTO);
 
         Mockito.verify(this.entityManager, Mockito.times(1)).getReference(ArgumentMatchers.eq(Estudiante.class), carnetCaptor.capture());
         Mockito.verify(this.entityManager, Mockito.times(1)).getReference(ArgumentMatchers.eq(Personal.class), personalIdCaptor.capture());
+        Mockito.verify(this.entityManager, Mockito.times(1)).getReference(ArgumentMatchers.eq(Status.class), statusCaptor.capture());
         Mockito.verify(this.proyectoRepository, Mockito.times(1)).save(proyectoCaptor.capture());
 
         var expectedDto = new ProyectoCreationDTO.ProyectoDTO(1, "Project", 150,
-                true, "Steve", Set.of(new EstudianteDTO("ZH15002", 250, false)));
+                true, "Steve", Set.of(new EstudianteDTO("ZH15002", 250, false)),
+                LocalDateTime.now(), LocalDateTime.now(), "DummyStatus");
 
         assertNotNull(result);
         assertEquals(result, expectedDto);
@@ -264,6 +272,7 @@ class ProyectoServiceImplTest {
         assertEquals(resultProject, proyectoCaptor.getValue());
         assertEquals(carnet, carnetCaptor.getValue());
         assertEquals(1, personalIdCaptor.getValue());
+        assertEquals(statusCaptor.getValue(), status.getId());
 
     }
 
@@ -289,14 +298,17 @@ class ProyectoServiceImplTest {
         var expectedProyectoEstudiante = new ProyectoEstudiante(estudiante, proyecto, false);
 
         proyecto.setProyectoEstudianteSet(Set.of(expectedProyectoEstudiante));
+        proyecto.setFechaCreacion(LocalDateTime.now());
+        proyecto.setFechaModificacion(LocalDateTime.now());
+        proyecto.setStatus(new Status(1, "dummyValue", "dummyValue"));
 
-        var creationDto = new ProyectoCreationDTO("Test2", 350, true, 10, List.of("ab12345"));
+        var creationDto = new ProyectoCreationDTO("Test2", 350, true, 10, List.of("ab12345"), LocalDateTime.now(), LocalDateTime.now(), new StatusDTO());
 
         ArgumentCaptor<Integer> idCaptor = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> idPersonal = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Proyecto> proyectoCaptor = ArgumentCaptor.forClass(Proyecto.class);
 
-        var expected = new ProyectoCreationDTO.ProyectoDTO(2, "Test2", 350, true, "Mario", Set.of(new EstudianteDTO("ab12345", 250, false)));
+        var expected = new ProyectoCreationDTO.ProyectoDTO(2, "Test2", 350, true, "Mario", Set.of(new EstudianteDTO("ab12345", 250, false)), LocalDateTime.now(), LocalDateTime.now(), "dummyValue");
 
         Mockito.when(this.proyectoRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(proyecto));
         Mockito.when(this.proyectoRepository.save(Mockito.any(Proyecto.class))).thenReturn(proyecto);

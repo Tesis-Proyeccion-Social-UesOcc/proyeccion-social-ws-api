@@ -1,6 +1,5 @@
 package ues.occ.proyeccion.social.ws.app.controller;
 
-import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsCollectionWithSize;
 import org.junit.jupiter.api.Assertions;
@@ -14,7 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.hamcrest.CoreMatchers.containsString;
 
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -22,10 +20,12 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
 import ues.occ.proyeccion.social.ws.app.model.EstudianteDTO;
 import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO;
+import ues.occ.proyeccion.social.ws.app.model.StatusDTO;
 import ues.occ.proyeccion.social.ws.app.service.ProyectoService;
 import ues.occ.proyeccion.social.ws.app.utils.PageDtoWrapper;
 
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -180,7 +180,7 @@ class ProyectoControllerTest {
     void createTestWithInvalidBody() throws Exception{
         var proyecto = "Test";
         var estudiantes = List.of("zhd0022");
-        var body = new ProyectoCreationDTO(proyecto, null, true, 10, estudiantes);
+        var body = new ProyectoCreationDTO(proyecto, null, true, 10, estudiantes, LocalDateTime.now(), LocalDateTime.now(), new StatusDTO());
 
         var estudiantesResponse = Set.of(new EstudianteDTO("zh15002", 300, false));
 
@@ -240,7 +240,7 @@ class ProyectoControllerTest {
     void UpdateTestWithInvalidBody() throws Exception{
         var proyecto = "Test";
         var estudiantes = List.of("zhd0022");
-        var body = new ProyectoCreationDTO(proyecto, null, true, 10, estudiantes);
+        var body = new ProyectoCreationDTO(proyecto, null, true, 10, estudiantes, LocalDateTime.now(), LocalDateTime.now(), new StatusDTO());
 
         var estudiantesResponse = Set.of(new EstudianteDTO("zh15002", 300, false));
 
