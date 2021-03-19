@@ -1,15 +1,21 @@
 package ues.occ.proyeccion.social.ws.app.mappers;
 
-import org.mapstruct.*;
+import org.mapstruct.Context;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
+import ues.occ.proyeccion.social.ws.app.dao.Documento;
 import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
 import ues.occ.proyeccion.social.ws.app.dao.ProyectoEstudiante;
 import ues.occ.proyeccion.social.ws.app.model.EstudianteDTO;
+import ues.occ.proyeccion.social.ws.app.model.PendingProjectDTO;
 import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO;
 
+import java.util.List;
 import java.util.Set;
 
-@Mapper(uses = {EstudianteMapper.class, StatusMapper.class})
+@Mapper(uses = {EstudianteMapper.class, StatusMapper.class, SimpleDocumentMapper.class})
 public interface ProyectoMapper {
     ProyectoMapper INSTANCE = Mappers.getMapper(ProyectoMapper.class);
     EstudianteMapper MAPPER = Mappers.getMapper(EstudianteMapper.class);
@@ -33,6 +39,13 @@ public interface ProyectoMapper {
     @Mapping(source = "proyecto.proyectoEstudianteSet", target = "estudiantes", qualifiedByName = "estudiantesBuilder")
     @Mapping(source = "proyecto.status.status", target ="status")
     ProyectoCreationDTO.ProyectoDTO proyectoToProyectoDTO(Proyecto proyecto, @Context CycleUtil cycleUtil);
+
+
+    @Mapping(source = "proyecto", target = "personal", qualifiedByName = "nombreChecker")
+    @Mapping(source = "proyecto.proyectoEstudianteSet", target = "estudiantes", qualifiedByName = "estudiantesBuilder")
+    @Mapping(source = "proyecto.status.status", target ="status")
+    @Mapping(source = "documentos", target ="documentos")
+    PendingProjectDTO mapToPendingProject(Proyecto proyecto, List<Documento> documentos, @Context CycleUtil cycleUtil);
 
     @Mapping(source = "proyecto", target = "personal", qualifiedByName = "idChecker")
     ProyectoCreationDTO proyectoToProyectoCreationDTO(Proyecto proyecto);
