@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
+
 import ues.occ.proyeccion.social.ws.app.dao.EstadoRequerimientoEstudiante;
 import ues.occ.proyeccion.social.ws.app.dao.EstadoRequerimientoEstudiantePK;
 
@@ -21,4 +21,8 @@ public interface EstadoRequerimientoEstudianteRepository
 
 	@Query("SELECT c FROM EstadoRequerimientoEstudiante c WHERE c.estudiante.carnet like %:carnet%")
 	List<EstadoRequerimientoEstudiante> findByCarnet(String carnet);
+	
+	@Query("SELECT c FROM EstadoRequerimientoEstudiante c WHERE c.estudiante.carnet like %:carnet% and c.entregado = :entregado "
+			+ " and c.requerimiento.id = :idRequerimiento ")
+	EstadoRequerimientoEstudiante findByCarnetAndEntregadoAndRequerimientoId(String carnet, boolean entregado, int idRequerimiento);
 }
