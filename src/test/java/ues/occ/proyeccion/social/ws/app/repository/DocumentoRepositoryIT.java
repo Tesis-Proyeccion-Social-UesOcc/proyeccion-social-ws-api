@@ -9,13 +9,14 @@ import ues.occ.proyeccion.social.ws.app.dao.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 @Profile("test")
-class DocumentoRepositoryTest {
+class DocumentoRepositoryIT {
 
     @Autowired DocumentoRepository documentoRepository;
     @Autowired RequerimientoRepository requerimientoRepository;
@@ -46,41 +47,49 @@ class DocumentoRepositoryTest {
 
         requerimientoRepository.saveAll(List.of(requerimiento1, requerimiento2));
 
-        var toDebug = requerimientoRepository.findAll();
-        var toDebug3 = documentoRepository.findAll();
+        var estudiante1 = new Estudiante(carnet, 300, false);
+        var estudiante2 = new Estudiante("ab12345", 300, false);
 
-        var estudiante = new Estudiante(carnet, 300, false);
-        estudiante.addRequerimiento(requerimiento1, false);
-        estudiante.addRequerimiento(requerimiento2, true);
-        estudianteRepository.save(estudiante);
+        estudiante1.addRequerimiento(requerimiento1, false);
+        estudiante1.addRequerimiento(requerimiento2, true);
 
-        var toDebug2 = estudianteRepository.findAll();
+        estudiante2.addRequerimiento(requerimiento1, false);
+        estudiante2.addRequerimiento(requerimiento2, true);
+
+        estudianteRepository.saveAll(List.of(estudiante1, estudiante2));
 
         var proyecto = new Proyecto(1, projectName, 250, true, LocalDateTime.now());
         proyecto.setStatus(status);
-        proyecto.registerStudent(estudiante);
+        proyecto.registerStudent(estudiante1);
+        proyecto.registerStudent(estudiante2);
         proyectoRepository.save(proyecto);
 
 
-        var result = documentoRepository.findProjectRelatedDocuments(1, "zH15002", "Anything");
+        var result = documentoRepository.findProjectRelatedDocuments(carnet, "Anything");
         assertEquals(result.size(), 2);
 
         var requerimientos1 = result.get(0).getRequerimientos();
         var resultRequerimiento1 = getFirstItem(requerimientos1);
         var requerimientoEstudiante1 = resultRequerimiento1.getEstadoRequerimientoEstudiantes();
-        var resultRequerimientoEstudiante1 = getFirstItem(requerimientoEstudiante1);
+
+        var resultRequerimientoEstudianteOptional1 = test(requerimientoEstudiante1, carnet);
+        assertTrue(resultRequerimientoEstudianteOptional1.isPresent());
+        var resultRequerimientoEstudiante1 = resultRequerimientoEstudianteOptional1.get();
+
         assertEquals(1, requerimientos1.size());
         assertEquals(resultRequerimiento1.getcantidadCopias(), 2);
-        assertEquals(1, requerimientoEstudiante1.size());
         assertFalse(resultRequerimientoEstudiante1.isAprobado());
 
         var requerimientos2 = result.get(1).getRequerimientos();
         var resultRequerimiento2 = getFirstItem(requerimientos2);
         var requerimientoEstudiante2 = resultRequerimiento2.getEstadoRequerimientoEstudiantes();
-        var resultRequerimientoEstudiante2 = getFirstItem(requerimientoEstudiante2);
+
+        var resultRequerimientoEstudianteOptional2 = test(requerimientoEstudiante2, carnet);
+        assertTrue(resultRequerimientoEstudianteOptional2.isPresent());
+        var resultRequerimientoEstudiante2 = resultRequerimientoEstudianteOptional2.get();
+
         assertEquals(1, requerimientos2.size());
         assertEquals(resultRequerimiento2.getcantidadCopias(), 3);
-        assertEquals(1, requerimientoEstudiante2.size());
         assertTrue(resultRequerimientoEstudiante2.isAprobado());
 
 
@@ -89,5 +98,8 @@ class DocumentoRepositoryTest {
     private <T> T getFirstItem(Set<T> set){
         var iter = set.iterator();
         return iter.next();
+    }
+    private Optional<EstadoRequerimientoEstudiante> test(Set<EstadoRequerimientoEstudiante> set, String carnet){
+        return set.stream().filter(obj -> obj.getEstudiante().getCarnet().equals(carnet)).findFirst();
     }
 }

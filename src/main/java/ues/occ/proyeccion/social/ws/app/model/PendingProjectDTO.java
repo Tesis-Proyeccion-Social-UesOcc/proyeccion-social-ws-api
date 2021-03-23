@@ -2,11 +2,12 @@ package ues.occ.proyeccion.social.ws.app.model;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Set;
 
 @Data
-public class PendingProjectDTO {
+public class PendingProjectDTO implements Serializable, ProjectMarker {
     private Integer id;
     private String nombre;
     private Integer duracion;

@@ -14,6 +14,7 @@ import ues.occ.proyeccion.social.ws.app.mappers.ProyectoMapper;
 import ues.occ.proyeccion.social.ws.app.model.EstudianteDTO;
 import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO;
 import ues.occ.proyeccion.social.ws.app.model.StatusDTO;
+import ues.occ.proyeccion.social.ws.app.repository.DocumentoRepository;
 import ues.occ.proyeccion.social.ws.app.repository.ProyectoRepository;
 
 import javax.persistence.EntityManager;
@@ -32,6 +33,9 @@ class ProyectoServiceImplTest {
 
     @Mock
     private ProyectoRepository proyectoRepository;
+
+    @Mock
+    private DocumentoRepository documentoRepository;
 
     @Mock
     EntityManager entityManager;
@@ -78,7 +82,7 @@ class ProyectoServiceImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        proyectoService = new ProyectoServiceImpl(proyectoRepository, proyectoMapper, entityManager);
+        proyectoService = new ProyectoServiceImpl(proyectoRepository, documentoRepository, proyectoMapper, entityManager);
     }
 
     @Test

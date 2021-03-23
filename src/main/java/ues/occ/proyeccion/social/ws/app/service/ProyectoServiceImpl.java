@@ -6,21 +6,19 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
-import ues.occ.proyeccion.social.ws.app.dao.PersonalExterno;
-import ues.occ.proyeccion.social.ws.app.dao.Estudiante;
-import ues.occ.proyeccion.social.ws.app.dao.ProyectoEstudiante;
-import ues.occ.proyeccion.social.ws.app.dao.Status;
+import ues.occ.proyeccion.social.ws.app.dao.*;
 import ues.occ.proyeccion.social.ws.app.dto.ProyectoChangeStatusDto;
 import ues.occ.proyeccion.social.ws.app.dto.StatusEnum;
-import ues.occ.proyeccion.social.ws.app.dao.Personal;
 import ues.occ.proyeccion.social.ws.app.exceptions.ChangeStatusProjectException;
 import ues.occ.proyeccion.social.ws.app.exceptions.InternalErrorException;
 import ues.occ.proyeccion.social.ws.app.exceptions.ResourceNotFoundException;
 import ues.occ.proyeccion.social.ws.app.mappers.CycleUtil;
 import ues.occ.proyeccion.social.ws.app.mappers.ProyectoMapper;
+import ues.occ.proyeccion.social.ws.app.model.PendingProjectDTO;
+import ues.occ.proyeccion.social.ws.app.model.ProjectMarker;
 import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO;
 import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO.ProyectoDTO;
+import ues.occ.proyeccion.social.ws.app.repository.DocumentoRepository;
 import ues.occ.proyeccion.social.ws.app.repository.ProyectoEstudianteRepository;
 import ues.occ.proyeccion.social.ws.app.repository.ProyectoRepository;
 import ues.occ.proyeccion.social.ws.app.utils.PageDtoWrapper;
@@ -40,14 +38,15 @@ import java.util.stream.Collectors;
 public class ProyectoServiceImpl implements ProyectoService {
 
     private final ProyectoRepository proyectoRepository;
+    private final DocumentoRepository documentoRepository;
     private final ProyectoMapper proyectoMapper;
 
     @PersistenceContext
     private final EntityManager entityManager;
 
-    public ProyectoServiceImpl(ProyectoRepository proyectoRepository, ProyectoMapper proyectoMapper, EntityManager entityManager) {
-
+    public ProyectoServiceImpl(ProyectoRepository proyectoRepository, DocumentoRepository documentoRepository, ProyectoMapper proyectoMapper, EntityManager entityManager) {
         this.proyectoRepository = proyectoRepository;
+        this.documentoRepository = documentoRepository;
         this.proyectoMapper = proyectoMapper;
         this.entityManager = entityManager;
     }
@@ -81,11 +80,21 @@ public class ProyectoServiceImpl implements ProyectoService {
     }
 
     @Override
-    public PageDtoWrapper<Proyecto, ProyectoCreationDTO.ProyectoDTO> findProyectosByEstudiante(int page, int size, String carnet, int status) {
+    public PageDtoWrapper<Proyecto, ProyectoDTO> findProyectosByEstudiante(int page, int size, String carnet, int status) {
         Pageable paging = this.getPageable(page, size);
         Page<Proyecto> proyectoPage = proyectoRepository
                 .findAllByStatus_IdAndProyectoEstudianteSet_Estudiante_CarnetIgnoreCase(status, carnet, paging);
+
         return this.getPagedData(proyectoPage);
+    }
+
+    @Override
+    public PageDtoWrapper<Proyecto, PendingProjectDTO> findProyectosPendientesByEstudiante(int page, int size, String carnet, int status) {
+        Pageable paging = this.getPageable(page, size);
+        Page<Proyecto> proyectoPage = proyectoRepository
+                .findAllByStatus_IdAndProyectoEstudianteSet_Estudiante_CarnetIgnoreCase(status, carnet, paging);
+
+        return this.getPagedData(proyectoPage, carnet);
     }
 
     @Override
@@ -141,6 +150,22 @@ public class ProyectoServiceImpl implements ProyectoService {
             proyecto.setEncargadoExterno(personalExterno);
         }
     }
+
+    private PageDtoWrapper<Proyecto, PendingProjectDTO> getPagedData(Page<Proyecto> data, String carnet) {
+        List<PendingProjectDTO> content;
+        if (data.hasContent()) {
+            content = data.getContent().stream()
+                    .map(proyecto -> {
+                        var docs = this.documentoRepository.findProjectRelatedDocuments(carnet, proyecto.getNombre());
+                        return this.proyectoMapper.mapToPendingProject(proyecto, docs, new CycleUtil());
+                    })
+                    .collect(Collectors.toList());
+        } else {
+            content = Collections.emptyList();
+        }
+        return new PageDtoWrapper<>(data, content);
+    }
+
 
     private PageDtoWrapper<Proyecto, ProyectoDTO> getPagedData(Page<Proyecto> data) {
         List<ProyectoDTO> content;

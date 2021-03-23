@@ -60,7 +60,7 @@ public class ProyectoCreationDTO implements Serializable {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ProyectoDTO implements Serializable{
+    public static class ProyectoDTO implements Serializable, ProjectMarker{
         /**
 		 * 
 		 */
