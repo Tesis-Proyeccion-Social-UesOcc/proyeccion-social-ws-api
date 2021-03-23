@@ -1,6 +1,0 @@
-runtime: java11
-api_version: 3
-service: default
-instance_class: F2
-env_variables:
-  TESIS_DB_PASSW: uesfmocc2020$
