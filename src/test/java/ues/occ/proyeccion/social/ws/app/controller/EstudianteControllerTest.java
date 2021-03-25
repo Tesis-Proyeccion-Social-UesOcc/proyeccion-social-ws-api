@@ -32,6 +32,7 @@ import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -191,6 +192,48 @@ class EstudianteControllerTest {
                             IsCollectionWithSize.hasSize(toReturn.getContent().size())));
         Mockito.verify(this.proyectoService, Mockito.times(1))
                 .findProyectosByEstudiante(pageCaptor.capture(), sizeCaptor.capture(), carnetCaptor.capture(), statusCaptor.capture());
+        assertEquals(PAGE, pageCaptor.getValue());
+        assertEquals(SIZE, sizeCaptor.getValue());
+        assertEquals(Integer.parseInt(status), statusCaptor.getValue());
+        assertEquals(CARNET, carnetCaptor.getValue());
+    }
+
+    @Test
+    void projectsByStudentIDWIthDocuments() throws Exception{
+        String status = "1";
+        var docs = Set.of(new SimpleDocumentDTO("mydoc", true, true));
+        var dto1 = new PendingProjectDTO(
+                1, "Project1", 100, true, "Steve Jobs",
+                Collections.emptySet(), docs, LocalDateTime.now(), LocalDateTime.now(), "dummy");
+
+        ArgumentCaptor<Integer> pageCaptor = ArgumentCaptor.forClass(Integer.class);
+        ArgumentCaptor<Integer> sizeCaptor = ArgumentCaptor.forClass(Integer.class);
+        ArgumentCaptor<Integer> statusCaptor = ArgumentCaptor.forClass(Integer.class);
+        ArgumentCaptor<String> carnetCaptor = ArgumentCaptor.forClass(String.class);
+
+        var lista1 = List.of(dto1);
+        var lista2 = List.of(new Proyecto());
+        var toReturn = new PageDtoWrapper<>(new PageImpl<>(lista2, PageRequest.of(PAGE, SIZE),  lista2.size()), lista1);
+
+        Mockito.when(this.proyectoService
+                .findProyectosPendientesByEstudiante(Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString(), Mockito.anyInt()))
+                .thenReturn(toReturn);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/estudiantes/".concat(CARNET).concat("/proyectos"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("page", "5")
+                .param("size", "10")
+                .param("status", status))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content",
+                        IsCollectionWithSize.hasSize(toReturn.getContent().size())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].documentos[0].nombre", CoreMatchers.is("mydoc")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].documentos[0].entregado", CoreMatchers.is(true)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].documentos[0].aprobado", CoreMatchers.is(true)));
+
+        Mockito.verify(this.proyectoService, Mockito.times(1))
+                .findProyectosPendientesByEstudiante(pageCaptor.capture(), sizeCaptor.capture(), carnetCaptor.capture(), statusCaptor.capture());
+
         assertEquals(PAGE, pageCaptor.getValue());
         assertEquals(SIZE, sizeCaptor.getValue());
         assertEquals(Integer.parseInt(status), statusCaptor.getValue());
