@@ -122,6 +122,6 @@ public class Requerimiento implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, original, cantidadCopias, proceso, documento, estadoRequerimientoEstudiantes);
+        return Objects.hash(id, original, cantidadCopias);
     }
 }
