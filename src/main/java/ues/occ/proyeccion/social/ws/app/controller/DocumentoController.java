@@ -43,7 +43,7 @@ public class DocumentoController {
 	}
 	
 	@GetMapping("/nombre/{nombre}")
-	public ResponseEntity<ServiceResponse> findDocumentoByNombre(@PathVariable("nombre") String nombre) {
+	public ResponseEntity<ServiceResponse> findDocumentoByNombre(@PathVariable String nombre) {
 		/*decode required due to double encoding in the document name (part of the uri) provided by the webhook
 		* i.e. a document with original name as "form for service", will be encoded resulting in "form%20for%20service"
 		* which will also be encoded here, resulting in "form%2520for%2520", where %25 is the encoding of the character "%".

@@ -62,7 +62,7 @@ public class DocumentoServiceImpl implements DocumentoService {
 			log.info("uri " + uri);
 
 			Documento documento = documentoRepository
-					.save(new Documento(model.getNombre(), model.getDescripcion(), uri, time));
+					.save(new Documento(model.getNombre(), model.getDescripcion()));
 
 			return new ResponseEntity<ServiceResponse>(
 					new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk, documento), HttpStatus.OK);
@@ -92,11 +92,11 @@ public class DocumentoServiceImpl implements DocumentoService {
 	public ResponseEntity<ServiceResponse> findDocumentoByNombre(String nombre) {
 		try {
 			List<Documento> documentos = documentoRepository.findByNombreContainingIgnoreCaseOrderByFechaDocumento(nombre);
-			return new ResponseEntity<ServiceResponse>(
+			return new ResponseEntity<>(
 					new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk, documentos), HttpStatus.OK);
 
 		} catch (Exception e) {
-			return new ResponseEntity<ServiceResponse>(
+			return new ResponseEntity<>(
 					new ServiceResponse(ServiceResponse.codeFatal, ServiceResponse.messageFatal, e.getMessage()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
