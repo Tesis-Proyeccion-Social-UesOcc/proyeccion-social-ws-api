@@ -87,7 +87,7 @@ public class EstudianteController {
 
     // HERE DOWN
     @GetMapping("/{carnet}/proyectos")
-    public ResponseEntity<?> projectsByStudentID(
+    public ResponseEntity<PageDTO<? extends ProjectMarker>> projectsByStudentID(
             @PathVariable String carnet,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
