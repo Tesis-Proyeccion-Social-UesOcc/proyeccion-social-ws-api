@@ -16,13 +16,16 @@ import ues.occ.proyeccion.social.ws.app.mappers.ProyectoMapper;
 import ues.occ.proyeccion.social.ws.app.model.PendingProjectDTO;
 import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO;
 import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO.ProyectoDTO;
+import ues.occ.proyeccion.social.ws.app.model.StatusDTO;
 import ues.occ.proyeccion.social.ws.app.repository.DocumentoRepository;
+import ues.occ.proyeccion.social.ws.app.repository.EstudianteRepository;
 import ues.occ.proyeccion.social.ws.app.repository.ProyectoRepository;
 import ues.occ.proyeccion.social.ws.app.utils.PageDtoWrapper;
 import ues.occ.proyeccion.social.ws.app.utils.StatusOption;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Collections;
@@ -36,14 +39,17 @@ public class ProyectoServiceImpl implements ProyectoService {
     private final ProyectoRepository proyectoRepository;
     private final DocumentoRepository documentoRepository;
     private final ProyectoMapper proyectoMapper;
+    private final EstudianteRepository estudianteRepository;
 
     @PersistenceContext
     private final EntityManager entityManager;
 
-    public ProyectoServiceImpl(ProyectoRepository proyectoRepository, DocumentoRepository documentoRepository, ProyectoMapper proyectoMapper, EntityManager entityManager) {
+    public ProyectoServiceImpl(ProyectoRepository proyectoRepository, DocumentoRepository documentoRepository, ProyectoMapper proyectoMapper,
+                               EstudianteRepository estudianteRepository, EntityManager entityManager) {
         this.proyectoRepository = proyectoRepository;
         this.documentoRepository = documentoRepository;
         this.proyectoMapper = proyectoMapper;
+        this.estudianteRepository = estudianteRepository;
         this.entityManager = entityManager;
     }
 
@@ -96,6 +102,9 @@ public class ProyectoServiceImpl implements ProyectoService {
     @Override
     public ProyectoCreationDTO.ProyectoDTO save(ProyectoCreationDTO proyecto) {
         try {
+        	ZoneId zid = ZoneId.of("America/Guatemala");
+			proyecto.setFechaCreacion(LocalDateTime.now(zid));
+			proyecto.setStatus(new StatusDTO(1));
             var proyectoToSave = this.proyectoMapper.proyectoCreationDTOToProyecto(proyecto);
             this.setEncargado(proyectoToSave, proyecto.getPersonal());
 
@@ -152,6 +161,7 @@ public class ProyectoServiceImpl implements ProyectoService {
         if (data.hasContent()) {
             content = data.getContent().stream()
                     .map(proyecto -> {
+                        // TODO: update with Plantilla entity
                         var docs = this.documentoRepository.findProjectRelatedDocuments(carnet, proyecto.getNombre());
                         return this.proyectoMapper.mapToPendingProject(proyecto, docs, new CycleUtil());
                     })
@@ -180,6 +190,7 @@ public class ProyectoServiceImpl implements ProyectoService {
     }
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
 	public ProyectoDTO changeStatus(ProyectoChangeStatusDto proyectoDto) {
 
 		Proyecto proyecto = proyectoRepository.findById(proyectoDto.getIdProyecto())
@@ -188,7 +199,7 @@ public class ProyectoServiceImpl implements ProyectoService {
 
 		var proyectoStatus = this.proyectoMapper.proyectoToProyectoDTO(proyecto, new CycleUtil());
 
-		if (proyecto.getStatus().equals("Pendiente")) {
+		if (proyecto.getStatus().getStatus().equalsIgnoreCase("Pendiente")) {
 			if (proyectoDto.getStatus() == StatusEnum.Pendiente) {
 				throw new ChangeStatusProjectException(
 						"El proyecto ya esta en estado pendiente. Podria  asignar estado rechazado o en proceso");
@@ -198,7 +209,7 @@ public class ProyectoServiceImpl implements ProyectoService {
 			}
 		}
 
-		if (proyecto.getStatus().equals("En proceso")) {
+		if (proyecto.getStatus().getStatus().equalsIgnoreCase("En proceso")) {
 			if (proyectoDto.getStatus() == StatusEnum.Pendiente) {
 				throw new ChangeStatusProjectException(
 						"El proyecto ya esta en proceso, no se puede asginar el estado pendiente. Podria asignar estado completado o retiro porfavor");
@@ -208,10 +219,25 @@ public class ProyectoServiceImpl implements ProyectoService {
 			}
 		}
 
-		if (proyecto.getStatus().equals("Completado") || proyecto.getStatus().getStatus().equalsIgnoreCase("Retiro")
+		if (proyecto.getStatus().getStatus().equalsIgnoreCase("Completado")
+                || proyecto.getStatus().getStatus().equalsIgnoreCase("Retiro")
 				|| proyecto.getStatus().getStatus().equalsIgnoreCase("Rechazado")) {
 			throw new ChangeStatusProjectException("Estado de proyecto: " + proyecto.getStatus().getStatus()
 					+ ", el proyecto ya esta en un estado definitivo, este no se puede cambiar.");
+		}
+
+		int horaProyectoActual = proyecto.getDuracion();
+
+		if(proyecto.getStatus().getStatus().equalsIgnoreCase("En proceso") && proyectoDto.getStatus() == StatusEnum.Completado) {
+			proyecto.getProyectoEstudianteSet().forEach(estudianteProyecto -> {
+				int horasEstudiante = estudianteProyecto.getEstudiante().getHorasProgreso();
+				int totalHorasEstudiante = horaProyectoActual + horasEstudiante;
+				estudianteProyecto.getEstudiante().setHorasProgreso(totalHorasEstudiante);
+				if(totalHorasEstudiante>=300) {
+					estudianteProyecto.getEstudiante().setServicioCompleto(true);
+					estudianteRepository.save(estudianteProyecto.getEstudiante());
+				}
+			});
 		}
 
 		proyecto.setStatus(new Status(proyectoDto.getStatus().ordinal() + 1));

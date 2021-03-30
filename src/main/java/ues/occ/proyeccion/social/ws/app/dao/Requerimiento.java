@@ -33,7 +33,7 @@ public class Requerimiento implements Serializable {
     private Documento documento;
 
     @OneToMany(mappedBy = "requerimiento", fetch = FetchType.LAZY,
-            cascade = CascadeType.PERSIST,
+            cascade = CascadeType.ALL,
             orphanRemoval = true)
     private Set<EstadoRequerimientoEstudiante> estadoRequerimientoEstudiantes = new HashSet<>();
 
