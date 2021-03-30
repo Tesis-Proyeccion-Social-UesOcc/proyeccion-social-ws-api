@@ -21,6 +21,8 @@ import ues.occ.proyeccion.social.ws.app.mappers.CycleUtil;
 import ues.occ.proyeccion.social.ws.app.mappers.ProyectoMapper;
 import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO;
 import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO.ProyectoDTO;
+import ues.occ.proyeccion.social.ws.app.model.StatusDTO;
+import ues.occ.proyeccion.social.ws.app.repository.EstudianteRepository;
 import ues.occ.proyeccion.social.ws.app.repository.ProyectoEstudianteRepository;
 import ues.occ.proyeccion.social.ws.app.repository.ProyectoRepository;
 import ues.occ.proyeccion.social.ws.app.utils.PageDtoWrapper;
@@ -28,11 +30,13 @@ import ues.occ.proyeccion.social.ws.app.utils.StatusOption;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -41,6 +45,9 @@ public class ProyectoServiceImpl implements ProyectoService {
 
     private final ProyectoRepository proyectoRepository;
     private final ProyectoMapper proyectoMapper;
+    
+    @Autowired
+    private EstudianteRepository estudianteRepository;
 
     @PersistenceContext
     private final EntityManager entityManager;
@@ -91,6 +98,9 @@ public class ProyectoServiceImpl implements ProyectoService {
     @Override
     public ProyectoCreationDTO.ProyectoDTO save(ProyectoCreationDTO proyecto) {
         try {
+        	ZoneId zid = ZoneId.of("America/Guatemala");
+			proyecto.setFechaCreacion(LocalDateTime.now(zid));
+			proyecto.setStatus(new StatusDTO(1));
             var proyectoToSave = this.proyectoMapper.proyectoCreationDTOToProyecto(proyecto);
             this.setEncargado(proyectoToSave, proyecto.getPersonal());
 
@@ -159,6 +169,7 @@ public class ProyectoServiceImpl implements ProyectoService {
     }
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
 	public ProyectoDTO changeStatus(ProyectoChangeStatusDto proyectoDto) {
 
 		Proyecto proyecto = proyectoRepository.findById(proyectoDto.getIdProyecto())
@@ -193,6 +204,20 @@ public class ProyectoServiceImpl implements ProyectoService {
 					+ ", el proyecto ya esta en un estado definitivo, este no se puede cambiar.");
 		}
 
+		int horaProyectoActual = proyecto.getDuracion();
+		//log.info(proyecto.getStatus().getStatus().toString());
+		if(proyecto.getStatus().getStatus().equals("En proceso") && proyectoDto.getStatus() == StatusEnum.Completado) {
+			proyecto.getProyectoEstudianteSet().stream().forEach(estudianteProyecto -> {
+				int horasEstudiante = estudianteProyecto.getEstudiante().getHorasProgreso();
+				 				int totalHorasEstudiante = horaProyectoActual + horasEstudiante;
+				estudianteProyecto.getEstudiante().setHorasProgreso(totalHorasEstudiante);
+				if(totalHorasEstudiante>=300) {
+					estudianteProyecto.getEstudiante().setServicioCompleto(true);
+					estudianteRepository.save(estudianteProyecto.getEstudiante());
+				}
+			});
+		}
+		
 		proyecto.setStatus(new Status(proyectoDto.getStatus().ordinal() + 1));
 		ZoneId zid = ZoneId.of("America/Guatemala");
 		proyecto.setFechaModificacion(LocalDateTime.now(zid));

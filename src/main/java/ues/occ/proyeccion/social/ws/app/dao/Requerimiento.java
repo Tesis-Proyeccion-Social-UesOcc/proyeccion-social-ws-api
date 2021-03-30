@@ -112,4 +112,12 @@ public class Requerimiento implements Serializable {
     public int hashCode() {
         return Objects.hash(id, original, cantidadCopias, proceso, documento, estadoRequerimientoEstudiantes);
     }
+
+	@Override
+	public String toString() {
+		return "Requerimiento [id=" + id + ", original=" + original + ", cantidadCopias=" + cantidadCopias
+				+ ", proceso=" + proceso + ", documento=" + documento + "]";
+	}
+    
+    
 }

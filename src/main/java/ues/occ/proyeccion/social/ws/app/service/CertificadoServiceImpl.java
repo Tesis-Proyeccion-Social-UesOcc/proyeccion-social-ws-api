@@ -113,14 +113,14 @@ public class CertificadoServiceImpl extends PageableResource<Certificado, Certif
 			store(file);
 			redirectAttributes.addFlashAttribute("message",
 					"You successfully uploaded " + file.getOriginalFilename() + "!");
-			String carnet =  certificadoRepository.findCarnet(id);
-			if(carnet == null) {
-				return new ResponseEntity<ServiceResponse>(
-						new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk, "Registro de Proyecto no encontrado, no se guardo el certificado"),
-						HttpStatus.CREATED);
-			}
-
-			BlobId blobId = BlobId.of(bucketName, carnet.toUpperCase()+"-" + file.getOriginalFilename());
+			/*
+			 * String carnet = certificadoRepository.findCarnet(id); if(carnet == null) {
+			 * return new ResponseEntity<ServiceResponse>( new
+			 * ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk,
+			 * "Registro de Proyecto no encontrado, no se guardo el certificado"),
+			 * HttpStatus.CREATED); }
+			 */
+			BlobId blobId = BlobId.of(bucketName, file.getOriginalFilename()+"-"+LocalDateTime.now());
 			BlobInfo blobInfo = BlobInfo.newBuilder(blobId).build();
 			String url;
 			try {

@@ -46,10 +46,8 @@ public class Proyecto implements Serializable {
 	@JoinColumn(name = "id", referencedColumnName = "id")
 	private Certificado certificado;
 
-    @OneToMany(mappedBy = "proyecto", fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL,
-            orphanRemoval = true)
-    private Set<ProyectoEstudiante> proyectoEstudianteSet = new HashSet<>();
+	@OneToMany(mappedBy = "proyecto", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	private Set<ProyectoEstudiante> proyectoEstudianteSet = new HashSet<>();
 
 	@Column(name = "fecha_creacion")
 	private LocalDateTime fechaCreacion;
@@ -57,12 +55,12 @@ public class Proyecto implements Serializable {
 	@Column(name = "fecha_modificacion")
 	private LocalDateTime fechaModificacion;
 
-
 	public Proyecto() {
 		super();
 	}
 
-	public Proyecto(String nombre, Integer duracion, boolean interno, Personal tutor, PersonalExterno encargadoExterno, Status status, Set<ProyectoEstudiante> proyectoEstudianteSet) {
+	public Proyecto(String nombre, Integer duracion, boolean interno, Personal tutor, PersonalExterno encargadoExterno,
+			Status status, Set<ProyectoEstudiante> proyectoEstudianteSet) {
 		this.nombre = nombre;
 		this.duracion = duracion;
 		this.interno = interno;
@@ -168,7 +166,7 @@ public class Proyecto implements Serializable {
 		this.proyectoEstudianteSet = proyectoEstudianteSet;
 	}
 
-	public void registerStudent(Estudiante estudiante){
+	public void registerStudent(Estudiante estudiante) {
 		var proyectoEstudiante = new ProyectoEstudiante(estudiante, this, true);
 		this.proyectoEstudianteSet.add(proyectoEstudiante);
 		estudiante.getProyectoEstudianteSet().add(proyectoEstudiante);
@@ -204,18 +202,10 @@ public class Proyecto implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Proyecto{" +
-				"id=" + id +
-				", nombre='" + nombre + '\'' +
-				", duracion=" + duracion +
-				", interno=" + interno +
-				", tutor=" + tutor +
-				", encargadoExterno=" + encargadoExterno +
-				", status=" + status +
-				", certificado=" + certificado +
-				", proyectoEstudianteSet=" + proyectoEstudianteSet +
-				", fechaCreacion=" + fechaCreacion +
-				", fechaModificacion=" + fechaModificacion +
-				'}';
+		return "Proyecto{" + "id=" + id + ", nombre='" + nombre + '\'' + ", duracion=" + duracion + ", interno="
+				+ interno + ", tutor=" + tutor + ", encargadoExterno=" + encargadoExterno + ", status=" + status
+				+ ", certificado=" + certificado + ", proyectoEstudianteSet=" + proyectoEstudianteSet
+				+ ", fechaCreacion=" + fechaCreacion + ", fechaModificacion=" + fechaModificacion + '}';
 	}
+
 }
