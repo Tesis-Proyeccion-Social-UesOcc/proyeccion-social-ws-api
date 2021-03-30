@@ -8,11 +8,11 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
-@Table("plantilla")
+@Table(name = "plantilla")
 public class Plantilla implements Serializable {
 
     @Id
-    private Integer id_plantilla;
+    private Integer idPlantilla;
 
     @Column(name = "nombre", nullable = false)
     private String nombre;
@@ -23,18 +23,17 @@ public class Plantilla implements Serializable {
     public Plantilla() {
     }
 
-    public Plantilla(int id_plantilla, String nombre, String url) {
-        this.id_plantilla = id_plantilla;
+    public Plantilla(String nombre, String url) {
         this.nombre = nombre;
         this.url = url;
     }
 
-    public int getId_plantilla() {
-        return id_plantilla;
+    public Integer getIdPlantilla() {
+        return idPlantilla;
     }
 
-    public void setId_plantilla(int id_plantilla) {
-        this.id_plantilla = id_plantilla;
+    public void setIdPlantilla(Integer idPlantilla) {
+        this.idPlantilla = idPlantilla;
     }
 
     public String getNombre() {
@@ -58,11 +57,11 @@ public class Plantilla implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Plantilla plantilla = (Plantilla) o;
-        return id_plantilla == plantilla.id_plantilla && Objects.equals(nombre, plantilla.nombre) && Objects.equals(url, plantilla.url);
+        return Objects.equals(idPlantilla, plantilla.idPlantilla) && Objects.equals(nombre, plantilla.nombre) && Objects.equals(url, plantilla.url);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id_plantilla, nombre, url);
+        return Objects.hash(idPlantilla, nombre, url);
     }
 }

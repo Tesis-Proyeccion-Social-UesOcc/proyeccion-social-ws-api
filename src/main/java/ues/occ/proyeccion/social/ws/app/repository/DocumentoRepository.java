@@ -11,6 +11,5 @@ import ues.occ.proyeccion.social.ws.app.dao.Documento;
 @Repository
 public interface DocumentoRepository extends JpaRepository<Documento, Integer> {
 
-	List<Documento> findByNombreContainingIgnoreCaseOrderByFechaDocumento(String nombre);
 
 }

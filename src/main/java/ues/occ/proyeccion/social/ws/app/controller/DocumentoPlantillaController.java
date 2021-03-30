@@ -1,28 +1,21 @@
 package ues.occ.proyeccion.social.ws.app.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 import ues.occ.proyeccion.social.ws.app.dao.ServiceResponse;
 import ues.occ.proyeccion.social.ws.app.dto.DocumentoRequest;
-import ues.occ.proyeccion.social.ws.app.service.DocumentoServiceImpl;
+import ues.occ.proyeccion.social.ws.app.service.DocumentoService;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 
 @RestController
-@RequestMapping(value = "documentos")
-public class DocumentoController {
+@RequestMapping(value = "plantillas")
+public class DocumentoPlantillaController {
 
-	private final DocumentoServiceImpl documentService;
+	private final DocumentoService documentService;
 
-	public DocumentoController(DocumentoServiceImpl documentService) {
+	public DocumentoPlantillaController(DocumentoService documentService) {
 		this.documentService = documentService;
 	}
 
@@ -38,7 +31,7 @@ public class DocumentoController {
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<ServiceResponse> findDocumentoById(@PathVariable("id") int id) {
+	public ResponseEntity<ServiceResponse> findDocumentoById(@PathVariable int id) {
 		return documentService.findById(id);
 	}
 	
@@ -53,7 +46,7 @@ public class DocumentoController {
 	}
 	
 	@DeleteMapping("/{id}")
-	public ResponseEntity<ServiceResponse> deleteById(@PathVariable("id") int id) {
+	public ResponseEntity<ServiceResponse> deleteById(@PathVariable int id) {
 		return documentService.deleteById(id);
-	} 
+	}
 }
