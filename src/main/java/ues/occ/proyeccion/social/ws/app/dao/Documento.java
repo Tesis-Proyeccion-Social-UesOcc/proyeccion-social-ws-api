@@ -2,6 +2,7 @@ package ues.occ.proyeccion.social.ws.app.dao;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -34,7 +35,7 @@ public class Documento implements Serializable {
     private LocalDateTime fechaDocumento;
 
     @OneToMany(mappedBy = "documento", fetch = FetchType.LAZY)
-    private Set<Requerimiento> requerimientos;
+    private Set<Requerimiento> requerimientos = new HashSet<>();
 
     public Documento() {
         super();
@@ -68,5 +69,13 @@ public class Documento implements Serializable {
 
     public void setFechaDocumento(LocalDateTime fechaDocumento) {
         this.fechaDocumento = fechaDocumento;
+    }
+
+    public Set<Requerimiento> getRequerimientos() {
+        return requerimientos;
+    }
+
+    public void setRequerimientos(Set<Requerimiento> requerimientos) {
+        this.requerimientos = requerimientos;
     }
 }

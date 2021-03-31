@@ -1,34 +1,31 @@
 package ues.occ.proyeccion.social.ws.app.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
-import ues.occ.proyeccion.social.ws.app.dao.PersonalExterno;
-import ues.occ.proyeccion.social.ws.app.dao.Estudiante;
-import ues.occ.proyeccion.social.ws.app.dao.ProyectoEstudiante;
-import ues.occ.proyeccion.social.ws.app.dao.Status;
+import ues.occ.proyeccion.social.ws.app.dao.*;
 import ues.occ.proyeccion.social.ws.app.dto.ProyectoChangeStatusDto;
 import ues.occ.proyeccion.social.ws.app.dto.StatusEnum;
-import ues.occ.proyeccion.social.ws.app.dao.Personal;
 import ues.occ.proyeccion.social.ws.app.exceptions.ChangeStatusProjectException;
 import ues.occ.proyeccion.social.ws.app.exceptions.InternalErrorException;
 import ues.occ.proyeccion.social.ws.app.exceptions.ResourceNotFoundException;
 import ues.occ.proyeccion.social.ws.app.mappers.CycleUtil;
 import ues.occ.proyeccion.social.ws.app.mappers.ProyectoMapper;
+import ues.occ.proyeccion.social.ws.app.model.PendingProjectDTO;
 import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO;
 import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO.ProyectoDTO;
-import ues.occ.proyeccion.social.ws.app.repository.ProyectoEstudianteRepository;
+import ues.occ.proyeccion.social.ws.app.model.StatusDTO;
+import ues.occ.proyeccion.social.ws.app.repository.DocumentoRepository;
+import ues.occ.proyeccion.social.ws.app.repository.EstudianteRepository;
 import ues.occ.proyeccion.social.ws.app.repository.ProyectoRepository;
 import ues.occ.proyeccion.social.ws.app.utils.PageDtoWrapper;
 import ues.occ.proyeccion.social.ws.app.utils.StatusOption;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Collections;
@@ -40,15 +37,19 @@ import java.util.stream.Collectors;
 public class ProyectoServiceImpl implements ProyectoService {
 
     private final ProyectoRepository proyectoRepository;
+    private final DocumentoRepository documentoRepository;
     private final ProyectoMapper proyectoMapper;
+    private final EstudianteRepository estudianteRepository;
 
     @PersistenceContext
     private final EntityManager entityManager;
 
-    public ProyectoServiceImpl(ProyectoRepository proyectoRepository, ProyectoMapper proyectoMapper, EntityManager entityManager) {
-
+    public ProyectoServiceImpl(ProyectoRepository proyectoRepository, DocumentoRepository documentoRepository, ProyectoMapper proyectoMapper,
+                               EstudianteRepository estudianteRepository, EntityManager entityManager) {
         this.proyectoRepository = proyectoRepository;
+        this.documentoRepository = documentoRepository;
         this.proyectoMapper = proyectoMapper;
+        this.estudianteRepository = estudianteRepository;
         this.entityManager = entityManager;
     }
 
@@ -81,17 +82,31 @@ public class ProyectoServiceImpl implements ProyectoService {
     }
 
     @Override
-    public PageDtoWrapper<Proyecto, ProyectoCreationDTO.ProyectoDTO> findProyectosByEstudiante(int page, int size, String carnet, int status) {
+    public PageDtoWrapper<Proyecto, ProyectoDTO> findProyectosByEstudiante(int page, int size, String carnet, int status) {
         Pageable paging = this.getPageable(page, size);
         Page<Proyecto> proyectoPage = proyectoRepository
                 .findAllByStatus_IdAndProyectoEstudianteSet_Estudiante_CarnetIgnoreCase(status, carnet, paging);
+
         return this.getPagedData(proyectoPage);
+    }
+
+    @Override
+    public PageDtoWrapper<Proyecto, PendingProjectDTO> findProyectosPendientesByEstudiante(int page, int size, String carnet, int status) {
+        Pageable paging = this.getPageable(page, size);
+        Page<Proyecto> proyectoPage = proyectoRepository
+                .findAllByStatus_IdAndProyectoEstudianteSet_Estudiante_CarnetIgnoreCase(status, carnet, paging);
+
+        return this.getPagedData(proyectoPage, carnet);
     }
 
     @Override
     public ProyectoCreationDTO.ProyectoDTO save(ProyectoCreationDTO proyecto) {
         try {
+
             var proyectoToSave = this.proyectoMapper.proyectoCreationDTOToProyecto(proyecto);
+            ZoneId zid = ZoneId.of("America/Guatemala");
+            proyectoToSave.setFechaCreacion(LocalDateTime.now(zid));
+            proyectoToSave.setStatus(entityManager.getReference(Status.class, 1));
             this.setEncargado(proyectoToSave, proyecto.getPersonal());
 
             proyecto.getEstudiantes().forEach(carnet -> {
@@ -99,7 +114,6 @@ public class ProyectoServiceImpl implements ProyectoService {
                 proyectoToSave.registerStudent(studentProxy);
             });
 
-            proyectoToSave.setStatus(this.entityManager.getReference(Status.class, proyecto.getStatus().getId()));
             var savedProyecto = this.proyectoRepository.save(proyectoToSave);
 
             return this.proyectoMapper.proyectoToProyectoDTO(savedProyecto, new CycleUtil());
@@ -142,6 +156,22 @@ public class ProyectoServiceImpl implements ProyectoService {
         }
     }
 
+    private PageDtoWrapper<Proyecto, PendingProjectDTO> getPagedData(Page<Proyecto> data, String carnet) {
+        List<PendingProjectDTO> content;
+        if (data.hasContent()) {
+            content = data.getContent().stream()
+                    .map(proyecto -> {
+                        var docs = this.documentoRepository.findProjectRelatedDocuments(carnet, proyecto.getNombre());
+                        return this.proyectoMapper.mapToPendingProject(proyecto, docs, new CycleUtil());
+                    })
+                    .collect(Collectors.toList());
+        } else {
+            content = Collections.emptyList();
+        }
+        return new PageDtoWrapper<>(data, content);
+    }
+
+
     private PageDtoWrapper<Proyecto, ProyectoDTO> getPagedData(Page<Proyecto> data) {
         List<ProyectoDTO> content;
         if (data.hasContent()) {
@@ -159,6 +189,7 @@ public class ProyectoServiceImpl implements ProyectoService {
     }
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
 	public ProyectoDTO changeStatus(ProyectoChangeStatusDto proyectoDto) {
 
 		Proyecto proyecto = proyectoRepository.findById(proyectoDto.getIdProyecto())
@@ -167,7 +198,7 @@ public class ProyectoServiceImpl implements ProyectoService {
 
 		var proyectoStatus = this.proyectoMapper.proyectoToProyectoDTO(proyecto, new CycleUtil());
 
-		if (proyecto.getStatus().equals("Pendiente")) {
+		if (proyecto.getStatus().getStatus().equalsIgnoreCase("Pendiente")) {
 			if (proyectoDto.getStatus() == StatusEnum.Pendiente) {
 				throw new ChangeStatusProjectException(
 						"El proyecto ya esta en estado pendiente. Podria  asignar estado rechazado o en proceso");
@@ -177,7 +208,7 @@ public class ProyectoServiceImpl implements ProyectoService {
 			}
 		}
 
-		if (proyecto.getStatus().equals("En proceso")) {
+		if (proyecto.getStatus().getStatus().equalsIgnoreCase("En proceso")) {
 			if (proyectoDto.getStatus() == StatusEnum.Pendiente) {
 				throw new ChangeStatusProjectException(
 						"El proyecto ya esta en proceso, no se puede asginar el estado pendiente. Podria asignar estado completado o retiro porfavor");
@@ -187,10 +218,25 @@ public class ProyectoServiceImpl implements ProyectoService {
 			}
 		}
 
-		if (proyecto.getStatus().equals("Completado") || proyecto.getStatus().getStatus().equalsIgnoreCase("Retiro")
+		if (proyecto.getStatus().getStatus().equalsIgnoreCase("Completado")
+                || proyecto.getStatus().getStatus().equalsIgnoreCase("Retiro")
 				|| proyecto.getStatus().getStatus().equalsIgnoreCase("Rechazado")) {
 			throw new ChangeStatusProjectException("Estado de proyecto: " + proyecto.getStatus().getStatus()
 					+ ", el proyecto ya esta en un estado definitivo, este no se puede cambiar.");
+		}
+
+		int horaProyectoActual = proyecto.getDuracion();
+
+		if(proyecto.getStatus().getStatus().equalsIgnoreCase("En proceso") && proyectoDto.getStatus() == StatusEnum.Completado) {
+			proyecto.getProyectoEstudianteSet().forEach(estudianteProyecto -> {
+				int horasEstudiante = estudianteProyecto.getEstudiante().getHorasProgreso();
+				int totalHorasEstudiante = horaProyectoActual + horasEstudiante;
+				estudianteProyecto.getEstudiante().setHorasProgreso(totalHorasEstudiante);
+				if(totalHorasEstudiante>=300) {
+					estudianteProyecto.getEstudiante().setServicioCompleto(true);
+					estudianteRepository.save(estudianteProyecto.getEstudiante());
+				}
+			});
 		}
 
 		proyecto.setStatus(new Status(proyectoDto.getStatus().ordinal() + 1));

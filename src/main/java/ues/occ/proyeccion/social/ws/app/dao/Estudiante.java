@@ -1,6 +1,7 @@
 package ues.occ.proyeccion.social.ws.app.dao;
 
 import java.io.Serializable;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -24,8 +25,10 @@ public class Estudiante implements Serializable {
 	@Column(name = "servicio_completo", nullable = true)
 	private boolean servicioCompleto;
 
-	@OneToMany(mappedBy = "estudiante", fetch = FetchType.LAZY)
-	private List<EstadoRequerimientoEstudiante> estadoRequerimientoEstudiantes;
+	@OneToMany(mappedBy = "estudiante", fetch = FetchType.LAZY,
+			cascade = CascadeType.ALL,
+			orphanRemoval = true)
+	private List<EstadoRequerimientoEstudiante> estadoRequerimientoEstudiantes = new ArrayList<>();
 
 	@OneToMany(mappedBy = "estudiante", fetch = FetchType.LAZY,
 			cascade = CascadeType.ALL,
@@ -80,6 +83,13 @@ public class Estudiante implements Serializable {
 
 	public void setEstadoRequerimientoEstudiantes(List<EstadoRequerimientoEstudiante> estadoRequerimientoEstudiantes) {
 		this.estadoRequerimientoEstudiantes = estadoRequerimientoEstudiantes;
+	}
+
+	public void addRequerimiento(Requerimiento requerimiento, boolean aprobado){
+		var requerimientoEstudiante = new EstadoRequerimientoEstudiante(this, requerimiento, true,
+				aprobado, new Date(System.currentTimeMillis()), null);
+		this.estadoRequerimientoEstudiantes.add(requerimientoEstudiante);
+		requerimiento.getEstadoRequerimientoEstudiantes().add(requerimientoEstudiante);
 	}
 
 	public List<ProyectoEstudiante> getProyectoEstudianteSet() {
