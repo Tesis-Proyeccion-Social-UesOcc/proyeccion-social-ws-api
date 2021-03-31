@@ -1,6 +1,7 @@
 package ues.occ.proyeccion.social.ws.app.dao;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -31,8 +32,10 @@ public class Requerimiento implements Serializable {
     @JoinColumn(name = "id_documento")
     private Documento documento;
 
-    @OneToMany(mappedBy = "requerimiento", fetch = FetchType.LAZY)
-    private Set<EstadoRequerimientoEstudiante> estadoRequerimientoEstudiantes;
+    @OneToMany(mappedBy = "requerimiento", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private Set<EstadoRequerimientoEstudiante> estadoRequerimientoEstudiantes = new HashSet<>();
 
     public Requerimiento() {
         super();
@@ -45,6 +48,15 @@ public class Requerimiento implements Serializable {
         this.proceso = proceso;
         this.documento = documento;
         this.estadoRequerimientoEstudiantes = estadoRequerimientoEstudiantes;
+    }
+
+    public Requerimiento(Integer id, boolean original, Integer cantidadCopias, Documento documento) {
+        this.id = id;
+        this.original = original;
+        this.cantidadCopias = cantidadCopias;
+        this.documento = documento;
+        documento.getRequerimientos().add(this);
+
     }
 
     public Integer getId() {
@@ -110,14 +122,6 @@ public class Requerimiento implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, original, cantidadCopias, proceso, documento, estadoRequerimientoEstudiantes);
+        return Objects.hash(id, original, cantidadCopias);
     }
-
-	@Override
-	public String toString() {
-		return "Requerimiento [id=" + id + ", original=" + original + ", cantidadCopias=" + cantidadCopias
-				+ ", proceso=" + proceso + ", documento=" + documento + "]";
-	}
-    
-    
 }

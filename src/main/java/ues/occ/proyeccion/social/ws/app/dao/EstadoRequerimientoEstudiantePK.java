@@ -52,4 +52,12 @@ import javax.persistence.Embeddable;
     public int hashCode() {
         return Objects.hash(idRequerimiento, idEstudiante);
     }
+
+    @Override
+    public String toString() {
+        return "EstadoRequerimientoEstudiantePK{" +
+                "idRequerimiento=" + idRequerimiento +
+                ", idEstudiante='" + idEstudiante + '\'' +
+                '}';
+    }
 }

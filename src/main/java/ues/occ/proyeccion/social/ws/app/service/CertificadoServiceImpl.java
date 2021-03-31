@@ -130,10 +130,9 @@ public class CertificadoServiceImpl extends PageableResource<Certificado, Certif
 				log.info("uri "+url);
 
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 				log.error("No se logro guardar el documento en el bucket", e);
-				return new ResponseEntity<ServiceResponse>(
+				return new ResponseEntity<>(
 						new ServiceResponse(ServiceResponse.codeFailStorageDocumentBucket,
 								ServiceResponse.messageFailStorageDocumentBucket, e.getMessage()),HttpStatus.INTERNAL_SERVER_ERROR);
 			}
@@ -144,11 +143,11 @@ public class CertificadoServiceImpl extends PageableResource<Certificado, Certif
 				log.info("Se creo un certificado " + certificado.toString());
 				certificado.setUri(url);
 				Certificado result = certificadoRepository.save(certificado);
-				return new ResponseEntity<ServiceResponse>(
+				return new ResponseEntity<>(
 						new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk, result),
 						HttpStatus.CREATED);
 			} else {
-				return new ResponseEntity<ServiceResponse>(
+				return new ResponseEntity<>(
 						new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk, "Registro no creado por falta de la creacion de la URI"),
 						HttpStatus.CREATED);
 
@@ -156,7 +155,7 @@ public class CertificadoServiceImpl extends PageableResource<Certificado, Certif
 
 		} catch (Exception e) {
 			log.error("No se logro crear el registro", e);
-			return new ResponseEntity<ServiceResponse>(
+			return new ResponseEntity<>(
 					new ServiceResponse(ServiceResponse.codeFatal, ServiceResponse.messageFatal, e.getMessage()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}

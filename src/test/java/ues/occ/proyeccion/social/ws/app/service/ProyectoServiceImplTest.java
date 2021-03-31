@@ -3,17 +3,23 @@ package ues.occ.proyeccion.social.ws.app.service;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ues.occ.proyeccion.social.ws.app.dao.*;
 import ues.occ.proyeccion.social.ws.app.exceptions.ResourceNotFoundException;
 import ues.occ.proyeccion.social.ws.app.mappers.ProyectoMapper;
 import ues.occ.proyeccion.social.ws.app.model.EstudianteDTO;
 import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO;
 import ues.occ.proyeccion.social.ws.app.model.StatusDTO;
+import ues.occ.proyeccion.social.ws.app.repository.DocumentoRepository;
+import ues.occ.proyeccion.social.ws.app.repository.EstudianteRepository;
 import ues.occ.proyeccion.social.ws.app.repository.ProyectoRepository;
 
 import javax.persistence.EntityManager;
@@ -24,27 +30,36 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
+@ExtendWith(SpringExtension.class)
 class ProyectoServiceImplTest {
 
     private static final int PAGE = 5;
     private static final int SIZE = 10;
 
+    @Autowired private ProyectoMapper proyectoMapper;
 
     @Mock
     private ProyectoRepository proyectoRepository;
 
     @Mock
+    private DocumentoRepository documentoRepository;
+
+    @Mock
+    private EstudianteRepository estudianteRepository;
+
+    @Mock
     EntityManager entityManager;
 
-
     private ProyectoServiceImpl proyectoService;
-    private final ProyectoMapper proyectoMapper = ProyectoMapper.INSTANCE;
+
     static Proyecto proyecto1;
     static Proyecto proyecto2;
 
     @BeforeAll
     static void setUpForClass(){
         proyecto1 = new Proyecto();
+        proyecto1.setNombre("proyecto1");
         proyecto1.setInterno(false);
         PersonalExterno personalExterno = new PersonalExterno();
         personalExterno.setNombre("text");
@@ -69,6 +84,7 @@ class ProyectoServiceImplTest {
         proyecto1.setTutor(new Personal());
         proyecto1.setProyectoEstudianteSet(proyectoEstudiantes);
         proyecto2 = new Proyecto();
+        proyecto2.setNombre("proyecto2");
         proyecto2.setInterno(true);
         proyecto2.setTutor(new Personal());
         proyecto2.setProyectoEstudianteSet(proyectoEstudiantes);
@@ -78,7 +94,7 @@ class ProyectoServiceImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        proyectoService = new ProyectoServiceImpl(proyectoRepository, proyectoMapper, entityManager);
+        proyectoService = new ProyectoServiceImpl(proyectoRepository, documentoRepository, proyectoMapper, estudianteRepository, entityManager);
     }
 
     @Test
@@ -217,6 +233,53 @@ class ProyectoServiceImplTest {
         assertEquals("zh", carnetArgumentCaptor.getValue());
         assertEquals(3, statusArgumentCaptor.getValue());
 
+    }
+
+    @Test
+    void findProyectosPendientesByEstudiante(){
+        List<Proyecto> data = List.of(proyecto1, proyecto2);
+        Pageable pageable = PageRequest.of(5, 10);
+        Page<Proyecto> page = new PageImpl<>(data, pageable, data.size());
+
+        var document = new Documento("doc", "my doc", "www.google.com", LocalDateTime.now());
+        var requerimiento = new Requerimiento(1, true, 2, document);
+        var student = new Estudiante("zh15002", 200, false);
+        student.addRequerimiento(requerimiento, false);
+
+        var docs = List.of(document);
+
+        ArgumentCaptor<Pageable> pageableArgumentCaptor = ArgumentCaptor.forClass(Pageable.class);
+        ArgumentCaptor<Integer> statusArgumentCaptor = ArgumentCaptor.forClass(Integer.class);
+        ArgumentCaptor<String> carnetArgumentCaptor = ArgumentCaptor.forClass(String.class);
+
+        Mockito.when(this.proyectoRepository.findAllByStatus_IdAndProyectoEstudianteSet_Estudiante_CarnetIgnoreCase(
+                Mockito.anyInt(), Mockito.anyString(), Mockito.any(Pageable.class))).thenReturn(page);
+
+        Mockito.when(this.documentoRepository
+                .findProjectRelatedDocuments(Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(docs);
+
+        var result = this.proyectoService.findProyectosPendientesByEstudiante(5, 10, "zh", 3);
+
+        Mockito.verify(this.proyectoRepository, Mockito.times(1))
+                .findAllByStatus_IdAndProyectoEstudianteSet_Estudiante_CarnetIgnoreCase(
+                        statusArgumentCaptor.capture(), carnetArgumentCaptor.capture(), pageableArgumentCaptor.capture()
+                );
+
+        Mockito.verify(this.documentoRepository, Mockito.times(2))
+                .findProjectRelatedDocuments(ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
+
+        assertNotNull(result);
+        assertEquals(PAGE, pageableArgumentCaptor.getValue().getPageNumber());
+        assertEquals(SIZE, pageableArgumentCaptor.getValue().getPageSize());
+
+        assertEquals(2, result.getContent().size());
+        assertFalse(result.getContent().get(0).isInterno());
+        assertEquals(result.getContent().get(0).getPersonal(), "text");
+        assertTrue(result.getContent().get(1).isInterno());
+        assertEquals("doc", result.getContent().get(1).getDocumentos().iterator().next().getNombre());
+        assertEquals("zh", carnetArgumentCaptor.getValue());
+        assertEquals(3, statusArgumentCaptor.getValue());
     }
 
     @Test

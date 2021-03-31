@@ -18,6 +18,7 @@ import ues.occ.proyeccion.social.ws.app.service.EstudianteService;
 import ues.occ.proyeccion.social.ws.app.service.ProyectoService;
 import ues.occ.proyeccion.social.ws.app.utils.MapperUtility;
 import ues.occ.proyeccion.social.ws.app.utils.PageDtoWrapper;
+import ues.occ.proyeccion.social.ws.app.utils.StatusOption;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
@@ -86,18 +87,22 @@ public class EstudianteController {
 
     // HERE DOWN
     @GetMapping("/{carnet}/proyectos")
-    public PageDTO<ProyectoCreationDTO.ProyectoDTO> projectsByStudentID(
+    public ResponseEntity<PageDTO<? extends ProjectMarker>> projectsByStudentID(
             @PathVariable String carnet,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "2") int status,
             UriComponentsBuilder builder, HttpServletResponse response) {
-        var result = this.proyectoService.findProyectosByEstudiante(page, size, carnet, status);
+
+        var result = status == StatusOption.PENDIENTE ?
+                this.proyectoService.findProyectosPendientesByEstudiante(page, size, carnet, status) :
+                this.proyectoService.findProyectosByEstudiante(page, size, carnet, status);
+
         publisher.publishEvent(new PaginatedResultsRetrievedEvent<>(
                 this.getClass(), builder, response, page,
                 result.getOriginalPage().getTotalPages(), size)
         );
-        return new PageDTO<>(result);
+        return new ResponseEntity<>(new PageDTO<>(result), HttpStatus.OK);
     }
 
     @PostMapping("/{carnet}/documentos/{requerimientoId}")

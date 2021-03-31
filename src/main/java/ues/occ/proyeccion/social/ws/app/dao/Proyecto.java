@@ -166,7 +166,7 @@ public class Proyecto implements Serializable {
 		this.proyectoEstudianteSet = proyectoEstudianteSet;
 	}
 
-	public void registerStudent(Estudiante estudiante) {
+	public void registerStudent(Estudiante estudiante){
 		var proyectoEstudiante = new ProyectoEstudiante(estudiante, this, true);
 		this.proyectoEstudianteSet.add(proyectoEstudiante);
 		estudiante.getProyectoEstudianteSet().add(proyectoEstudiante);

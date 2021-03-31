@@ -23,12 +23,13 @@ import ues.occ.proyeccion.social.ws.app.service.CertificadoServiceImpl;
 @RequestMapping(value = "/proyectos-estudiante")
 public class ProyectoEstudianteController {
 
-    // private final StorageService storageService;
+    private final Storage storage;
+    private final CertificadoServiceImpl certificadoServiceImpl;
 
-    @Autowired
-    private Storage storage;
-    @Autowired
-    private CertificadoServiceImpl certificadoServiceImpl;
+    public ProyectoEstudianteController(Storage storage, CertificadoServiceImpl certificadoServiceImpl) {
+        this.storage = storage;
+        this.certificadoServiceImpl = certificadoServiceImpl;
+    }
 
     @PostMapping(value = "/certificado/{idProyectoEstudiante}")
     public ResponseEntity<ServiceResponse> crearCertificado(
