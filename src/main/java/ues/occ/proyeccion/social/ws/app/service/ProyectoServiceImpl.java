@@ -102,10 +102,11 @@ public class ProyectoServiceImpl implements ProyectoService {
     @Override
     public ProyectoCreationDTO.ProyectoDTO save(ProyectoCreationDTO proyecto) {
         try {
-        	ZoneId zid = ZoneId.of("America/Guatemala");
-			proyecto.setFechaCreacion(LocalDateTime.now(zid));
-			proyecto.setStatus(new StatusDTO(1));
+
             var proyectoToSave = this.proyectoMapper.proyectoCreationDTOToProyecto(proyecto);
+            ZoneId zid = ZoneId.of("America/Guatemala");
+            proyectoToSave.setFechaCreacion(LocalDateTime.now(zid));
+            proyectoToSave.setStatus(entityManager.getReference(Status.class, 1));
             this.setEncargado(proyectoToSave, proyecto.getPersonal());
 
             proyecto.getEstudiantes().forEach(carnet -> {
@@ -113,7 +114,6 @@ public class ProyectoServiceImpl implements ProyectoService {
                 proyectoToSave.registerStudent(studentProxy);
             });
 
-            proyectoToSave.setStatus(this.entityManager.getReference(Status.class, proyecto.getStatus().getId()));
             var savedProyecto = this.proyectoRepository.save(proyectoToSave);
 
             return this.proyectoMapper.proyectoToProyectoDTO(savedProyecto, new CycleUtil());
@@ -161,7 +161,6 @@ public class ProyectoServiceImpl implements ProyectoService {
         if (data.hasContent()) {
             content = data.getContent().stream()
                     .map(proyecto -> {
-                        // TODO: update with Plantilla entity
                         var docs = this.documentoRepository.findProjectRelatedDocuments(carnet, proyecto.getNombre());
                         return this.proyectoMapper.mapToPendingProject(proyecto, docs, new CycleUtil());
                     })

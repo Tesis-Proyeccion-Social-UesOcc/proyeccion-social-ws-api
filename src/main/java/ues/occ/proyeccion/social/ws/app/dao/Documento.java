@@ -31,9 +31,6 @@ public class Documento implements Serializable {
     @Column(name = "descripcion", nullable = false, length = 100)
     private String descripcion;
 
-    @Column(name = "uri", nullable = false)
-    private String uri;
-
     @Column(name = "fecha_documento", nullable = false)
     private LocalDateTime fechaDocumento;
 
@@ -44,54 +41,41 @@ public class Documento implements Serializable {
         super();
     }
 
-    public Documento(String nombre, String descripcion, String uri, LocalDateTime fecha_documento) {
+    public Documento(String nombre, String descripcion, LocalDateTime fechaDocumento) {
         this.nombre = nombre;
         this.descripcion = descripcion;
-        this.uri = uri;
-        this.fechaDocumento = fecha_documento;
+        this.fechaDocumento = fechaDocumento;
     }
 
-	public Integer getId() {
-		return Id;
-	}
+    public String getNombre() {
+        return nombre;
+    }
 
-	public void setId(Integer id) {
-		Id = id;
-	}
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 
-	public String getNombre() {
-		return nombre;
-	}
+    public String getDescripcion() {
+        return descripcion;
+    }
 
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
 
-	public String getDescripcion() {
-		return descripcion;
-	}
+    public LocalDateTime getFechaDocumento() {
+        return fechaDocumento;
+    }
 
-	public void setDescripcion(String descripcion) {
-		this.descripcion = descripcion;
-	}
+    public void setFechaDocumento(LocalDateTime fechaDocumento) {
+        this.fechaDocumento = fechaDocumento;
+    }
 
-	public String getUri() {
-		return uri;
-	}
+    public Set<Requerimiento> getRequerimientos() {
+        return requerimientos;
+    }
 
-	public void setUri(String uri) {
-		this.uri = uri;
-	}
-
-	public LocalDateTime getFechaDocumento() {
-		return fechaDocumento;
-	}
-
-	public void setFechaDocumento(LocalDateTime fechaDocumento) {
-		this.fechaDocumento = fechaDocumento;
-	}
-
-	public Set<Requerimiento> getRequerimientos() {
-		return requerimientos;
-	}
+    public void setRequerimientos(Set<Requerimiento> requerimientos) {
+        this.requerimientos = requerimientos;
+    }
 }

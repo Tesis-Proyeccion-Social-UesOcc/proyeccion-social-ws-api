@@ -2,6 +2,7 @@ package ues.occ.proyeccion.social.ws.app.dao;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -187,12 +188,17 @@ public class Proyecto implements Serializable {
 		if (o == null || getClass() != o.getClass())
 			return false;
 		Proyecto proyecto = (Proyecto) o;
+		var fechaCreacionValue = fechaCreacion == null ? null : fechaCreacion.truncatedTo(ChronoUnit.SECONDS);
+		var thatFechaCreacionValue = proyecto.fechaCreacion == null ? null : proyecto.fechaCreacion.truncatedTo(ChronoUnit.SECONDS);
+		var fechaModificacionValue = fechaModificacion == null ? null : fechaModificacion.truncatedTo(ChronoUnit.SECONDS);
+		var thatFechaModificacionValue = proyecto.fechaModificacion == null ? null : proyecto.fechaModificacion.truncatedTo(ChronoUnit.SECONDS);
+
 		return interno == proyecto.interno && Objects.equals(id, proyecto.id) && Objects.equals(nombre, proyecto.nombre)
 				&& Objects.equals(duracion, proyecto.duracion) && Objects.equals(tutor, proyecto.tutor)
 				&& Objects.equals(status, proyecto.status) && Objects.equals(certificado, proyecto.certificado)
 				&& Objects.equals(encargadoExterno, proyecto.encargadoExterno)
-				&& Objects.equals(fechaCreacion.withNano(0), proyecto.fechaCreacion.withNano(0))
-				&& Objects.equals(fechaModificacion.withNano(0), proyecto.fechaModificacion.withNano(0));
+				&& Objects.equals(fechaCreacionValue, thatFechaCreacionValue)
+				&& Objects.equals(fechaModificacionValue, thatFechaModificacionValue);
 	}
 
 	@Override

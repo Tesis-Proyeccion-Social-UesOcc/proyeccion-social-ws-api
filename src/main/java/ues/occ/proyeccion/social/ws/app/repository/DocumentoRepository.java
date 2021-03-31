@@ -13,7 +13,6 @@ import ues.occ.proyeccion.social.ws.app.dao.Documento;
 @Repository
 public interface DocumentoRepository extends JpaRepository<Documento, Integer> {
 
-	List<Documento> findByNombreContainingIgnoreCaseOrderByFechaDocumento(String nombre);
 	@Query(value =
 			"SELECT * from documento d inner join requerimiento r on r.id_documento = d.id inner join estado_requerimiento_estudiante ere"
 			+" on ere.id_requerimiento = r.id RIGHT join estudiante e on e.carnet = ere.id_estudiante inner join proyecto_estudiante pe"

@@ -241,7 +241,7 @@ class ProyectoServiceImplTest {
         Pageable pageable = PageRequest.of(5, 10);
         Page<Proyecto> page = new PageImpl<>(data, pageable, data.size());
 
-        var document = new Documento("doc", "my doc", "www.google.com", LocalDateTime.now());
+        var document = new Documento("doc", "my doc", LocalDateTime.now());
         var requerimiento = new Requerimiento(1, true, 2, document);
         var student = new Estudiante("zh15002", 200, false);
         student.addRequerimiento(requerimiento, false);
@@ -293,7 +293,7 @@ class ProyectoServiceImplTest {
 
         var carnets = List.of(carnet);
 
-        ProyectoCreationDTO proyectoCreationDTO = new ProyectoCreationDTO("Project", 150, true, 1, carnets, LocalDateTime.now(), LocalDateTime.now(), new StatusDTO(1, "DummyStatus", "DummyDesc"));
+        ProyectoCreationDTO proyectoCreationDTO = new ProyectoCreationDTO("Project", 150, true, 1, carnets, new StatusDTO(1, "DummyStatus", "DummyDesc"));
         Proyecto resultProject = this.proyectoMapper.proyectoCreationDTOToProyecto(proyectoCreationDTO);
         resultProject.setTutor(personal);
 
@@ -306,6 +306,7 @@ class ProyectoServiceImplTest {
         var expectedProyectoEstudiante = new ProyectoEstudiante(estudiante, resultProject, false);
         resultProject.setProyectoEstudianteSet(Set.of(expectedProyectoEstudiante));
         resultProject.setId(1);
+        resultProject.setFechaCreacion(LocalDateTime.now());
 
 
         ArgumentCaptor<String> carnetCaptor = ArgumentCaptor.forClass(String.class);
@@ -327,7 +328,7 @@ class ProyectoServiceImplTest {
 
         var expectedDto = new ProyectoCreationDTO.ProyectoDTO(1, "Project", 150,
                 true, "Steve", Set.of(new EstudianteDTO("ZH15002", 250, false)),
-                LocalDateTime.now(), LocalDateTime.now(), "DummyStatus");
+                LocalDateTime.now(), null, "DummyStatus");
 
         assertNotNull(result);
         assertEquals(result, expectedDto);
@@ -365,7 +366,7 @@ class ProyectoServiceImplTest {
         proyecto.setFechaModificacion(LocalDateTime.now());
         proyecto.setStatus(new Status(1, "dummyValue", "dummyValue"));
 
-        var creationDto = new ProyectoCreationDTO("Test2", 350, true, 10, List.of("ab12345"), LocalDateTime.now(), LocalDateTime.now(), new StatusDTO());
+        var creationDto = new ProyectoCreationDTO("Test2", 350, true, 10, List.of("ab12345"), new StatusDTO());
 
         ArgumentCaptor<Integer> idCaptor = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> idPersonal = ArgumentCaptor.forClass(Integer.class);

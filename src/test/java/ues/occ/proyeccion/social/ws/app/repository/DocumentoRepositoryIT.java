@@ -35,10 +35,10 @@ class DocumentoRepositoryIT {
         var status = new Status(1, "Pendiente", "pendiente");
         statusRepository.save(status);
 
-        var documento1 = new Documento("Doc 1", "Test doc 1", "www.google.com", LocalDateTime.now());
-        var documento2 = new Documento("Doc 2", "Test doc 2", "www.google.com", LocalDateTime.now());
+        var documento1 = new Documento("Doc 1", "Test doc 1", LocalDateTime.now());
+        var documento2 = new Documento("Doc 2", "Test doc 2", LocalDateTime.now());
 
-        var unsedDocumento = new Documento("unsedDocumento", "Test unsedDocumento", "www.google.com", LocalDateTime.now());
+        var unsedDocumento = new Documento("unsedDocumento", "Test unsedDocumento", LocalDateTime.now());
 
         documentoRepository.saveAll(List.of(documento1, documento2, unsedDocumento));
 

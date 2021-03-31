@@ -43,7 +43,7 @@ class Bootstrap implements ApplicationListener<ContextRefreshedEvent>{
 		Estudiante estudiante = new Estudiante();
 		estudiante.setCarnet("zh15002");
 		Requerimiento requerimiento = new Requerimiento();
-		Documento documento = new Documento("Nombre", "Descripcion", "https://google.com", LocalDateTime.now());
+		Documento documento = new Documento("Nombre", "Descripcion", LocalDateTime.now());
 		var docResult = documentoRepository.save(documento);
 		requerimiento.setId(1);
 		requerimiento.setDocumento(docResult);
