@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface PlantillaRepository extends CrudRepository<Plantilla, Integer> {
 
-    List<Plantilla> findByNombreContainingIgnoreCaseOrderByIdPlantilla(String nombre);
+    List<Plantilla> findByNombreContainingIgnoreCaseOrderByFechaDocumento(String nombre);
 
 }

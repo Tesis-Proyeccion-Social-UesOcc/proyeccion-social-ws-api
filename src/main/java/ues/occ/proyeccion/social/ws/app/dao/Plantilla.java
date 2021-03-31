@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
@@ -20,20 +21,16 @@ public class Plantilla implements Serializable {
     @Column(name = "url", nullable = false)
     private String url;
 
+    @Column(name = "fecha_documento", nullable = false)
+    private LocalDateTime fechaDocumento;
+
     public Plantilla() {
     }
 
-    public Plantilla(String nombre, String url) {
+    public Plantilla(String nombre, String url, LocalDateTime fechaDocumento) {
         this.nombre = nombre;
         this.url = url;
-    }
-
-    public Integer getIdPlantilla() {
-        return idPlantilla;
-    }
-
-    public void setIdPlantilla(Integer idPlantilla) {
-        this.idPlantilla = idPlantilla;
+        this.fechaDocumento = fechaDocumento;
     }
 
     public String getNombre() {
@@ -52,16 +49,24 @@ public class Plantilla implements Serializable {
         this.url = url;
     }
 
+    public LocalDateTime getFechaDocumento() {
+        return fechaDocumento;
+    }
+
+    public void setFechaDocumento(LocalDateTime fechaDocumento) {
+        this.fechaDocumento = fechaDocumento;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Plantilla plantilla = (Plantilla) o;
-        return Objects.equals(idPlantilla, plantilla.idPlantilla) && Objects.equals(nombre, plantilla.nombre) && Objects.equals(url, plantilla.url);
+        return Objects.equals(idPlantilla, plantilla.idPlantilla) && Objects.equals(nombre, plantilla.nombre) && Objects.equals(url, plantilla.url) && Objects.equals(fechaDocumento, plantilla.fechaDocumento);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idPlantilla, nombre, url);
+        return Objects.hash(idPlantilla, nombre, url, fechaDocumento);
     }
 }

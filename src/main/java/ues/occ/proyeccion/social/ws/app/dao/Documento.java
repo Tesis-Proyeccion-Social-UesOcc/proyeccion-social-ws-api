@@ -30,6 +30,9 @@ public class Documento implements Serializable {
     @Column(name = "descripcion", nullable = false, length = 100)
     private String descripcion;
 
+    @Column(name = "fecha_documento", nullable = false)
+    private LocalDateTime fechaDocumento;
+
     @OneToMany(mappedBy = "documento", fetch = FetchType.LAZY)
     private Set<Requerimiento> requerimientos;
 
@@ -37,36 +40,33 @@ public class Documento implements Serializable {
         super();
     }
 
-    public Documento(String nombre, String descripcion) {
+    public Documento(String nombre, String descripcion, LocalDateTime fechaDocumento) {
         this.nombre = nombre;
         this.descripcion = descripcion;
-
+        this.fechaDocumento = fechaDocumento;
     }
-	public Integer getId() {
-		return Id;
-	}
 
-	public void setId(Integer id) {
-		Id = id;
-	}
+    public String getNombre() {
+        return nombre;
+    }
 
-	public String getNombre() {
-		return nombre;
-	}
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
+    public String getDescripcion() {
+        return descripcion;
+    }
 
-	public String getDescripcion() {
-		return descripcion;
-	}
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
 
-	public void setDescripcion(String descripcion) {
-		this.descripcion = descripcion;
-	}
+    public LocalDateTime getFechaDocumento() {
+        return fechaDocumento;
+    }
 
-
-   
-
+    public void setFechaDocumento(LocalDateTime fechaDocumento) {
+        this.fechaDocumento = fechaDocumento;
+    }
 }

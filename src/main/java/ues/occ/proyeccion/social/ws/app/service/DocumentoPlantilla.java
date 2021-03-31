@@ -61,7 +61,7 @@ public class DocumentoPlantilla implements DocumentoService {
 			storage.createAcl(blobId, Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER));
 			log.info("uri " + uri);
 
-			var plantilla = plantillaRepository.save(new Plantilla(model.getNombre(), uri));
+			var plantilla = plantillaRepository.save(new Plantilla(model.getNombre(), uri, time));
 
 			return new ResponseEntity<>(
 					new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk, plantilla), HttpStatus.OK);
@@ -91,7 +91,7 @@ public class DocumentoPlantilla implements DocumentoService {
 	@Override
 	public ResponseEntity<ServiceResponse> findDocumentoByNombre(String nombre) {
 		try {
-			List<Plantilla> documentos = plantillaRepository.findByNombreContainingIgnoreCaseOrderByIdPlantilla(nombre);
+			List<Plantilla> documentos = plantillaRepository.findByNombreContainingIgnoreCaseOrderByFechaDocumento(nombre);
 			return new ResponseEntity<>(
 					new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk, documentos), HttpStatus.OK);
 
