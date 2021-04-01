@@ -6,14 +6,15 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import ues.occ.proyeccion.social.ws.app.dao.Estudiante;
 import ues.occ.proyeccion.social.ws.app.exceptions.ResourceNotFoundException;
+import ues.occ.proyeccion.social.ws.app.mappers.EstadoRequerimientoEstudianteMapper;
 import ues.occ.proyeccion.social.ws.app.mappers.EstudianteMapper;
 import ues.occ.proyeccion.social.ws.app.model.EstudianteDTO;
+import ues.occ.proyeccion.social.ws.app.repository.EstadoRequerimientoEstudianteRepository;
 import ues.occ.proyeccion.social.ws.app.repository.EstudianteRepository;
 
 import java.util.List;
@@ -28,12 +29,19 @@ class EstudianteServiceImplTest {
     @Mock
     EstudianteRepository estudianteRepository;
 
+    @Mock
+    private EstadoRequerimientoEstudianteMapper requerimientoEstudianteMapper;
+
+    @Mock
+    private EstadoRequerimientoEstudianteRepository estadoRequerimientoEstudianteRepository;
+
     EstudianteService estudianteService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        estudianteService = new EstudianteServiceImpl(estudianteRepository, EstudianteMapper.INSTANCE);
+        estudianteService = new EstudianteServiceImpl(estudianteRepository, EstudianteMapper.INSTANCE,
+                requerimientoEstudianteMapper, estadoRequerimientoEstudianteRepository);
     }
 
     @Test
