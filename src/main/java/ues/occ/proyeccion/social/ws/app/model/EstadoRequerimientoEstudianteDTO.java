@@ -14,4 +14,14 @@ public class EstadoRequerimientoEstudianteDTO{
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date fechaEntrega;
 
+    @Data
+    public static class RequerimientoEstudianteDTO{
+        private String documento;
+        private boolean entregado;
+        private boolean aprobado;
+        private Date fechaEntrega;
+        private Date fechaAprobacion;
+    }
 }
+
+
