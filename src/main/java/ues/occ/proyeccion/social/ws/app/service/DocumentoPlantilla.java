@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,17 +48,19 @@ public class DocumentoPlantilla implements DocumentoService {
 	}
 
 	public ResponseEntity<ServiceResponse> crearDocumento(DocumentoRequest model) {
-		log.info(model.toString());
+		log.info("Plantilla Request: "+model.toString());
 		LocalDateTime time = LocalDateTime.now();
 
 		BlobId blobId = BlobId.of(bucketName, time + "_" + model.getFile().getOriginalFilename());
 		BlobInfo blobInfo = BlobInfo.newBuilder(blobId).build();
+		log.info(model.getFile().getOriginalFilename());
 		String uri;
 
 		try {
 
 			Blob blob = storage.create(blobInfo, model.getFile().getBytes());
 			uri = blob.getMediaLink();
+			//blob.
 			storage.createAcl(blobId, Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER));
 			log.info("uri " + uri);
 
@@ -74,6 +77,7 @@ public class DocumentoPlantilla implements DocumentoService {
 							ServiceResponse.messageFailStorageDocumentBucket, e.getMessage()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		} catch (Exception ex) {
+			log.error("Error al subir un archivo",ex);
 			return new ResponseEntity<>(
 					new ServiceResponse(ServiceResponse.codeFatal, ServiceResponse.messageFatal, ex.getMessage()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
