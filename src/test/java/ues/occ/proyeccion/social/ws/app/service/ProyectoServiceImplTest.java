@@ -16,6 +16,7 @@ import ues.occ.proyeccion.social.ws.app.dao.*;
 import ues.occ.proyeccion.social.ws.app.exceptions.ResourceNotFoundException;
 import ues.occ.proyeccion.social.ws.app.mappers.ProyectoMapper;
 import ues.occ.proyeccion.social.ws.app.model.EstudianteDTO;
+import ues.occ.proyeccion.social.ws.app.model.PendingProjectDTO;
 import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO;
 import ues.occ.proyeccion.social.ws.app.model.StatusDTO;
 import ues.occ.proyeccion.social.ws.app.repository.DocumentoRepository;
@@ -59,6 +60,8 @@ class ProyectoServiceImplTest {
     @BeforeAll
     static void setUpForClass(){
         proyecto1 = new Proyecto();
+        var status = new Status(2, "statusName", "desc");
+        proyecto1.setStatus(status);
         proyecto1.setNombre("proyecto1");
         proyecto1.setInterno(false);
         PersonalExterno personalExterno = new PersonalExterno();
@@ -200,6 +203,43 @@ class ProyectoServiceImplTest {
         assertTrue(result.getContent().get(1).isInterno());
         assertEquals(1, statusCaptor.getValue());
 
+    }
+
+    @Test
+    void testFindByCarnetAndProjectNameWhenIsNoPending(){
+        var toReturn = Optional.of(proyecto1);
+
+        Mockito.when(this.proyectoRepository.findByProyectoEstudianteSet_Estudiante_CarnetIgnoreCaseAndNombreIgnoreCase(Mockito.anyString(), Mockito.anyString())).thenReturn(toReturn);
+
+        var result = (ProyectoCreationDTO.ProyectoDTO) this.proyectoService.findByCarnetAndProjectName("ab12345", "test");
+
+        Mockito.verify(this.documentoRepository, Mockito.never()).findProjectRelatedDocuments(Mockito.anyString(), Mockito.anyString());
+        assertNotNull(result);
+        assertEquals(result.getDuracion(), proyecto1.getDuracion());
+        assertEquals(result.getId(), proyecto1.getId());
+        assertEquals(result.getNombre(), proyecto1.getNombre());
+    }
+
+    @Test
+    void testFindByCarnetAndProjectNameWhenIsPending(){
+        proyecto1.getStatus().setId(1);
+        var toReturn = Optional.of(proyecto1);
+        var doc = new Documento("doc1", "desc", null);
+        var requerimiento = new Requerimiento(1, true, 3, doc);
+        var estudiante = new Estudiante("ab12345", 250, false);
+        estudiante.addRequerimiento(requerimiento, true);
+        var docs = List.of(doc);
+
+        Mockito.when(this.proyectoRepository.findByProyectoEstudianteSet_Estudiante_CarnetIgnoreCaseAndNombreIgnoreCase(Mockito.anyString(), Mockito.anyString())).thenReturn(toReturn);
+        Mockito.when(this.documentoRepository.findProjectRelatedDocuments(Mockito.anyString(), Mockito.anyString())).thenReturn(docs);
+
+        var result = (PendingProjectDTO) this.proyectoService.findByCarnetAndProjectName("ab12345", "test");
+
+        assertNotNull(result);
+        assertEquals(result.getDuracion(), proyecto1.getDuracion());
+        assertEquals(result.getId(), proyecto1.getId());
+        assertEquals(result.getNombre(), proyecto1.getNombre());
+        assertEquals(result.getDocumentos().iterator().next().getNombre(), docs.get(0).getNombre());
     }
 
     @Test

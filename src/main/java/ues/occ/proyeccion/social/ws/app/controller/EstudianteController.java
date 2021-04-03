@@ -104,7 +104,7 @@ public class EstudianteController {
     }
 
     @GetMapping("/{carnet}/proyectos/single")
-    public ProyectoCreationDTO.ProyectoDTO studentProjectByName(@PathVariable String carnet, @RequestParam String projectName){
+    public ProjectMarker studentProjectByName(@PathVariable String carnet, @RequestParam String projectName){
         var decodedProjectName = URLDecoder.decode(projectName, StandardCharsets.UTF_8);
         return this.proyectoService.findByCarnetAndProjectName(carnet, decodedProjectName);
     }
