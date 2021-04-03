@@ -1,13 +1,10 @@
 package ues.occ.proyeccion.social.ws.app.controller;
 
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
-import ues.occ.proyeccion.social.ws.app.dao.Certificado;
-import ues.occ.proyeccion.social.ws.app.dao.Estudiante;
 import ues.occ.proyeccion.social.ws.app.dao.ServiceResponse;
 import ues.occ.proyeccion.social.ws.app.events.PaginatedResultsRetrievedEvent;
 import ues.occ.proyeccion.social.ws.app.exceptions.InternalErrorException;
@@ -17,11 +14,12 @@ import ues.occ.proyeccion.social.ws.app.service.EstadoRequerimientoEstudianteSer
 import ues.occ.proyeccion.social.ws.app.service.EstudianteService;
 import ues.occ.proyeccion.social.ws.app.service.ProyectoService;
 import ues.occ.proyeccion.social.ws.app.utils.MapperUtility;
-import ues.occ.proyeccion.social.ws.app.utils.PageDtoWrapper;
 import ues.occ.proyeccion.social.ws.app.utils.StatusOption;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/estudiantes")
@@ -103,6 +101,12 @@ public class EstudianteController {
                 result.getOriginalPage().getTotalPages(), size)
         );
         return new ResponseEntity<>(new PageDTO<>(result), HttpStatus.OK);
+    }
+
+    @GetMapping("/{carnet}/proyectos/single")
+    public ProjectMarker studentProjectByName(@PathVariable String carnet, @RequestParam String projectName){
+        var decodedProjectName = URLDecoder.decode(projectName, StandardCharsets.UTF_8);
+        return this.proyectoService.findByCarnetAndProjectName(carnet, decodedProjectName);
     }
 
     @PostMapping("/{carnet}/documentos/{requerimientoId}")

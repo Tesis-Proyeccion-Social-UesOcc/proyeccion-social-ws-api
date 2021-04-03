@@ -165,6 +165,30 @@ class EstudianteControllerTest {
     }
 
     @Test
+    void testStudentProjectByName() throws Exception{
+        ProyectoCreationDTO.ProyectoDTO dto1 = new ProyectoCreationDTO.ProyectoDTO(1, "Project1", 100, true, "Steve Jobs", Collections.emptySet(), LocalDateTime.now(), LocalDateTime.now(), "dummy");
+
+        var carnetCaptor = ArgumentCaptor.forClass(String.class);
+        var projectNameCaptor = ArgumentCaptor.forClass(String.class);
+
+        Mockito.when(this.proyectoService.findByCarnetAndProjectName(Mockito.anyString(), Mockito.anyString())).thenReturn(dto1);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/estudiantes/".concat(CARNET).concat("/proyectos/single"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("projectName", "Project1"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.nombre", CoreMatchers.is(dto1.getNombre())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.duracion", CoreMatchers.is(dto1.getDuracion())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.interno", CoreMatchers.is(dto1.isInterno())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.personal", CoreMatchers.is(dto1.getPersonal())));
+
+        Mockito.verify(this.proyectoService, Mockito.times(1)).findByCarnetAndProjectName(carnetCaptor.capture(), projectNameCaptor.capture());
+
+        assertEquals(carnetCaptor.getValue(), CARNET);
+        assertEquals(projectNameCaptor.getValue(), dto1.getNombre());
+    }
+
+    @Test
     void projectsByStudentID() throws Exception{
         String status = "3";
         ProyectoCreationDTO.ProyectoDTO dto1 = new ProyectoCreationDTO.ProyectoDTO(1, "Project1", 100, true, "Steve Jobs", Collections.emptySet(), LocalDateTime.now(), LocalDateTime.now(), "dummy");

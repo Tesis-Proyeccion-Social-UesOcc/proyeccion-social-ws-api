@@ -14,9 +14,9 @@ import ues.occ.proyeccion.social.ws.app.exceptions.ResourceNotFoundException;
 import ues.occ.proyeccion.social.ws.app.mappers.CycleUtil;
 import ues.occ.proyeccion.social.ws.app.mappers.ProyectoMapper;
 import ues.occ.proyeccion.social.ws.app.model.PendingProjectDTO;
+import ues.occ.proyeccion.social.ws.app.model.ProjectMarker;
 import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO;
 import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO.ProyectoDTO;
-import ues.occ.proyeccion.social.ws.app.model.StatusDTO;
 import ues.occ.proyeccion.social.ws.app.repository.DocumentoRepository;
 import ues.occ.proyeccion.social.ws.app.repository.EstudianteRepository;
 import ues.occ.proyeccion.social.ws.app.repository.ProyectoRepository;
@@ -58,6 +58,22 @@ public class ProyectoServiceImpl implements ProyectoService {
         return this.proyectoRepository.findById(id)
                 .map(proyecto -> this.proyectoMapper.proyectoToProyectoDTO(proyecto, new CycleUtil()))
                 .orElseThrow(ResourceNotFoundException::new);
+    }
+
+    @Override
+    public ProjectMarker findByCarnetAndProjectName(String carnet, String projectName) {
+        return this.proyectoRepository.findByProyectoEstudianteSet_Estudiante_CarnetIgnoreCaseAndNombreIgnoreCase(carnet, projectName)
+                .map(proyecto -> {
+                    if(proyecto.getStatus().getId() == StatusOption.PENDIENTE){
+                        var docs = this.documentoRepository.findProjectRelatedDocuments(carnet, proyecto.getNombre());
+                        return proyectoMapper.mapToPendingProject(proyecto, docs, new CycleUtil<>());
+                    }
+                    else {
+                        return proyectoMapper.proyectoToProyectoDTO(proyecto, new CycleUtil<>());
+                    }
+                })
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Proyecto no encontrado, asegurese de ingresar correctamente su carnet y el nombre del proyecto"));
     }
 
     @Override

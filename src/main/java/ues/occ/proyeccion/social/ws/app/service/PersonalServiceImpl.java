@@ -36,7 +36,6 @@ public class PersonalServiceImpl implements PersonalService {
 	
 	@Override
 	public ResponseEntity<ServiceResponse> findByTipoPersonalId(int idTipoPersonal) {
-		// TODO Auto-generated method stub
 		try {
 			return new ResponseEntity<ServiceResponse>(new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk,
 					 personalRepository.findByTipoPersonalId(idTipoPersonal)), HttpStatus.OK);
