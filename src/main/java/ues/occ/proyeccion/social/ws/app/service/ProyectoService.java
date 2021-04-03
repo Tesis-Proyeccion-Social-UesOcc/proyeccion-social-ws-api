@@ -9,6 +9,7 @@ import ues.occ.proyeccion.social.ws.app.utils.PageDtoWrapper;
 
 public interface ProyectoService {
     ProyectoCreationDTO.ProyectoDTO findById(int id);
+    ProyectoDTO findByCarnetAndProjectName(String carnet, String projectName);
     PageDtoWrapper<Proyecto, ProyectoCreationDTO.ProyectoDTO> findAll(int page, int size);
     PageDtoWrapper<Proyecto, ProyectoCreationDTO.ProyectoDTO> findAllByStatus(int page, int size, int statusId);
     PageDtoWrapper<Proyecto, ProyectoCreationDTO.ProyectoDTO> findAllPending(int page, int size);

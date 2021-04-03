@@ -13,6 +13,7 @@ import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
 import ues.occ.proyeccion.social.ws.app.dao.ProyectoEstudiante;
 
 import java.util.List;
+import java.util.Optional;
 
 // This repository extends CrudRepository
 @Repository
@@ -21,7 +22,9 @@ public interface ProyectoRepository extends PagingAndSortingRepository<Proyecto,
     Page<Proyecto> findAllByStatus_Id(int statusId, Pageable pageable);
     Page<Proyecto> findAllByStatus_IdAndProyectoEstudianteSet_Estudiante_CarnetIgnoreCase(int status, String carnet, Pageable pageable);
 
-    @Query(value="SELECT p.id, p.nombre, p.duracion, p.interno, p.id_tutor, p.id_encargado_externo, p.fecha_creacion\r\n" +
+	Optional<Proyecto> findByProyectoEstudianteSet_Estudiante_CarnetIgnoreCaseAndNombreIgnoreCase(String carnet, String projectName);
+
+	@Query(value="SELECT p.id, p.nombre, p.duracion, p.interno, p.id_tutor, p.id_encargado_externo, p.fecha_creacion\r\n" +
 			"FROM chatbot_db.proyecto p\r\n" +
 			"INNER JOIN chatbot_db.proyecto_estudiante pe ON p.id = pe.id_proyecto\r\n" +
 			"WHERE pe.id_status = ?1  ORDER BY p.fecha_creacion DESC;", nativeQuery = true)
