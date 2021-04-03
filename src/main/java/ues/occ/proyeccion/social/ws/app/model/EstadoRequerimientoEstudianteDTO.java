@@ -16,6 +16,7 @@ public class EstadoRequerimientoEstudianteDTO{
 
     @Data
     public static class RequerimientoEstudianteDTO{
+        private int requerimientoId;
         private String documento;
         private boolean entregado;
         private boolean aprobado;

@@ -11,10 +11,7 @@ public class DocumentoRequest implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
-
 	private String nombre;
-
-	private String descripcion;
 
 	private MultipartFile file;
 
@@ -24,14 +21,6 @@ public class DocumentoRequest implements Serializable {
 
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
-	}
-
-	public String getDescripcion() {
-		return descripcion;
-	}
-
-	public void setDescripcion(String descripcion) {
-		this.descripcion = descripcion;
 	}
 
 	public MultipartFile getFile() {
@@ -44,7 +33,7 @@ public class DocumentoRequest implements Serializable {
 
 	@Override
 	public String toString() {
-		return "DocumentoRequest [nombre=" + nombre + ", descripcion=" + descripcion + ", file=" + file.getOriginalFilename() + "]";
+		return "DocumentoRequest [nombre=" + nombre + ", file=" + file + "]";
 	}
-	
+
 }
