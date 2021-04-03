@@ -12,4 +12,5 @@ public interface DocumentoService {
 	ResponseEntity<ServiceResponse> crearDocumento(DocumentoRequest model);
 	ResponseEntity<ServiceResponse> findById(int id);
 	ResponseEntity<ServiceResponse> deleteById(int id);
+	ResponseEntity<ServiceResponse> updateTemplate(Integer id, DocumentoRequest model);
 }

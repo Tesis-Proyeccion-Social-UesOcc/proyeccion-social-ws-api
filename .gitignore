@@ -33,3 +33,5 @@ build/
 .vscode/
 appengine
 .gcloudignore
+/app.yaml
+/app-spring.yaml

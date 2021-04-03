@@ -19,9 +19,11 @@ import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 
+import javassist.NotFoundException;
 import ues.occ.proyeccion.social.ws.app.dao.Plantilla;
 import ues.occ.proyeccion.social.ws.app.dao.ServiceResponse;
 import ues.occ.proyeccion.social.ws.app.dto.DocumentoRequest;
+import ues.occ.proyeccion.social.ws.app.exceptions.ResourceNotFoundException;
 import ues.occ.proyeccion.social.ws.app.repository.PlantillaRepository;
 
 @Service
@@ -118,6 +120,38 @@ public class DocumentoPlantilla implements DocumentoService {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 
 		}
+
+	}
+
+	@Override
+	public ResponseEntity<ServiceResponse> updateTemplate(Integer id, DocumentoRequest model) {
+		Plantilla plantilla = plantillaRepository.findById(id).orElseThrow(
+				()-> new ResourceNotFoundException("No se encontro la plantilla"));
+		
+		LocalDateTime time = LocalDateTime.now();
+
+		BlobId blobId = BlobId.of(bucketName, time + "_" + model.getFile().getOriginalFilename());
+		BlobInfo blobInfo = BlobInfo.newBuilder(blobId).build();
+		log.info(model.getFile().getOriginalFilename());
+		String uri;
+
+		
+		Blob blob;
+		try {
+			blob = storage.create(blobInfo, model.getFile().getBytes());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new ResourceNotFoundException("Problemas al subir la plantilla: "+e.getMessage());
+		}
+		uri = blob.getMediaLink();
+		//blob.
+		storage.createAcl(blobId, Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER));
+		log.info("uri " + uri);
+		plantilla.setUrl(uri);
+		plantilla.setFechaDocumento(time);
+		return new ResponseEntity<ServiceResponse>(new ServiceResponse(ServiceResponse.codeOk,
+				ServiceResponse.messageOk, plantillaRepository.save(plantilla)), HttpStatus.OK);
 
 	}
 
