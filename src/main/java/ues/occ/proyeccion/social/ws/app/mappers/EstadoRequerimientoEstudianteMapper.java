@@ -15,5 +15,6 @@ public interface EstadoRequerimientoEstudianteMapper {
     EstadoRequerimientoEstudianteDTO estadoRequerimientoEstudianteToDTO(EstadoRequerimientoEstudiante estadoRequerimientoEstudiante);
 
     @Mapping(source = "requerimiento.documento.nombre", target = "documento")
+    @Mapping(source = "requerimiento.id", target = "requerimientoId")
     EstadoRequerimientoEstudianteDTO.RequerimientoEstudianteDTO requerimientoEstudianteToDTO(EstadoRequerimientoEstudiante estadoRequerimientoEstudiante);
 }
