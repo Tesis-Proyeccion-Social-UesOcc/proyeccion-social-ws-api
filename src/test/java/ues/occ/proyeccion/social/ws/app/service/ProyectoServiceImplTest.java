@@ -244,7 +244,8 @@ class ProyectoServiceImplTest {
         var document = new Documento("doc", "my doc", LocalDateTime.now());
         var requerimiento = new Requerimiento(1, true, 2, document);
         var student = new Estudiante("zh15002", 200, false);
-        student.addRequerimiento(requerimiento, false);
+        var projectStudent = new ProyectoEstudiante(student, proyecto1, true);
+        projectStudent.addRequerimiento(requerimiento, false);
 
         var docs = List.of(document);
 

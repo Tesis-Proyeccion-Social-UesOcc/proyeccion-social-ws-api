@@ -162,7 +162,7 @@ public class ProyectoServiceImpl implements ProyectoService {
             content = data.getContent().stream()
                     .map(proyecto -> {
                         var docs = this.documentoRepository.findProjectRelatedDocuments(carnet, proyecto.getNombre());
-                        return this.proyectoMapper.mapToPendingProject(proyecto, docs, new CycleUtil());
+                        return this.proyectoMapper.mapToPendingProject(proyecto, docs, new CycleUtil<>());
                     })
                     .collect(Collectors.toList());
         } else {

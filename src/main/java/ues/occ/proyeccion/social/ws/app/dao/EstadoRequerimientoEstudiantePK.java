@@ -11,12 +11,12 @@ import javax.persistence.Embeddable;
     @Column(name = "id_requerimiento")
     private Integer idRequerimiento;
 
-    @Column(name = "id_estudiante")
-    private String idEstudiante;
+    @Column(name = "id_proyecto_estudiante")
+    private Integer idProyectoEstudiante;
 
-    public EstadoRequerimientoEstudiantePK(Integer idRequerimiento, String idEstudiante) {
+    public EstadoRequerimientoEstudiantePK(Integer idRequerimiento, Integer idProyectoEstudiante) {
         this.idRequerimiento = idRequerimiento;
-        this.idEstudiante = idEstudiante;
+        this.idProyectoEstudiante = idProyectoEstudiante;
     }
 
     public EstadoRequerimientoEstudiantePK() {
@@ -31,12 +31,12 @@ import javax.persistence.Embeddable;
         this.idRequerimiento = idRequerimiento;
     }
 
-    public String getIdEstudiante() {
-        return idEstudiante;
+    public Integer getIdProyectoEstudiante() {
+        return idProyectoEstudiante;
     }
 
-    public void setIdEstudiante(String idEstudiante) {
-        this.idEstudiante = idEstudiante;
+    public void setIdProyectoEstudiante(Integer idProyectoEstudiante) {
+        this.idProyectoEstudiante = idProyectoEstudiante;
     }
 
     @Override
@@ -44,20 +44,11 @@ import javax.persistence.Embeddable;
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         EstadoRequerimientoEstudiantePK that = (EstadoRequerimientoEstudiantePK) o;
-        return Objects.equals(idRequerimiento, that.idRequerimiento) &&
-                Objects.equals(idEstudiante, that.idEstudiante);
+        return Objects.equals(idRequerimiento, that.idRequerimiento) && Objects.equals(idProyectoEstudiante, that.idProyectoEstudiante);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idRequerimiento, idEstudiante);
-    }
-
-    @Override
-    public String toString() {
-        return "EstadoRequerimientoEstudiantePK{" +
-                "idRequerimiento=" + idRequerimiento +
-                ", idEstudiante='" + idEstudiante + '\'' +
-                '}';
+        return Objects.hash(idRequerimiento, idProyectoEstudiante);
     }
 }

@@ -9,7 +9,7 @@ import ues.occ.proyeccion.social.ws.app.model.EstadoRequerimientoEstudianteDTO;
 import ues.occ.proyeccion.social.ws.app.utils.PageDtoWrapper;
 
 public interface EstadoRequerimientoEstudianteService {
-    Optional<EstadoRequerimientoEstudianteDTO> save(String carnet, int requerimientoId);
+    Optional<EstadoRequerimientoEstudianteDTO> save(Integer idProyectoEstudiante, int requerimientoId);
     PageDtoWrapper<EstadoRequerimientoEstudiante, EstadoRequerimientoEstudianteDTO> findAllByCarnet(int page, int size, String carnet, boolean aprobado);
 
     PageDtoWrapper<EstadoRequerimientoEstudiante, EstadoRequerimientoEstudianteDTO> findAllByCarnet(int page, int size, String carnet);

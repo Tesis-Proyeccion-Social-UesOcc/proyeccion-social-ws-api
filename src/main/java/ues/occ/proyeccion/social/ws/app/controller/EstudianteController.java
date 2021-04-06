@@ -105,10 +105,10 @@ public class EstudianteController {
         return new ResponseEntity<>(new PageDTO<>(result), HttpStatus.OK);
     }
 
-    @PostMapping("/{carnet}/documentos/{requerimientoId}")
+    @PostMapping("/{idProyectoEstudiante}/documentos/{requerimientoId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public EstadoRequerimientoEstudianteDTO addDocument(@PathVariable String carnet, @PathVariable int requerimientoId) {
-        return this.estadoRequerimientoEstudianteService.save(carnet, requerimientoId).orElseThrow(
+    public EstadoRequerimientoEstudianteDTO addDocument(@PathVariable Integer idProyectoEstudiante, @PathVariable int requerimientoId) {
+        return this.estadoRequerimientoEstudianteService.save(idProyectoEstudiante, requerimientoId).orElseThrow(
                 () -> new InternalErrorException("Something went wrong")
         );
     }

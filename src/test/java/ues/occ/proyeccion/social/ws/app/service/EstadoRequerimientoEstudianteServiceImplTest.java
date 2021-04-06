@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import ues.occ.proyeccion.social.ws.app.dao.EstadoRequerimientoEstudiante;
 import ues.occ.proyeccion.social.ws.app.dao.Estudiante;
+import ues.occ.proyeccion.social.ws.app.dao.ProyectoEstudiante;
 import ues.occ.proyeccion.social.ws.app.dao.Requerimiento;
 import ues.occ.proyeccion.social.ws.app.mappers.EstadoRequerimientoEstudianteMapper;
 import ues.occ.proyeccion.social.ws.app.model.EstadoRequerimientoEstudianteDTO;
@@ -56,13 +57,13 @@ class EstadoRequerimientoEstudianteServiceImplTest {
         ArgumentCaptor<String> carnetCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<Boolean> isAprobadoCaptor = ArgumentCaptor.forClass(Boolean.class);
 
-        Mockito.when(this.repository.findAllByEstudiante_CarnetAndAprobado(
+        Mockito.when(this.repository.findAllByProyectoEstudiante_Estudiante_CarnetAndAprobado(
                 Mockito.anyString(), Mockito.anyBoolean(), Mockito.any(Pageable.class))).thenReturn(page);
 
         var result=
                 this.service.findAllByCarnet(5, 10, "zh15002", true);
 
-        Mockito.verify(this.repository, Mockito.times(1)).findAllByEstudiante_CarnetAndAprobado(
+        Mockito.verify(this.repository, Mockito.times(1)).findAllByProyectoEstudiante_Estudiante_CarnetAndAprobado(
                 carnetCaptor.capture(), isAprobadoCaptor.capture(), pageableCaptor.capture()
         );
 
@@ -80,43 +81,40 @@ class EstadoRequerimientoEstudianteServiceImplTest {
     @Test
     void save() {
         String carnet = "zh15002";
-        int requerimientoId = 100;
-        Estudiante estudiante = new Estudiante();
+        int requerimientoId = 100, proyectoEstudianteId = 12;
+        var proyectoEstudiante = new ProyectoEstudiante();
+        var estudiante = new Estudiante();
         estudiante.setCarnet(carnet);
+        proyectoEstudiante.setEstudiante(estudiante);
 
         Requerimiento requerimiento = new Requerimiento();
         requerimiento.setcantidadCopias(3);
 
-        ArgumentCaptor<String> carnetCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<Integer> projectoEstudianteIdCaptor = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> requerimientoIDCaptor = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<EstadoRequerimientoEstudiante> pojoCaptor = ArgumentCaptor.forClass(EstadoRequerimientoEstudiante.class);
 
         EstadoRequerimientoEstudiante estadoRequerimientoEstudiante = new EstadoRequerimientoEstudiante(
-                estudiante, requerimiento, true, true,
+                proyectoEstudiante, requerimiento, true, true,
                 Date.valueOf("2019-12-01"), null);
 
-        Mockito.when(this.entityManager.getReference(ArgumentMatchers.<Class<Estudiante>>any(), Mockito.anyString())).thenReturn(estudiante);
-        Mockito.when(this.entityManager.getReference(ArgumentMatchers.<Class<Requerimiento>>any(), Mockito.anyInt())).thenReturn(requerimiento);
+        Mockito.when(this.entityManager.getReference(ArgumentMatchers.eq(ProyectoEstudiante.class), Mockito.anyInt())).thenReturn(proyectoEstudiante);
+        Mockito.when(this.entityManager.getReference(ArgumentMatchers.eq(Requerimiento.class), Mockito.anyInt())).thenReturn(requerimiento);
         Mockito.when(this.repository.save(Mockito.any(EstadoRequerimientoEstudiante.class))).thenReturn(estadoRequerimientoEstudiante);
 
-        Optional<EstadoRequerimientoEstudianteDTO> result = this.service.save(carnet, requerimientoId);
+        Optional<EstadoRequerimientoEstudianteDTO> result = this.service.save(12, requerimientoId);
 
         Mockito.verify(this.repository, Mockito.times(1)).save(ArgumentMatchers.any(EstadoRequerimientoEstudiante.class));
         Mockito.verify(this.entityManager, Mockito.times(1))
-                .getReference(ArgumentMatchers.eq(Estudiante.class), carnetCaptor.capture());
+                .getReference(ArgumentMatchers.eq(ProyectoEstudiante.class), projectoEstudianteIdCaptor.capture());
         Mockito.verify(this.entityManager, Mockito.times(1))
                 .getReference(ArgumentMatchers.eq(Requerimiento.class), requerimientoIDCaptor.capture());
 
         assertTrue(result.isPresent());
-        assertEquals(carnet, carnetCaptor.getValue());
+        assertEquals(proyectoEstudianteId, projectoEstudianteIdCaptor.getValue());
         assertEquals(requerimientoId, requerimientoIDCaptor.getValue());
         assertTrue(result.get().isAprobado());
         assertEquals(Date.valueOf("2019-12-01"), result.get().getFechaEntrega());
     }
 
-    @Test
-    void whenCarnetHasInvalidLengthThenThrowsAnException(){
-        String invalidCarnet = "zh";
-        assertThrows(IllegalArgumentException.class, () -> this.service.save(invalidCarnet, 1));
-    }
 }

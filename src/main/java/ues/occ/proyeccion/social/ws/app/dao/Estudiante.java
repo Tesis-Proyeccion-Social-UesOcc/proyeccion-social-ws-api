@@ -28,22 +28,16 @@ public class Estudiante implements Serializable {
 	@OneToMany(mappedBy = "estudiante", fetch = FetchType.LAZY,
 			cascade = CascadeType.ALL,
 			orphanRemoval = true)
-	private List<EstadoRequerimientoEstudiante> estadoRequerimientoEstudiantes = new ArrayList<>();
-
-	@OneToMany(mappedBy = "estudiante", fetch = FetchType.LAZY,
-			cascade = CascadeType.ALL,
-			orphanRemoval = true)
 	private List<ProyectoEstudiante> proyectoEstudianteSet = new ArrayList<>();
 
 	public Estudiante() {
 		super();
 	}
 
-	public Estudiante(String carnet, Integer horasProgreso, boolean servicioCompleto, List<EstadoRequerimientoEstudiante> estadoRequerimientoEstudiantes, List<ProyectoEstudiante> proyectoEstudianteSet) {
+	public Estudiante(String carnet, Integer horasProgreso, boolean servicioCompleto, List<ProyectoEstudiante> proyectoEstudianteSet) {
 		this.carnet = carnet;
 		this.horasProgreso = horasProgreso;
 		this.servicioCompleto = servicioCompleto;
-		this.estadoRequerimientoEstudiantes = estadoRequerimientoEstudiantes;
 		this.proyectoEstudianteSet = proyectoEstudianteSet;
 	}
 
@@ -77,21 +71,6 @@ public class Estudiante implements Serializable {
 		this.servicioCompleto = servicioCompleto;
 	}
 
-	public List<EstadoRequerimientoEstudiante> getEstadoRequerimientoEstudiantes() {
-		return estadoRequerimientoEstudiantes;
-	}
-
-	public void setEstadoRequerimientoEstudiantes(List<EstadoRequerimientoEstudiante> estadoRequerimientoEstudiantes) {
-		this.estadoRequerimientoEstudiantes = estadoRequerimientoEstudiantes;
-	}
-
-	public void addRequerimiento(Requerimiento requerimiento, boolean aprobado){
-		var requerimientoEstudiante = new EstadoRequerimientoEstudiante(this, requerimiento, true,
-				aprobado, new Date(System.currentTimeMillis()), null);
-		this.estadoRequerimientoEstudiantes.add(requerimientoEstudiante);
-		requerimiento.getEstadoRequerimientoEstudiantes().add(requerimientoEstudiante);
-	}
-
 	public List<ProyectoEstudiante> getProyectoEstudianteSet() {
 		return proyectoEstudianteSet;
 	}
@@ -108,7 +87,6 @@ public class Estudiante implements Serializable {
 		return servicioCompleto == that.servicioCompleto &&
 				carnet.equals(that.carnet) &&
 				Objects.equals(horasProgreso, that.horasProgreso) &&
-				Objects.equals(estadoRequerimientoEstudiantes, that.estadoRequerimientoEstudiantes) &&
 				Objects.equals(proyectoEstudianteSet, that.proyectoEstudianteSet);
 	}
 

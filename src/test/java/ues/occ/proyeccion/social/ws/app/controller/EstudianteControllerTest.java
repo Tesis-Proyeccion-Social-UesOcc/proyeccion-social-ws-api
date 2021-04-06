@@ -246,28 +246,28 @@ class EstudianteControllerTest {
         EstadoRequerimientoEstudianteDTO dto = new EstadoRequerimientoEstudianteDTO(true, Date.valueOf(dateStr));
         Optional<EstadoRequerimientoEstudianteDTO> toReturnObj = Optional.of(dto);
 
-        ArgumentCaptor<String> carnetCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<Integer> proyectoEstuanteIdCaptor = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> requerimientoIdCaptor = ArgumentCaptor.forClass(Integer.class);
 
-        Mockito.when(this.estadoRequerimientoEstudianteService.save(Mockito.anyString(), Mockito.anyInt())).thenReturn(toReturnObj);
+        Mockito.when(this.estadoRequerimientoEstudianteService.save(Mockito.anyInt(), Mockito.anyInt())).thenReturn(toReturnObj);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/estudiantes/".concat(CARNET).concat("/documentos/").concat(requerimientoId))
+        mockMvc.perform(MockMvcRequestBuilders.post("/estudiantes/123".concat("/documentos/").concat(requerimientoId))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.fechaEntrega", CoreMatchers.is(dateStr)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.aprobado", CoreMatchers.is(true)));
 
         Mockito.verify(this.estadoRequerimientoEstudianteService, Mockito.times(1))
-                .save(carnetCaptor.capture(), requerimientoIdCaptor.capture());
+                .save(proyectoEstuanteIdCaptor.capture(), requerimientoIdCaptor.capture());
 
-        assertEquals(CARNET, carnetCaptor.getValue());
+        assertEquals(123, proyectoEstuanteIdCaptor.getValue());
         assertEquals(Integer.parseInt(requerimientoId), requerimientoIdCaptor.getValue());
     }
 
     @Test
     void addDocumentWithEmptyOptional() throws Exception{
-        Mockito.when(this.estadoRequerimientoEstudianteService.save(Mockito.anyString(), Mockito.anyInt())).thenReturn(Optional.empty());
-        mockMvc.perform(MockMvcRequestBuilders.post("/estudiantes/someCarnet/documentos/1")
+        Mockito.when(this.estadoRequerimientoEstudianteService.save(Mockito.anyInt(), Mockito.anyInt())).thenReturn(Optional.empty());
+        mockMvc.perform(MockMvcRequestBuilders.post("/estudiantes/1/documentos/1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().is5xxServerError())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message", CoreMatchers.containsString("went wrong")));

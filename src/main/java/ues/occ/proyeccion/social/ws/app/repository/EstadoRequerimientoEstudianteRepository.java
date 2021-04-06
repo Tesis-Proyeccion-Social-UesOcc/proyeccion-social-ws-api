@@ -12,17 +12,15 @@ import ues.occ.proyeccion.social.ws.app.dao.EstadoRequerimientoEstudiantePK;
 
 public interface EstadoRequerimientoEstudianteRepository
         extends PagingAndSortingRepository<EstadoRequerimientoEstudiante, EstadoRequerimientoEstudiantePK> {
-    Page<EstadoRequerimientoEstudiante> findAllByEstudiante_CarnetAndAprobado(String carnet, boolean aprobado, Pageable pageable);
+    Page<EstadoRequerimientoEstudiante> findAllByProyectoEstudiante_Estudiante_CarnetAndAprobado(String carnet, boolean aprobado, Pageable pageable);
 
     List<EstadoRequerimientoEstudiante> findAll();
 
-	Page<EstadoRequerimientoEstudiante> findAllByEstudiante_Carnet(String carnet,
-			Pageable requerimientoEstudiantePageable);
+    Page<EstadoRequerimientoEstudiante> findAllByProyectoEstudiante_Estudiante_Carnet(String carnet, Pageable requerimientoEstudiantePageable);
 
-	@Query("SELECT c FROM EstadoRequerimientoEstudiante c WHERE c.estudiante.carnet like %:carnet%")
-	List<EstadoRequerimientoEstudiante> findByCarnet(String carnet);
-	
-	@Query("SELECT c FROM EstadoRequerimientoEstudiante c WHERE c.estudiante.carnet like %:carnet% and c.entregado = :entregado "
-			+ " and c.requerimiento.id = :idRequerimiento ")
-	EstadoRequerimientoEstudiante findByCarnetAndEntregadoAndRequerimientoId(String carnet, boolean entregado, int idRequerimiento);
+    @Query("SELECT c FROM EstadoRequerimientoEstudiante c inner join c.proyectoEstudiante pe inner join pe.estudiante e " +
+            "where e.carnet like %:carnet%")
+    List<EstadoRequerimientoEstudiante> findByCarnet(String carnet);
+
+    EstadoRequerimientoEstudiante findByProyectoEstudiante_IdAndEntregadoAndRequerimientoId(Integer id, boolean entregado, int idRequerimiento);
 }

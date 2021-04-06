@@ -69,8 +69,7 @@ public class EstudianteServiceImpl extends PageableResource<Estudiante, Estudian
 	@Override
 	@Transactional(rollbackOn = Exception.class)
 	public ResponseEntity<ServiceResponse> getRequirementStatusByCardId(String carnet) {
-		// TODO Auto-generated method stub
-		 modelMapper = new ModelMapper(); 
+		 modelMapper = new ModelMapper();
 		List<EstadoRequerimientoEstudiante> estadoRequerimientos = estadoRequerimientoEstudianteRepository.findByCarnet(carnet);
 		List<EstadoRequerimientoEstudianteDto> result = 
 				estadoRequerimientos.stream().map(element -> modelMapper.map(element, EstadoRequerimientoEstudianteDto.class)).collect(Collectors.toList());

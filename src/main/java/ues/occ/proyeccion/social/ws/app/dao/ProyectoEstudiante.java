@@ -1,12 +1,17 @@
 package ues.occ.proyeccion.social.ws.app.dao;
 
 import java.io.Serializable;
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import javax.persistence.*;
 
 @Entity
-@Table(name = "proyecto_estudiante")
+@Table(name = "proyecto_estudiante"
+        , uniqueConstraints = @UniqueConstraint(
+        columnNames = {"carnet", "id_proyecto"}))
 public class ProyectoEstudiante implements Serializable {
 
     /**
@@ -14,18 +19,23 @@ public class ProyectoEstudiante implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@EmbeddedId
-    private ProyectoEstudiantePK id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_proyecto_estudiante")
+    private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("studentId")
     @JoinColumn(name = "carnet")
     private Estudiante estudiante;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("projectId")
     @JoinColumn(name = "id_proyecto")
     private Proyecto proyecto;
+
+    @OneToMany(mappedBy = "proyectoEstudiante", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<EstadoRequerimientoEstudiante> estadoRequerimientoEstudiantes = new ArrayList<>();
 
     @Column(name = "activo")
     private Boolean active;
@@ -37,7 +47,6 @@ public class ProyectoEstudiante implements Serializable {
         this.estudiante = estudiante;
         this.proyecto = proyecto;
         this.active = active;
-        this.id = new ProyectoEstudiantePK(proyecto.getId(), estudiante.getCarnet());
     }
 
     public Estudiante getEstudiante() {
@@ -54,6 +63,21 @@ public class ProyectoEstudiante implements Serializable {
 
     public void setProyecto(Proyecto proyecto) {
         this.proyecto = proyecto;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void addRequerimiento(Requerimiento requerimiento, boolean aprobado){
+        var requerimientoEstudiante = new EstadoRequerimientoEstudiante(this, requerimiento, true,
+                aprobado, new Date(System.currentTimeMillis()), null);
+        this.estadoRequerimientoEstudiantes.add(requerimientoEstudiante);
+        requerimiento.getEstadoRequerimientoEstudiantes().add(requerimientoEstudiante);
+    }
+
+    public List<EstadoRequerimientoEstudiante> getEstadoRequerimientoEstudiantes() {
+        return estadoRequerimientoEstudiantes;
     }
 
     @Override
