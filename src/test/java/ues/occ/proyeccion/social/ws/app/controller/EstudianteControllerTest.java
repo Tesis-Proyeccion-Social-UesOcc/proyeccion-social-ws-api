@@ -201,7 +201,7 @@ class EstudianteControllerTest {
     @Test
     void projectsByStudentIDWIthDocuments() throws Exception{
         String status = "1";
-        var docs = Set.of(new SimpleDocumentDTO("mydoc", true, true));
+        var docs = Set.of(new SimpleDocumentDTO("mydoc", true, true, null, null));
         var dto1 = new PendingProjectDTO(
                 1, "Project1", 100, true, "Steve Jobs",
                 Collections.emptySet(), docs, LocalDateTime.now(), LocalDateTime.now(), "dummy");

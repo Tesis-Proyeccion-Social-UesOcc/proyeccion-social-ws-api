@@ -8,6 +8,7 @@ import ues.occ.proyeccion.social.ws.app.dao.Documento;
 import ues.occ.proyeccion.social.ws.app.dao.Requerimiento;
 import ues.occ.proyeccion.social.ws.app.model.SimpleDocumentDTO;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -28,8 +29,24 @@ public interface SimpleDocumentMapper {
         return requerimientoEstudiante.isEntregado();
     }
 
+    @Named("fechaEntregado")
+    default Date getFechaEntregado(Set<Requerimiento> requerimientos){
+        var requerimiento = requerimientos.iterator().next();
+        var requerimientoEstudiante = requerimiento.getEstadoRequerimientoEstudiantes().iterator().next();
+        return requerimientoEstudiante.getFechaEntrega();
+    }
+
+    @Named("fechaAprobado")
+    default Date getFechaAprobado(Set<Requerimiento> requerimientos){
+        var requerimiento = requerimientos.iterator().next();
+        var requerimientoEstudiante = requerimiento.getEstadoRequerimientoEstudiantes().iterator().next();
+        return requerimientoEstudiante.getFechaAprobacion();
+    }
+
     @Mapping(source = "requerimientos", target = "aprobado", qualifiedByName = "isAprobado")
     @Mapping(source = "requerimientos", target = "entregado", qualifiedByName = "isEntregado")
+    @Mapping(source = "requerimientos", target = "fechaAprobacion", qualifiedByName = "fechaAprobado")
+    @Mapping(source = "requerimientos", target = "fechaEntrega", qualifiedByName = "fechaEntregado")
     SimpleDocumentDTO documentoToDTO(Documento documento, @Context CycleUtil cycleUtil);
 
     Set<SimpleDocumentDTO> toSimpleDocumentDTO(List<Documento> documentos, @Context CycleUtil cycleUtil);
