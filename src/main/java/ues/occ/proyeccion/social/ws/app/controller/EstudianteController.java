@@ -101,6 +101,14 @@ public class EstudianteController {
         return new ResponseEntity<>(new PageDTO<>(result), HttpStatus.OK);
     }
 
+    @GetMapping("/{carnet}/proyectos/estadoRequerimiento")
+    public ResponseEntity<ServiceResponse> getRequirementStatus(@PathVariable String carnet){
+        var data = this.proyectoService.getRequirementsData(carnet);
+        return new ResponseEntity<>(
+                new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk, data),
+                HttpStatus.OK);
+    }
+
     @PostMapping("/{idProyectoEstudiante}/documentos/{requerimientoId}")
     @ResponseStatus(HttpStatus.CREATED)
     public EstadoRequerimientoEstudianteDTO addDocument(@PathVariable Integer idProyectoEstudiante, @PathVariable int requerimientoId) {
@@ -143,7 +151,7 @@ public class EstudianteController {
         return new PageDTO<>(result);
     }
     
-    @GetMapping("/{carnet}/estadoRequerimiento")
+    @GetMapping("/{carnet}/estadoRequerimiento2")
     public ResponseEntity<ServiceResponse> getRequirementStatusByCardId(@PathVariable String carnet){
     	return estudianteService.getRequirementStatusByCardId(carnet);
     }

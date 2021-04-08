@@ -24,18 +24,18 @@ public class Certificado implements Serializable {
 
 	// Indica que la columna id de proyecto_estudiante se usara como PK y FK
 
-	@OneToOne(mappedBy = "certificado", fetch = FetchType.EAGER)
-	private Proyecto proyecto;
+	@OneToOne(mappedBy = "certificado", fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+	private ProyectoEstudiante proyectoEstudiante;
 
 	public Certificado() {
 	}
 
-	public Certificado(Integer id, String uri, LocalDateTime fechaExpedicion, Proyecto proyecto) {
+	public Certificado(Integer id, String uri, LocalDateTime fechaExpedicion, ProyectoEstudiante proyectoEstudiante) {
 		this.id = id;
 		this.uri = uri;
-		this.proyecto = proyecto;
+		this.proyectoEstudiante = proyectoEstudiante;
 		this.fechaExpedicion = fechaExpedicion;
-		proyecto.setCertificado(this);
+		proyectoEstudiante.setCertificado(this);
 	}
 
 	public Integer getId() {
@@ -62,12 +62,12 @@ public class Certificado implements Serializable {
 		this.fechaExpedicion = fecha_expedicion;
 	}
 
-	public Proyecto getProyecto() {
-		return proyecto;
+	public ProyectoEstudiante getProyectoEstudiante() {
+		return proyectoEstudiante;
 	}
 
-	public void setProyecto(Proyecto proyecto) {
-		this.proyecto = proyecto;
+	public void setProyectoEstudiante(ProyectoEstudiante proyectoEstudiante) {
+		this.proyectoEstudiante = proyectoEstudiante;
 	}
 
 	@Override

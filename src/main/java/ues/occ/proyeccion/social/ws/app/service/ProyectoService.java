@@ -3,12 +3,16 @@ package ues.occ.proyeccion.social.ws.app.service;
 import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
 import ues.occ.proyeccion.social.ws.app.dto.ProyectoChangeStatusDto;
 import ues.occ.proyeccion.social.ws.app.model.PendingProjectDTO;
+import ues.occ.proyeccion.social.ws.app.model.ProjectMarker;
 import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO;
 import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO.ProyectoDTO;
 import ues.occ.proyeccion.social.ws.app.utils.PageDtoWrapper;
 
+import java.util.List;
+
 public interface ProyectoService {
     ProyectoCreationDTO.ProyectoDTO findById(int id);
+    List<? extends ProjectMarker> getRequirementsData(String carnet);
     PageDtoWrapper<Proyecto, ProyectoCreationDTO.ProyectoDTO> findAll(int page, int size);
     PageDtoWrapper<Proyecto, ProyectoCreationDTO.ProyectoDTO> findAllByStatus(int page, int size, int statusId);
     PageDtoWrapper<Proyecto, ProyectoCreationDTO.ProyectoDTO> findAllPending(int page, int size);

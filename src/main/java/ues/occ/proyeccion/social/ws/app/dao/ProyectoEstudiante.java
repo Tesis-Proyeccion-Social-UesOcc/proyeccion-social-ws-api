@@ -37,6 +37,10 @@ public class ProyectoEstudiante implements Serializable {
             orphanRemoval = true)
     private List<EstadoRequerimientoEstudiante> estadoRequerimientoEstudiantes = new ArrayList<>();
 
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_proyecto_estudiante", referencedColumnName = "id")
+    private Certificado certificado;
+
     @Column(name = "activo")
     private Boolean active;
 
@@ -47,6 +51,14 @@ public class ProyectoEstudiante implements Serializable {
         this.estudiante = estudiante;
         this.proyecto = proyecto;
         this.active = active;
+    }
+
+    public void setCertificado(Certificado certificado) {
+        this.certificado = certificado;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public Estudiante getEstudiante() {
@@ -85,12 +97,24 @@ public class ProyectoEstudiante implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ProyectoEstudiante that = (ProyectoEstudiante) o;
-        return estudiante.equals(that.estudiante) && proyecto.equals(that.proyecto) && Objects.equals(active, that.active);
+        return estudiante.equals(that.estudiante) && proyecto.equals(that.proyecto)
+                && Objects.equals(active, that.active) && certificado.equals(that.certificado);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(estudiante, proyecto, active);
+    }
+
+    @Override
+    public String toString() {
+        return "ProyectoEstudiante{" +
+                "id=" + id +
+                ", estudiante=" + estudiante +
+                ", estadoRequerimientoEstudiantes=" + estadoRequerimientoEstudiantes +
+                ", certificado=" + certificado +
+                ", active=" + active +
+                '}';
     }
 }
 

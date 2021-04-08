@@ -241,6 +241,30 @@ class EstudianteControllerTest {
     }
 
     @Test
+    void testGetRequirementStatus() throws Exception{
+        var project1 = new PendingProjectDTO(
+                1, "test1", 150, true, "tutor1", null,
+                Set.of(new SimpleDocumentDTO("doc1", true, true, null, null)),
+                null, null, "pendiente");
+
+        var project2 = new ProyectoCreationDTO.ProyectoDTO(
+                2, "test2", 150, true, "tutor2", null,
+                null, null, "en proceso");
+
+        var projects = List.of(project1, project2);
+        Mockito.doReturn(projects).when(this.proyectoService).getRequirementsData(Mockito.anyString());
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/estudiantes/abc12345/proyectos/estadoRequerimiento"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.result[0].nombre", CoreMatchers.is("test1")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.result[0].status", CoreMatchers.is("pendiente")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.result[0].documentos[0].nombre", CoreMatchers.is("doc1")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.result[1].nombre", CoreMatchers.is("test2")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.result[1].status", CoreMatchers.is("en proceso")));
+
+    }
+
+    @Test
     void addDocument() throws Exception{
         String dateStr = "2019-02-18", requerimientoId = "10";
         EstadoRequerimientoEstudianteDTO dto = new EstadoRequerimientoEstudianteDTO(true, Date.valueOf(dateStr));

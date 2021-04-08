@@ -14,9 +14,9 @@ import ues.occ.proyeccion.social.ws.app.exceptions.ResourceNotFoundException;
 import ues.occ.proyeccion.social.ws.app.mappers.CycleUtil;
 import ues.occ.proyeccion.social.ws.app.mappers.ProyectoMapper;
 import ues.occ.proyeccion.social.ws.app.model.PendingProjectDTO;
+import ues.occ.proyeccion.social.ws.app.model.ProjectMarker;
 import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO;
 import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO.ProyectoDTO;
-import ues.occ.proyeccion.social.ws.app.model.StatusDTO;
 import ues.occ.proyeccion.social.ws.app.repository.DocumentoRepository;
 import ues.occ.proyeccion.social.ws.app.repository.EstudianteRepository;
 import ues.occ.proyeccion.social.ws.app.repository.ProyectoRepository;
@@ -97,6 +97,21 @@ public class ProyectoServiceImpl implements ProyectoService {
                 .findAllByStatus_IdAndProyectoEstudianteSet_Estudiante_CarnetIgnoreCase(status, carnet, paging);
 
         return this.getPagedData(proyectoPage, carnet);
+    }
+
+    @Override
+    public List<? extends ProjectMarker> getRequirementsData(String carnet) {
+        return this.proyectoRepository.findAllByProyectoEstudianteSet_Estudiante_CarnetIgnoreCase(carnet)
+                .stream().map(proyecto -> {
+                    if(proyecto.getStatus().getId() == StatusOption.PENDIENTE){
+                        var docs = this.documentoRepository.findProjectRelatedDocuments(carnet, proyecto.getNombre());
+                        return this.proyectoMapper.mapToPendingProject(proyecto, docs, new CycleUtil<>());
+                    }
+                    else {
+                        return this.proyectoMapper.proyectoToProyectoDTO(proyecto, new CycleUtil<>());
+                    }
+                })
+                .collect(Collectors.toList());
     }
 
     @Override

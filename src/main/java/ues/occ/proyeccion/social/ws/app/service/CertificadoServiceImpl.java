@@ -24,13 +24,12 @@ import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 
 import ues.occ.proyeccion.social.ws.app.dao.Certificado;
-import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
 import ues.occ.proyeccion.social.ws.app.dao.ServiceResponse;
 import ues.occ.proyeccion.social.ws.app.exceptions.ResourceNotFoundException;
 import ues.occ.proyeccion.social.ws.app.mappers.CertificadoMapper;
 import ues.occ.proyeccion.social.ws.app.model.CertificadoCreationDTO;
 import ues.occ.proyeccion.social.ws.app.repository.CertificadoRepository;
-import ues.occ.proyeccion.social.ws.app.repository.ProyectoRepository;
+import ues.occ.proyeccion.social.ws.app.repository.ProyectoEstudianteRepository;
 import ues.occ.proyeccion.social.ws.app.utils.PageDtoWrapper;
 import ues.occ.proyeccion.social.ws.app.utils.PageableResource;
 
@@ -43,26 +42,26 @@ public class CertificadoServiceImpl extends PageableResource<Certificado, Certif
 	private String bucketName;
 	private final Storage storage;
 	private final CertificadoRepository certificadoRepository;
-    private final ProyectoRepository proyectoRepository;
+    private final ProyectoEstudianteRepository proyectoEstudianteRepository;
     private final CertificadoMapper certificadoMapper;
 
-    public CertificadoServiceImpl(CertificadoRepository certificadoRepository,
-                                  ProyectoRepository proyectoRepository,
-                                  CertificadoMapper certificadoMapper, Storage storage) {
-        this.certificadoRepository = certificadoRepository;
-        this.proyectoRepository = proyectoRepository;
-        this.certificadoMapper = certificadoMapper;
-        this.storage = storage;
-    }
+	public CertificadoServiceImpl(Storage storage, CertificadoRepository certificadoRepository,
+								  ProyectoEstudianteRepository proyectoEstudianteRepository,
+								  CertificadoMapper certificadoMapper) {
+		this.storage = storage;
+		this.certificadoRepository = certificadoRepository;
+		this.proyectoEstudianteRepository = proyectoEstudianteRepository;
+		this.certificadoMapper = certificadoMapper;
+	}
 
-    @Override
+	@Override
     public Optional<CertificadoCreationDTO.CertificadoDTO> save(CertificadoCreationDTO dto) {
-        Proyecto proyecto =
-                this.proyectoRepository.findById(dto.getProyectoId())
+        var proyectoEstudiante =
+                this.proyectoEstudianteRepository.findById(dto.getProyectoEstudianteId())
                 .orElseThrow(() -> new ResourceNotFoundException("Project does not exists or is not assigned yet"));
         try{
             URL url = new URL(dto.getUri());
-            Certificado certificado = new Certificado(proyecto.getId(), url.toString(), LocalDateTime.now(), proyecto);
+            Certificado certificado = new Certificado(proyectoEstudiante.getId(), url.toString(), LocalDateTime.now(), proyectoEstudiante);
             Certificado result = this.certificadoRepository.save(certificado);
             return Optional.of(this.certificadoMapper.certificadoToCertificadoDTO(result));
         }
@@ -79,7 +78,7 @@ public class CertificadoServiceImpl extends PageableResource<Certificado, Certif
 	@Override
 	public CertificadoCreationDTO.CertificadoDTO getCertificate(String carnet, String projectName) {
 		return this.certificadoRepository
-				.findByProyecto_ProyectoEstudianteSet_Estudiante_CarnetIgnoreCaseAndProyecto_NombreIgnoreCase(carnet, projectName)
+				.findByProyectoEstudiante_Estudiante_CarnetIgnoreCaseAndProyectoEstudiante_Proyecto_NombreIgnoreCase(carnet, projectName)
 				.map(this.certificadoMapper::certificadoToCertificadoDTO)
 				.orElseThrow(() -> new ResourceNotFoundException("Certificado no encontrado, asegúrese de escribir el nombre completo de su proyecto"));
 	}
@@ -95,7 +94,7 @@ public class CertificadoServiceImpl extends PageableResource<Certificado, Certif
     @Override
     public PageDtoWrapper<Certificado, CertificadoCreationDTO.CertificadoDTO> findAllByCarnet(int page, int size, String carnet) {
         Pageable pageable = this.getPageable(page, size);
-        Page<Certificado> certificadoPage = this.certificadoRepository.findAllByProyecto_ProyectoEstudianteSet_Estudiante_Carnet(carnet, pageable);
+        Page<Certificado> certificadoPage = this.certificadoRepository.findAllByProyectoEstudiante_Estudiante_Carnet(carnet, pageable);
         return this.getPagedData(certificadoPage);
     }
 

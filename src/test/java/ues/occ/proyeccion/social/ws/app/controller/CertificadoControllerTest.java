@@ -68,7 +68,7 @@ class CertificadoControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.fechaExpedicion", CoreMatchers.is(dateStr)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.uri", CoreMatchers.is("http://www.google.com")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id", CoreMatchers.is(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.proyectoEstudianteId", CoreMatchers.is(1)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.proyecto", CoreMatchers.is("Proyecto")));
 
         Mockito.verify(this.certificadoService, Mockito.times(1)).save(certificateCaptor.capture());
@@ -142,8 +142,8 @@ class CertificadoControllerTest {
                 .param("size", "10"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content", IsCollectionWithSize.hasSize(data.size())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].id", CoreMatchers.is(1)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content[1].id", CoreMatchers.is(2)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].proyectoEstudianteId", CoreMatchers.is(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[1].proyectoEstudianteId", CoreMatchers.is(2)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].proyecto", Matchers.containsInAnyOrder("Proyecto1", "Proyecto2")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].uri", Matchers.containsInAnyOrder(uri1, uri2)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].fechaExpedicion", Matchers.containsInAnyOrder(dateStr1, dateStr2)));
@@ -168,7 +168,7 @@ class CertificadoControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/certificados/".concat(carnet))
                 .param("projectName", projectName))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id", CoreMatchers.is(10)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.proyectoEstudianteId", CoreMatchers.is(10)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.proyecto", CoreMatchers.is("Test project")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.uri", CoreMatchers.is("www.google.com")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.fechaExpedicion", CoreMatchers.is("2020-12-01")));

@@ -43,10 +43,6 @@ public class Proyecto implements Serializable {
 	@JoinColumn(name = "id_status")
 	private Status status;
 
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name = "id", referencedColumnName = "id")
-	private Certificado certificado;
-
 	@OneToMany(mappedBy = "proyecto", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<ProyectoEstudiante> proyectoEstudianteSet = new HashSet<>();
 
@@ -174,14 +170,6 @@ public class Proyecto implements Serializable {
 		return proyectoEstudiante;
 	}
 
-	public Certificado getCertificado() {
-		return certificado;
-	}
-
-	public void setCertificado(Certificado certificado) {
-		this.certificado = certificado;
-	}
-
 	@Override
 	public boolean equals(Object o) {
 		if (this == o)
@@ -196,8 +184,7 @@ public class Proyecto implements Serializable {
 
 		return interno == proyecto.interno && Objects.equals(id, proyecto.id) && Objects.equals(nombre, proyecto.nombre)
 				&& Objects.equals(duracion, proyecto.duracion) && Objects.equals(tutor, proyecto.tutor)
-				&& Objects.equals(status, proyecto.status) && Objects.equals(certificado, proyecto.certificado)
-				&& Objects.equals(encargadoExterno, proyecto.encargadoExterno)
+				&& Objects.equals(status, proyecto.status) && Objects.equals(encargadoExterno, proyecto.encargadoExterno)
 				&& Objects.equals(fechaCreacionValue, thatFechaCreacionValue)
 				&& Objects.equals(fechaModificacionValue, thatFechaModificacionValue);
 	}
@@ -211,7 +198,7 @@ public class Proyecto implements Serializable {
 	public String toString() {
 		return "Proyecto{" + "id=" + id + ", nombre='" + nombre + '\'' + ", duracion=" + duracion + ", interno="
 				+ interno + ", tutor=" + tutor + ", encargadoExterno=" + encargadoExterno + ", status=" + status
-				+ ", certificado=" + certificado + ", proyectoEstudianteSet=" + proyectoEstudianteSet
+				+ ", proyectoEstudianteSet=" + proyectoEstudianteSet
 				+ ", fechaCreacion=" + fechaCreacion + ", fechaModificacion=" + fechaModificacion + '}';
 	}
 
