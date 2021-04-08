@@ -17,6 +17,8 @@ import ues.occ.proyeccion.social.ws.app.utils.MapperUtility;
 import ues.occ.proyeccion.social.ws.app.utils.StatusOption;
 
 import javax.servlet.http.HttpServletResponse;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 @RestController
@@ -99,6 +101,12 @@ public class EstudianteController {
                 result.getOriginalPage().getTotalPages(), size)
         );
         return new ResponseEntity<>(new PageDTO<>(result), HttpStatus.OK);
+    }
+
+    @GetMapping("/{carnet}/proyectos/single")
+    public ProjectMarker studentProjectByName(@PathVariable String carnet, @RequestParam String projectName){
+        var decodedProjectName = URLDecoder.decode(projectName, StandardCharsets.UTF_8);
+        return this.proyectoService.findByCarnetAndProjectName(carnet, decodedProjectName);
     }
 
     @GetMapping("/{carnet}/proyectos/estadoRequerimiento")

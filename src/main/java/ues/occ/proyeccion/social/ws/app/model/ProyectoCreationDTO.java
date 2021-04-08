@@ -74,6 +74,8 @@ public class ProyectoCreationDTO implements Serializable {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             ProyectoDTO that = (ProyectoDTO) o;
+
+            // to avoid NPE when fechaCreacion or fechaModificacion are null
             var fechaCreacionValue = fechaCreacion == null ? null : fechaCreacion.truncatedTo(ChronoUnit.SECONDS);
             var thatFechaCreacionValue = that.fechaCreacion == null ? null : that.fechaCreacion.truncatedTo(ChronoUnit.SECONDS);
             var fechaModificacionValue = fechaModificacion == null ? null : fechaModificacion.truncatedTo(ChronoUnit.SECONDS);

@@ -60,6 +60,8 @@ class ProyectoServiceImplTest {
     @BeforeAll
     static void setUpForClass(){
         proyecto1 = new Proyecto();
+        var status = new Status(2, "statusName", "desc");
+        proyecto1.setStatus(status);
         proyecto1.setNombre("proyecto1");
         proyecto1.setInterno(false);
         PersonalExterno personalExterno = new PersonalExterno();
@@ -201,6 +203,46 @@ class ProyectoServiceImplTest {
         assertTrue(result.getContent().get(1).isInterno());
         assertEquals(1, statusCaptor.getValue());
 
+    }
+
+    @Test
+    void testFindByCarnetAndProjectNameWhenIsNoPending(){
+        var toReturn = Optional.of(proyecto1);
+
+        Mockito.when(this.proyectoRepository.findByProyectoEstudianteSet_Estudiante_CarnetIgnoreCaseAndNombreIgnoreCase(Mockito.anyString(), Mockito.anyString())).thenReturn(toReturn);
+
+        var result = (ProyectoCreationDTO.ProyectoDTO) this.proyectoService.findByCarnetAndProjectName("ab12345", "test");
+
+        Mockito.verify(this.documentoRepository, Mockito.never()).findProjectRelatedDocuments(Mockito.anyString(), Mockito.anyString());
+        assertNotNull(result);
+        assertEquals(result.getDuracion(), proyecto1.getDuracion());
+        assertEquals(result.getId(), proyecto1.getId());
+        assertEquals(result.getNombre(), proyecto1.getNombre());
+    }
+
+    @Test
+    void testFindByCarnetAndProjectNameWhenIsPending(){
+        proyecto1.getStatus().setId(1);
+        var toReturn = Optional.of(proyecto1);
+
+        var document = new Documento("doc", "my doc", LocalDateTime.now());
+        var requerimiento = new Requerimiento(1, true, 2, document);
+        var student = new Estudiante("zh15002", 200, false);
+        var projectStudent = new ProyectoEstudiante(student, proyecto1, true);
+        projectStudent.addRequerimiento(requerimiento, false);
+
+        var docs = List.of(document);
+
+        Mockito.when(this.proyectoRepository.findByProyectoEstudianteSet_Estudiante_CarnetIgnoreCaseAndNombreIgnoreCase(Mockito.anyString(), Mockito.anyString())).thenReturn(toReturn);
+        Mockito.when(this.documentoRepository.findProjectRelatedDocuments(Mockito.anyString(), Mockito.anyString())).thenReturn(docs);
+
+        var result = (PendingProjectDTO) this.proyectoService.findByCarnetAndProjectName("ab12345", "test");
+
+        assertNotNull(result);
+        assertEquals(result.getDuracion(), proyecto1.getDuracion());
+        assertEquals(result.getId(), proyecto1.getId());
+        assertEquals(result.getNombre(), proyecto1.getNombre());
+        assertEquals(result.getDocumentos().iterator().next().getNombre(), docs.get(0).getNombre());
     }
 
     @Test

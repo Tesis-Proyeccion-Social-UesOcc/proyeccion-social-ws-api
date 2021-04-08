@@ -49,4 +49,10 @@ public class DocumentoPlantillaController {
 	public ResponseEntity<ServiceResponse> deleteById(@PathVariable int id) {
 		return documentService.deleteById(id);
 	}
+	
+	@PatchMapping("/{id}")
+	public ResponseEntity<ServiceResponse> updateById(@PathVariable Integer id,
+			@ModelAttribute DocumentoRequest request) {
+		return documentService.updateTemplate(id, request);
+	}
 }

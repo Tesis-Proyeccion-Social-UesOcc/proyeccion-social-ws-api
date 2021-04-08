@@ -13,4 +13,8 @@ public interface EstadoRequerimientoEstudianteMapper {
     EstadoRequerimientoEstudiante DTOtoEstadoRequerimientoEstudiante(EstadoRequerimientoEstudianteDTO dto);
     @Mapping(source = "fechaEntrega", target = "fechaEntrega", dateFormat = "yyyy-mm-dd")
     EstadoRequerimientoEstudianteDTO estadoRequerimientoEstudianteToDTO(EstadoRequerimientoEstudiante estadoRequerimientoEstudiante);
+
+    @Mapping(source = "requerimiento.documento.nombre", target = "documento")
+    @Mapping(source = "requerimiento.id", target = "requerimientoId")
+    EstadoRequerimientoEstudianteDTO.RequerimientoEstudianteDTO requerimientoEstudianteToDTO(EstadoRequerimientoEstudiante estadoRequerimientoEstudiante);
 }

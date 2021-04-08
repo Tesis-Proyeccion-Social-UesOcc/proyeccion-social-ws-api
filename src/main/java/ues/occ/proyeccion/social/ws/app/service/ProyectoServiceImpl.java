@@ -61,6 +61,22 @@ public class ProyectoServiceImpl implements ProyectoService {
     }
 
     @Override
+    public ProjectMarker findByCarnetAndProjectName(String carnet, String projectName) {
+        return this.proyectoRepository.findByProyectoEstudianteSet_Estudiante_CarnetIgnoreCaseAndNombreIgnoreCase(carnet, projectName)
+                .map(proyecto -> {
+                    if(proyecto.getStatus().getId() == StatusOption.PENDIENTE){
+                        var docs = this.documentoRepository.findProjectRelatedDocuments(carnet, proyecto.getNombre());
+                        return proyectoMapper.mapToPendingProject(proyecto, docs, new CycleUtil<>());
+                    }
+                    else {
+                        return proyectoMapper.proyectoToProyectoDTO(proyecto, new CycleUtil<>());
+                    }
+                })
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Proyecto no encontrado, asegurese de ingresar correctamente su carnet y el nombre del proyecto"));
+    }
+
+    @Override
     public PageDtoWrapper<Proyecto, ProyectoDTO> findAll(int page, int size) {
         Pageable paging = this.getPageable(page, size);
         Page<Proyecto> proyectoPage = proyectoRepository.findAll(paging);
