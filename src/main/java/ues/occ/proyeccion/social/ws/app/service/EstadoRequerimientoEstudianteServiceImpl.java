@@ -16,7 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import ues.occ.proyeccion.social.ws.app.dao.EstadoRequerimientoEstudiante;
-import ues.occ.proyeccion.social.ws.app.dao.Estudiante;
+import ues.occ.proyeccion.social.ws.app.dao.ProyectoEstudiante;
 import ues.occ.proyeccion.social.ws.app.dao.Requerimiento;
 import ues.occ.proyeccion.social.ws.app.mappers.EstadoRequerimientoEstudianteMapper;
 import ues.occ.proyeccion.social.ws.app.model.EstadoRequerimientoEstudianteDTO;
@@ -60,7 +60,7 @@ public class EstadoRequerimientoEstudianteServiceImpl
 
 		Pageable requerimientoEstudiantePageable = this.getPageable(page, size);
 		Page<EstadoRequerimientoEstudiante> estadoRequerimientoEstudiantes = this.repository
-				.findAllByEstudiante_CarnetAndAprobado(carnet, aprobado, requerimientoEstudiantePageable);
+				.findAllByProyectoEstudiante_Estudiante_CarnetAndAprobado(carnet, aprobado, requerimientoEstudiantePageable);
 
 		return this.getPagedData(estadoRequerimientoEstudiantes);
 	}
@@ -71,32 +71,28 @@ public class EstadoRequerimientoEstudianteServiceImpl
 
 		Pageable requerimientoEstudiantePageable = this.getPageable(page, size);
 		Page<EstadoRequerimientoEstudiante> estadoRequerimientoEstudiantes = this.repository
-				.findAllByEstudiante_Carnet(carnet, requerimientoEstudiantePageable);
+				.findAllByProyectoEstudiante_Estudiante_Carnet(carnet, requerimientoEstudiantePageable);
 
 		return this.getPagedData(estadoRequerimientoEstudiantes);
 	}
 
 	@Override
-	public Optional<EstadoRequerimientoEstudianteDTO> save(String carnet, int requerimientoId) {
-		log.info("cambio de estado de requerimiento, carnet: " + carnet + " requerimientoId: " + requerimientoId);
-		carnet = carnet.strip();
-		if (carnet.length() != 7) {
-			throw new IllegalArgumentException("Invalid student ID");
-		}
-		try {
-			Estudiante estudiante = this.entityManager.getReference(Estudiante.class, carnet);
-			Requerimiento requerimiento = this.entityManager.getReference(Requerimiento.class, requerimientoId);
+	public Optional<EstadoRequerimientoEstudianteDTO> save(Integer idProyectoEstudiante, int requerimientoId) {
+		log.info("cambio de estado de requerimiento, idProyectoEstudiante: " + idProyectoEstudiante + " requerimientoId: " + requerimientoId);
 
+		try {
+			var proyectoEstudiante = this.entityManager.getReference(ProyectoEstudiante.class, idProyectoEstudiante);
+			Requerimiento requerimiento = this.entityManager.getReference(Requerimiento.class, requerimientoId);
 			// verificar si estado entregado o aprobado
 			EstadoRequerimientoEstudiante estadoRequerimientoEstudiante = 
-					repository.findByCarnetAndEntregadoAndRequerimientoId(carnet, true, requerimientoId);
+					repository.findByProyectoEstudiante_IdAndEntregadoAndRequerimientoId(idProyectoEstudiante, true, requerimientoId);
 			
 			if (estadoRequerimientoEstudiante != null) {
 						estadoRequerimientoEstudiante.setAprobado(true);
 						estadoRequerimientoEstudiante.setFechaAprobacion(Date.valueOf(LocalDate.now()));
 			} else {
 				 estadoRequerimientoEstudiante = new EstadoRequerimientoEstudiante(
-						estudiante, requerimiento, true, false, Date.valueOf(LocalDate.now()), null);
+						proyectoEstudiante, requerimiento, true, false, Date.valueOf(LocalDate.now()), null);
 			}
 
 			EstadoRequerimientoEstudiante result = repository.save(estadoRequerimientoEstudiante);

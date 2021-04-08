@@ -25,9 +25,9 @@ public class EstadoRequerimientoEstudiante implements Serializable {
     private Requerimiento requerimiento;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("idEstudiante")
-    @JoinColumn(name = "id_estudiante")
-    private Estudiante estudiante;
+    @MapsId("idProyectoEstudiante")
+    @JoinColumn(name = "id_proyecto_estudiante")
+    private ProyectoEstudiante proyectoEstudiante;
 
     @Column(name = "entregado")
     private boolean entregado;
@@ -44,9 +44,9 @@ public class EstadoRequerimientoEstudiante implements Serializable {
     public EstadoRequerimientoEstudiante() {
     }
 
-    public EstadoRequerimientoEstudiante(Estudiante estudiante, Requerimiento requerimiento, boolean entregado, boolean aprobado, Date fechaEntrega, Date fechaAprobacion) {
-        this.id = new EstadoRequerimientoEstudiantePK(requerimiento.getId(), estudiante.getCarnet());
-        this.estudiante = estudiante;
+    public EstadoRequerimientoEstudiante(ProyectoEstudiante proyectoEstudiante, Requerimiento requerimiento, boolean entregado, boolean aprobado, Date fechaEntrega, Date fechaAprobacion) {
+        this.id = new EstadoRequerimientoEstudiantePK(requerimiento.getId(), proyectoEstudiante.getId());
+        this.proyectoEstudiante = proyectoEstudiante;
         this.requerimiento = requerimiento;
         this.entregado = entregado;
         this.aprobado = aprobado;
@@ -70,12 +70,12 @@ public class EstadoRequerimientoEstudiante implements Serializable {
         this.requerimiento = requerimiento;
     }
 
-    public Estudiante getEstudiante() {
-        return estudiante;
+    public ProyectoEstudiante getProyectoEstudiante() {
+        return proyectoEstudiante;
     }
 
-    public void setEstudiante(Estudiante estudiante) {
-        this.estudiante = estudiante;
+    public void setProyectoEstudiante(ProyectoEstudiante proyectoEstudiante) {
+        this.proyectoEstudiante = proyectoEstudiante;
     }
 
     public boolean isEntregado() {
@@ -119,7 +119,7 @@ public class EstadoRequerimientoEstudiante implements Serializable {
                 aprobado == that.aprobado &&
                 Objects.equals(id, that.id) &&
                 Objects.equals(requerimiento, that.requerimiento) &&
-                Objects.equals(estudiante, that.estudiante) &&
+                Objects.equals(proyectoEstudiante, that.proyectoEstudiante) &&
                 Objects.equals(fechaEntrega, that.fechaEntrega) &&
                 Objects.equals(fechaAprobacion, that.fechaAprobacion);
     }

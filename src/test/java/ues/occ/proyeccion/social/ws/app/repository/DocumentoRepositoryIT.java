@@ -50,24 +50,30 @@ class DocumentoRepositoryIT {
         var estudiante1 = new Estudiante(carnet, 300, false);
         var estudiante2 = new Estudiante("ab12345", 300, false);
 
-        estudiante1.addRequerimiento(requerimiento1, false);
-        estudiante1.addRequerimiento(requerimiento2, true);
+//        estudiante2.addRequerimiento(requerimiento1, false);
+//        estudiante2.addRequerimiento(requerimiento2, true);
 
-        estudiante2.addRequerimiento(requerimiento1, false);
-        estudiante2.addRequerimiento(requerimiento2, true);
-
+        // TODO: fix tests
         estudianteRepository.saveAll(List.of(estudiante1, estudiante2));
 
         var proyecto = new Proyecto(1, projectName, 250, true, LocalDateTime.now());
         proyecto.setStatus(status);
-        proyecto.registerStudent(estudiante1);
-        proyecto.registerStudent(estudiante2);
+
+        var proyectoEstudianteResult1 = proyecto.registerStudent(estudiante1);
+        var proyectoEstudianteResult2 = proyecto.registerStudent(estudiante2);
+
+        // requerimientos relacionados a estudiante1
+        proyectoEstudianteResult1.addRequerimiento(requerimiento1, false);
+        proyectoEstudianteResult1.addRequerimiento(requerimiento2, true);
+
+        proyectoEstudianteResult2.addRequerimiento(requerimiento1, false);
+        proyectoEstudianteResult2.addRequerimiento(requerimiento2, false);
         proyectoRepository.save(proyecto);
 
 
         var result = documentoRepository.findProjectRelatedDocuments(carnet, "Anything");
-        assertEquals(result.size(), 2);
-
+        assertEquals(2, result.size());
+        // --------------------------
         var requerimientos1 = result.get(0).getRequerimientos();
         var resultRequerimiento1 = getFirstItem(requerimientos1);
         var requerimientoEstudiante1 = resultRequerimiento1.getEstadoRequerimientoEstudiantes();
@@ -80,6 +86,7 @@ class DocumentoRepositoryIT {
         assertEquals(resultRequerimiento1.getcantidadCopias(), 2);
         assertFalse(resultRequerimientoEstudiante1.isAprobado());
 
+        // --------------------------
         var requerimientos2 = result.get(1).getRequerimientos();
         var resultRequerimiento2 = getFirstItem(requerimientos2);
         var requerimientoEstudiante2 = resultRequerimiento2.getEstadoRequerimientoEstudiantes();
@@ -100,6 +107,6 @@ class DocumentoRepositoryIT {
         return iter.next();
     }
     private Optional<EstadoRequerimientoEstudiante> test(Set<EstadoRequerimientoEstudiante> set, String carnet){
-        return set.stream().filter(obj -> obj.getEstudiante().getCarnet().equals(carnet)).findFirst();
+        return set.stream().filter(obj -> obj.getProyectoEstudiante().getEstudiante().getCarnet().equals(carnet)).findFirst();
     }
 }

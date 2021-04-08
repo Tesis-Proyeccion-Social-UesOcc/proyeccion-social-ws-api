@@ -8,8 +8,11 @@ import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO;
 import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO.ProyectoDTO;
 import ues.occ.proyeccion.social.ws.app.utils.PageDtoWrapper;
 
+import java.util.List;
+
 public interface ProyectoService {
     ProyectoCreationDTO.ProyectoDTO findById(int id);
+    List<? extends ProjectMarker> getRequirementsData(String carnet);
     ProjectMarker findByCarnetAndProjectName(String carnet, String projectName);
     PageDtoWrapper<Proyecto, ProyectoCreationDTO.ProyectoDTO> findAll(int page, int size);
     PageDtoWrapper<Proyecto, ProyectoCreationDTO.ProyectoDTO> findAllByStatus(int page, int size, int statusId);

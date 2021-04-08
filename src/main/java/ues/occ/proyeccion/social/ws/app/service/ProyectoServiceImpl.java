@@ -116,6 +116,21 @@ public class ProyectoServiceImpl implements ProyectoService {
     }
 
     @Override
+    public List<? extends ProjectMarker> getRequirementsData(String carnet) {
+        return this.proyectoRepository.findAllByProyectoEstudianteSet_Estudiante_CarnetIgnoreCase(carnet)
+                .stream().map(proyecto -> {
+                    if(proyecto.getStatus().getId() == StatusOption.PENDIENTE){
+                        var docs = this.documentoRepository.findProjectRelatedDocuments(carnet, proyecto.getNombre());
+                        return this.proyectoMapper.mapToPendingProject(proyecto, docs, new CycleUtil<>());
+                    }
+                    else {
+                        return this.proyectoMapper.proyectoToProyectoDTO(proyecto, new CycleUtil<>());
+                    }
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public ProyectoCreationDTO.ProyectoDTO save(ProyectoCreationDTO proyecto) {
         try {
 
@@ -178,7 +193,7 @@ public class ProyectoServiceImpl implements ProyectoService {
             content = data.getContent().stream()
                     .map(proyecto -> {
                         var docs = this.documentoRepository.findProjectRelatedDocuments(carnet, proyecto.getNombre());
-                        return this.proyectoMapper.mapToPendingProject(proyecto, docs, new CycleUtil());
+                        return this.proyectoMapper.mapToPendingProject(proyecto, docs, new CycleUtil<>());
                     })
                     .collect(Collectors.toList());
         } else {

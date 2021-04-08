@@ -54,7 +54,6 @@ public interface ProyectoMapper {
     @Mapping(target = "proyectoEstudianteSet", ignore = true)
     @Mapping(target = "encargadoExterno", ignore = true)
     @Mapping(target = "tutor", ignore = true)
-    @Mapping(target = "certificado", ignore = true)
     @Mapping(target = "status", ignore = true)
     Proyecto proyectoCreationDTOToProyecto(ProyectoCreationDTO proyectoCreationDTO);
 }

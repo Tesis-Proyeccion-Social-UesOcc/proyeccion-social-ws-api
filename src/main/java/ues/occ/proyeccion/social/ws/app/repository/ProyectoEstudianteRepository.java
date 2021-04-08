@@ -9,5 +9,4 @@ import ues.occ.proyeccion.social.ws.app.dao.ProyectoEstudiante;
 
 @Repository
 public interface ProyectoEstudianteRepository extends PagingAndSortingRepository<ProyectoEstudiante, Integer> {
-    Optional<ProyectoEstudiante> findByProyecto_Id(int proyectoId);
 }
