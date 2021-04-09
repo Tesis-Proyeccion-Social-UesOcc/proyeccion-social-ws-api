@@ -8,6 +8,7 @@ import java.sql.Date;
 @Data
 @AllArgsConstructor
 public class SimpleDocumentDTO {
+    private int idRequerimiento;
     private String nombre;
     private boolean entregado;
     private boolean aprobado;
