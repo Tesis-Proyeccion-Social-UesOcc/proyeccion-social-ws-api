@@ -27,13 +27,13 @@ public class DepartamentoServiceimpl implements DepartamentoService{
 		try {
 			
 		return new ResponseEntity<ServiceResponse>(
-				new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk, departamentoRepository.findAll()), 
+				new ServiceResponse(ServiceResponse.CODE_OK, ServiceResponse.MESSAGE_OK, departamentoRepository.findAll()),
 				HttpStatus.OK);	
 		
 		} catch (Exception e) {
 			e.getCause();
 			return new ResponseEntity<ServiceResponse>(
-					new ServiceResponse(ServiceResponse.codeFatal, ServiceResponse.messageFatal, null),
+					new ServiceResponse(ServiceResponse.CODE_FATAL, ServiceResponse.MESSAGE_FATAL, null),
 					HttpStatus.BAD_REQUEST);
 		}
 	}
@@ -46,15 +46,15 @@ public class DepartamentoServiceimpl implements DepartamentoService{
 			if(departamento != null) {
 				log.info("{}", departamento.toString());
 				return new ResponseEntity<ServiceResponse>(
-						new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk, departamento), HttpStatus.OK);
+						new ServiceResponse(ServiceResponse.CODE_OK, ServiceResponse.MESSAGE_OK, departamento), HttpStatus.OK);
 			} else {
 				return new ResponseEntity<ServiceResponse>(
-						new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageNull, departamento), HttpStatus.OK);
+						new ServiceResponse(ServiceResponse.CODE_OK, ServiceResponse.MESSAGE_NULL, departamento), HttpStatus.OK);
 			}
 		} catch (Exception e) {
 			log.error("Time: "+new Date(), e.getMessage());
 			return new ResponseEntity<ServiceResponse>(
-					new ServiceResponse(ServiceResponse.codeFatal, ServiceResponse.messageFatal, e.getMessage()),
+					new ServiceResponse(ServiceResponse.CODE_FATAL, ServiceResponse.MESSAGE_FATAL, e.getMessage()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}

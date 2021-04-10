@@ -7,7 +7,6 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +18,6 @@ import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 
-import javassist.NotFoundException;
 import ues.occ.proyeccion.social.ws.app.dao.Plantilla;
 import ues.occ.proyeccion.social.ws.app.dao.ServiceResponse;
 import ues.occ.proyeccion.social.ws.app.dto.DocumentoRequest;
@@ -45,7 +43,7 @@ public class DocumentoPlantilla implements DocumentoService {
 	@Override
 	public ResponseEntity<ServiceResponse> findAll() {
 		return new ResponseEntity<>(
-				new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk, plantillaRepository.findAll()),
+				new ServiceResponse(ServiceResponse.CODE_OK, ServiceResponse.MESSAGE_OK, plantillaRepository.findAll()),
 				HttpStatus.OK);
 	}
 
@@ -69,19 +67,19 @@ public class DocumentoPlantilla implements DocumentoService {
 			var plantilla = plantillaRepository.save(new Plantilla(model.getNombre(), uri, time));
 
 			return new ResponseEntity<>(
-					new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk, plantilla), HttpStatus.OK);
+					new ServiceResponse(ServiceResponse.CODE_OK, ServiceResponse.MESSAGE_OK, plantilla), HttpStatus.OK);
 
 		} catch (IOException e) {
 			e.printStackTrace();
 			log.error("No se logro guardar el documento en el bucket", e);
 			return new ResponseEntity<>(
-					new ServiceResponse(ServiceResponse.codeFailStorageDocumentBucket,
-							ServiceResponse.messageFailStorageDocumentBucket, e.getMessage()),
+					new ServiceResponse(ServiceResponse.CODE_FAIL_STORAGE_DOCUMENT_BUCKET,
+							ServiceResponse.MESSAGE_FAIL_STORAGE_DOCUMENT_BUCKET, e.getMessage()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		} catch (Exception ex) {
 			log.error("Error al subir un archivo",ex);
 			return new ResponseEntity<>(
-					new ServiceResponse(ServiceResponse.codeFatal, ServiceResponse.messageFatal, ex.getMessage()),
+					new ServiceResponse(ServiceResponse.CODE_FATAL, ServiceResponse.MESSAGE_FATAL, ex.getMessage()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -90,7 +88,7 @@ public class DocumentoPlantilla implements DocumentoService {
 		Optional<Plantilla> documento = Optional.of(
 				plantillaRepository.findById(id).orElseThrow(() -> new RuntimeException("Documento no encontrado")));
 		return new ResponseEntity<>(
-				new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk, documento), HttpStatus.OK);
+				new ServiceResponse(ServiceResponse.CODE_OK, ServiceResponse.MESSAGE_OK, documento), HttpStatus.OK);
 
 	}
 
@@ -99,11 +97,11 @@ public class DocumentoPlantilla implements DocumentoService {
 		try {
 			List<Plantilla> documentos = plantillaRepository.findByNombreContainingIgnoreCaseOrderByFechaDocumento(nombre);
 			return new ResponseEntity<>(
-					new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk, documentos), HttpStatus.OK);
+					new ServiceResponse(ServiceResponse.CODE_OK, ServiceResponse.MESSAGE_OK, documentos), HttpStatus.OK);
 
 		} catch (Exception e) {
 			return new ResponseEntity<>(
-					new ServiceResponse(ServiceResponse.codeFatal, ServiceResponse.messageFatal, e.getMessage()),
+					new ServiceResponse(ServiceResponse.CODE_FATAL, ServiceResponse.MESSAGE_FATAL, e.getMessage()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -111,12 +109,12 @@ public class DocumentoPlantilla implements DocumentoService {
 		try {
 			plantillaRepository.deleteById(id);
 
-			return new ResponseEntity<ServiceResponse>(new ServiceResponse(ServiceResponse.codeOk,
-					ServiceResponse.messageOk, "documento eliminado con id " + id), HttpStatus.NO_CONTENT);
+			return new ResponseEntity<ServiceResponse>(new ServiceResponse(ServiceResponse.CODE_OK,
+					ServiceResponse.MESSAGE_OK, "documento eliminado con id " + id), HttpStatus.NO_CONTENT);
 
 		} catch (Exception e) {
 			return new ResponseEntity<>(
-					new ServiceResponse(ServiceResponse.codeFatal, ServiceResponse.messageFatal, e.getMessage()),
+					new ServiceResponse(ServiceResponse.CODE_FATAL, ServiceResponse.MESSAGE_FATAL, e.getMessage()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 
 		}
@@ -150,8 +148,8 @@ public class DocumentoPlantilla implements DocumentoService {
 		log.info("uri " + uri);
 		plantilla.setUrl(uri);
 		plantilla.setFechaDocumento(time);
-		return new ResponseEntity<ServiceResponse>(new ServiceResponse(ServiceResponse.codeOk,
-				ServiceResponse.messageOk, plantillaRepository.save(plantilla)), HttpStatus.OK);
+		return new ResponseEntity<ServiceResponse>(new ServiceResponse(ServiceResponse.CODE_OK,
+				ServiceResponse.MESSAGE_OK, plantillaRepository.save(plantilla)), HttpStatus.OK);
 
 	}
 

@@ -113,7 +113,7 @@ public class EstudianteController {
     public ResponseEntity<ServiceResponse> getRequirementStatus(@PathVariable String carnet){
         var data = this.proyectoService.getRequirementsData(carnet);
         return new ResponseEntity<>(
-                new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk, data),
+                new ServiceResponse(ServiceResponse.CODE_OK, ServiceResponse.MESSAGE_OK, data),
                 HttpStatus.OK);
     }
 

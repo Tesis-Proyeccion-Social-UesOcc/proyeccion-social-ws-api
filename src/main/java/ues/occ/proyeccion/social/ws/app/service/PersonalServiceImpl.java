@@ -37,11 +37,11 @@ public class PersonalServiceImpl implements PersonalService {
 	@Override
 	public ResponseEntity<ServiceResponse> findByTipoPersonalId(int idTipoPersonal) {
 		try {
-			return new ResponseEntity<ServiceResponse>(new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk,
+			return new ResponseEntity<ServiceResponse>(new ServiceResponse(ServiceResponse.CODE_OK, ServiceResponse.MESSAGE_OK,
 					 personalRepository.findByTipoPersonalId(idTipoPersonal)), HttpStatus.OK);
 		} catch (Exception e) {
 			log.error("Problemas al buscar por tipo personal: "+e.getMessage());
-			return new ResponseEntity<ServiceResponse>(new ServiceResponse(ServiceResponse.codeFatal, ServiceResponse.messageFatal,
+			return new ResponseEntity<ServiceResponse>(new ServiceResponse(ServiceResponse.CODE_FATAL, ServiceResponse.MESSAGE_FATAL,
 					"Problemas al buscar por tipo personal: "+e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
@@ -51,10 +51,10 @@ public class PersonalServiceImpl implements PersonalService {
 	public ResponseEntity<ServiceResponse> findAll(int interno) {
 		modelMapper = new ModelMapper();
 		if(interno == 1) {
-			return new ResponseEntity<ServiceResponse>(new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk,
+			return new ResponseEntity<ServiceResponse>(new ServiceResponse(ServiceResponse.CODE_OK, ServiceResponse.MESSAGE_OK,
 					 personalRepository.findAll()), HttpStatus.OK);
 		} else {
-			return new ResponseEntity<ServiceResponse>(new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk,
+			return new ResponseEntity<ServiceResponse>(new ServiceResponse(ServiceResponse.CODE_OK, ServiceResponse.MESSAGE_OK,
 					 personalExternoRepository.findAll().stream().
 					 map(element -> modelMapper.map(element, PersonalExternoDto.class)).collect(Collectors.toList())
 			), HttpStatus.OK);
@@ -66,11 +66,11 @@ public class PersonalServiceImpl implements PersonalService {
 	@Override
 	public ResponseEntity<ServiceResponse> findByDepartamentoId(int idDepartamento) {
 		try {
-			return new ResponseEntity<ServiceResponse>(new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk,
+			return new ResponseEntity<ServiceResponse>(new ServiceResponse(ServiceResponse.CODE_OK, ServiceResponse.MESSAGE_OK,
 					 personalRepository.findByDepartamentoId(idDepartamento)), HttpStatus.OK);
 		} catch (Exception e) {
 			log.error("Problemas al buscar por Departamento: "+e.getMessage());
-			return new ResponseEntity<ServiceResponse>(new ServiceResponse(ServiceResponse.codeFatal, ServiceResponse.messageFatal,
+			return new ResponseEntity<ServiceResponse>(new ServiceResponse(ServiceResponse.CODE_FATAL, ServiceResponse.MESSAGE_FATAL,
 					"Problemas al buscar por Departamento: "+e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -78,11 +78,11 @@ public class PersonalServiceImpl implements PersonalService {
 	@Override
 	public ResponseEntity<ServiceResponse> findByNombre(String nombre, String apellido) {
 		try {
-			return new ResponseEntity<ServiceResponse>(new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk,
+			return new ResponseEntity<ServiceResponse>(new ServiceResponse(ServiceResponse.CODE_OK, ServiceResponse.MESSAGE_OK,
 					 personalRepository.findByNombreOrApellidoContaining(nombre, apellido)), HttpStatus.OK);
 		} catch (Exception e) {
 			log.error("Problemas al buscar por nombre de personal: "+e.getMessage());
-			return new ResponseEntity<ServiceResponse>(new ServiceResponse(ServiceResponse.codeFatal, ServiceResponse.messageFatal,
+			return new ResponseEntity<ServiceResponse>(new ServiceResponse(ServiceResponse.CODE_FATAL, ServiceResponse.MESSAGE_FATAL,
 					"Problemas al buscar por nombre de personal: "+e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -90,7 +90,7 @@ public class PersonalServiceImpl implements PersonalService {
 
 	@Override
 	public ResponseEntity<ServiceResponse> findAll() {
-		return new ResponseEntity<ServiceResponse>(new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk,
+		return new ResponseEntity<ServiceResponse>(new ServiceResponse(ServiceResponse.CODE_OK, ServiceResponse.MESSAGE_OK,
 				 personalRepository.findAll()), HttpStatus.OK);
 	}
 	

@@ -71,7 +71,7 @@ public class EstudianteServiceImpl extends PageableResource<Estudiante, Estudian
 				estadoRequerimientos.stream().map(requerimientoEstudianteMapper::requerimientoEstudianteToDTO)
                         .collect(Collectors.toList());
 		
-		return new ResponseEntity<>(new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk,
+		return new ResponseEntity<>(new ServiceResponse(ServiceResponse.CODE_OK, ServiceResponse.MESSAGE_OK,
 				result)
 				, HttpStatus.OK);
 	}
