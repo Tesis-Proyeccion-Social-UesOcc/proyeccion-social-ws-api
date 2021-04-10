@@ -2,7 +2,7 @@ package ues.occ.proyeccion.social.ws.app.dao;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
+import java.sql.Date;
 import java.util.Objects;
 import java.util.Set;
 
@@ -23,10 +23,10 @@ public class Proceso implements Serializable {
     private String descripcion;
 
     @Column(name = "fecha_inicio")
-    private Date fecha_inicio;
+    private Date fechaInicio;
 
     @Column(name = "fecha_fin")
-    private Date fecha_fin;
+    private Date fechaFin;
 
     @OneToMany(mappedBy = "proceso", fetch = FetchType.LAZY)
     private Set<Requerimiento> requerimientos;
@@ -35,12 +35,12 @@ public class Proceso implements Serializable {
         super();
     }
 
-    public Proceso(Integer id, String nombre, String descripcion, Date fecha_inicio, Date fecha_fin, Set<Requerimiento> requerimientos) {
+    public Proceso(Integer id, String nombre, String descripcion, Date fechaInicio, Date fechaFin, Set<Requerimiento> requerimientos) {
         Id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
-        this.fecha_inicio = fecha_inicio;
-        this.fecha_fin = fecha_fin;
+        this.fechaInicio = fechaInicio;
+        this.fechaFin = fechaFin;
         this.requerimientos = requerimientos;
     }
 
@@ -72,20 +72,20 @@ public class Proceso implements Serializable {
         this.descripcion = descripcion;
     }
 
-    public Date getFecha_inicio() {
-        return fecha_inicio;
+    public Date getFechaInicio() {
+        return fechaInicio;
     }
 
-    public void setFecha_inicio(Date fecha_inicio) {
-        this.fecha_inicio = fecha_inicio;
+    public void setFechaInicio(Date fecha_inicio) {
+        this.fechaInicio = fecha_inicio;
     }
 
-    public Date getFecha_fin() {
-        return fecha_fin;
+    public Date getFechaFin() {
+        return fechaFin;
     }
 
-    public void setFecha_fin(Date fecha_fin) {
-        this.fecha_fin = fecha_fin;
+    public void setFechaFin(Date fecha_fin) {
+        this.fechaFin = fecha_fin;
     }
 
     public Set<Requerimiento> getRequerimientos() {
@@ -105,14 +105,14 @@ public class Proceso implements Serializable {
         return Objects.equals(Id, proceso.Id) &&
                 Objects.equals(nombre, proceso.nombre) &&
                 Objects.equals(descripcion, proceso.descripcion) &&
-                Objects.equals(fecha_inicio, proceso.fecha_inicio) &&
-                Objects.equals(fecha_fin, proceso.fecha_fin) &&
+                Objects.equals(fechaInicio, proceso.fechaInicio) &&
+                Objects.equals(fechaFin, proceso.fechaFin) &&
                 Objects.equals(requerimientos, proceso.requerimientos);
     }
 
     // ide generated
     @Override
     public int hashCode() {
-        return Objects.hash(Id, nombre, descripcion, fecha_inicio, fecha_fin, requerimientos);
+        return Objects.hash(Id, nombre, descripcion, fechaInicio, fechaFin, requerimientos);
     }
 }
