@@ -14,7 +14,7 @@ public class Proceso implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Integer Id;
+    private Integer id;
 
     @Column(name = "nombre", nullable = false, length = 100)
     private String nombre;
@@ -35,13 +35,12 @@ public class Proceso implements Serializable {
         super();
     }
 
-    public Proceso(Integer id, String nombre, String descripcion, Date fechaInicio, Date fechaFin, Set<Requerimiento> requerimientos) {
-        Id = id;
+    public Proceso(Integer id, String nombre, String descripcion, Date fechaInicio, Date fechaFin) {
+        this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.fechaInicio = fechaInicio;
         this.fechaFin = fechaFin;
-        this.requerimientos = requerimientos;
     }
 
     public static long getSerialVersionUID() {
@@ -49,11 +48,11 @@ public class Proceso implements Serializable {
     }
 
     public Integer getId() {
-        return Id;
+        return id;
     }
 
     public void setId(Integer id) {
-        Id = id;
+        this.id = id;
     }
 
     public String getNombre() {
@@ -102,7 +101,7 @@ public class Proceso implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Proceso proceso = (Proceso) o;
-        return Objects.equals(Id, proceso.Id) &&
+        return Objects.equals(id, proceso.id) &&
                 Objects.equals(nombre, proceso.nombre) &&
                 Objects.equals(descripcion, proceso.descripcion) &&
                 Objects.equals(fechaInicio, proceso.fechaInicio) &&
@@ -113,6 +112,6 @@ public class Proceso implements Serializable {
     // ide generated
     @Override
     public int hashCode() {
-        return Objects.hash(Id, nombre, descripcion, fechaInicio, fechaFin, requerimientos);
+        return Objects.hash(id, nombre, descripcion, fechaInicio, fechaFin, requerimientos);
     }
 }

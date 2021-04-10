@@ -132,8 +132,8 @@ public class CertificadoServiceImpl extends PageableResource<Certificado, Certif
 				e.printStackTrace();
 				log.error("No se logro guardar el documento en el bucket", e);
 				return new ResponseEntity<>(
-						new ServiceResponse(ServiceResponse.codeFailStorageDocumentBucket,
-								ServiceResponse.messageFailStorageDocumentBucket, e.getMessage()),HttpStatus.INTERNAL_SERVER_ERROR);
+						new ServiceResponse(ServiceResponse.CODE_FAIL_STORAGE_DOCUMENT_BUCKET,
+								ServiceResponse.MESSAGE_FAIL_STORAGE_DOCUMENT_BUCKET, e.getMessage()),HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 
 			if(url != null && id > 0) {
@@ -143,11 +143,11 @@ public class CertificadoServiceImpl extends PageableResource<Certificado, Certif
 				certificado.setUri(url);
 				Certificado result = certificadoRepository.save(certificado);
 				return new ResponseEntity<>(
-						new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk, result),
+						new ServiceResponse(ServiceResponse.CODE_OK, ServiceResponse.MESSAGE_OK, result),
 						HttpStatus.CREATED);
 			} else {
 				return new ResponseEntity<>(
-						new ServiceResponse(ServiceResponse.codeOk, ServiceResponse.messageOk, "Registro no creado por falta de la creacion de la URI"),
+						new ServiceResponse(ServiceResponse.CODE_OK, ServiceResponse.MESSAGE_OK, "Registro no creado por falta de la creacion de la URI"),
 						HttpStatus.CREATED);
 
 			}
@@ -155,7 +155,7 @@ public class CertificadoServiceImpl extends PageableResource<Certificado, Certif
 		} catch (Exception e) {
 			log.error("No se logro crear el registro", e);
 			return new ResponseEntity<>(
-					new ServiceResponse(ServiceResponse.codeFatal, ServiceResponse.messageFatal, e.getMessage()),
+					new ServiceResponse(ServiceResponse.CODE_FATAL, ServiceResponse.MESSAGE_FATAL, e.getMessage()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
