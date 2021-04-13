@@ -50,10 +50,6 @@ class DocumentoRepositoryIT {
         var estudiante1 = new Estudiante(carnet, 300, false);
         var estudiante2 = new Estudiante("ab12345", 300, false);
 
-//        estudiante2.addRequerimiento(requerimiento1, false);
-//        estudiante2.addRequerimiento(requerimiento2, true);
-
-        // TODO: fix tests
         estudianteRepository.saveAll(List.of(estudiante1, estudiante2));
 
         var proyecto = new Proyecto(1, projectName, 250, true, LocalDateTime.now());
@@ -63,11 +59,12 @@ class DocumentoRepositoryIT {
         var proyectoEstudianteResult2 = proyecto.registerStudent(estudiante2);
 
         // requerimientos relacionados a estudiante1
-        proyectoEstudianteResult1.addRequerimiento(requerimiento1, false);
-        proyectoEstudianteResult1.addRequerimiento(requerimiento2, true);
+        requerimiento1.addEstadoRequerimiento(proyectoEstudianteResult1, false);
+        requerimiento2.addEstadoRequerimiento(proyectoEstudianteResult1, true);
 
-        proyectoEstudianteResult2.addRequerimiento(requerimiento1, false);
-        proyectoEstudianteResult2.addRequerimiento(requerimiento2, false);
+        requerimiento1.addEstadoRequerimiento(proyectoEstudianteResult2, false);
+        requerimiento2.addEstadoRequerimiento(proyectoEstudianteResult2, false);
+
         proyectoRepository.save(proyecto);
 
 

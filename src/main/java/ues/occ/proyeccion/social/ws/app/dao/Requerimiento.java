@@ -1,6 +1,7 @@
 package ues.occ.proyeccion.social.ws.app.dao;
 
 import java.io.Serializable;
+import java.sql.Date;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -101,6 +102,14 @@ public class Requerimiento implements Serializable {
 
     public Set<EstadoRequerimientoEstudiante> getEstadoRequerimientoEstudiantes() {
         return estadoRequerimientoEstudiantes;
+    }
+
+    public void addEstadoRequerimiento(ProyectoEstudiante proyectoEstudiante, boolean aprobado){
+        var requerimientoEstudiante = new EstadoRequerimientoEstudiante(proyectoEstudiante, this, true,
+                aprobado, new Date(System.currentTimeMillis()), null);
+        this.estadoRequerimientoEstudiantes.add(requerimientoEstudiante);
+        proyectoEstudiante.getEstadoRequerimientoEstudiantes().add(requerimientoEstudiante);
+
     }
 
     public void setEstadoRequerimientoEstudiantes(Set<EstadoRequerimientoEstudiante> estadoRequerimientoEstudiantes) {
