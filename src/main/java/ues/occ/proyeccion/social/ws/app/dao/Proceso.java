@@ -19,7 +19,7 @@ public class Proceso implements Serializable {
     @Column(name = "nombre", nullable = false, length = 100)
     private String nombre;
 
-    @Column(name = "descripcion", nullable = false, length = 45)
+    @Column(name = "descripcion", nullable = false, length = 45, columnDefinition = "TEXT")
     private String descripcion;
 
     @Column(name = "fecha_inicio")

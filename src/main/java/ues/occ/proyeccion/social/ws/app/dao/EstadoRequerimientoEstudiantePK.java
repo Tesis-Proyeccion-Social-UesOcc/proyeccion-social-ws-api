@@ -51,4 +51,12 @@ import javax.persistence.Embeddable;
     public int hashCode() {
         return Objects.hash(idRequerimiento, idProyectoEstudiante);
     }
+
+    @Override
+    public String toString() {
+        return "EstadoRequerimientoEstudiantePK{" +
+                "idRequerimiento=" + idRequerimiento +
+                ", idProyectoEstudiante=" + idProyectoEstudiante +
+                '}';
+    }
 }

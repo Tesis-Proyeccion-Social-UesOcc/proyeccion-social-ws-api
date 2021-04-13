@@ -20,6 +20,7 @@ import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO.ProyectoDTO;
 import ues.occ.proyeccion.social.ws.app.repository.DocumentoRepository;
 import ues.occ.proyeccion.social.ws.app.repository.EstudianteRepository;
 import ues.occ.proyeccion.social.ws.app.repository.ProyectoRepository;
+import ues.occ.proyeccion.social.ws.app.repository.RequerimientoRepository;
 import ues.occ.proyeccion.social.ws.app.utils.PageDtoWrapper;
 import ues.occ.proyeccion.social.ws.app.utils.StatusOption;
 
@@ -28,6 +29,7 @@ import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,16 +42,18 @@ public class ProyectoServiceImpl implements ProyectoService {
     private final DocumentoRepository documentoRepository;
     private final ProyectoMapper proyectoMapper;
     private final EstudianteRepository estudianteRepository;
+    private final RequerimientoRepository requerimientoRepository;
 
     @PersistenceContext
     private final EntityManager entityManager;
 
     public ProyectoServiceImpl(ProyectoRepository proyectoRepository, DocumentoRepository documentoRepository, ProyectoMapper proyectoMapper,
-                               EstudianteRepository estudianteRepository, EntityManager entityManager) {
+                               EstudianteRepository estudianteRepository, RequerimientoRepository requerimientoRepository, EntityManager entityManager) {
         this.proyectoRepository = proyectoRepository;
         this.documentoRepository = documentoRepository;
         this.proyectoMapper = proyectoMapper;
         this.estudianteRepository = estudianteRepository;
+        this.requerimientoRepository = requerimientoRepository;
         this.entityManager = entityManager;
     }
 
@@ -146,8 +150,17 @@ public class ProyectoServiceImpl implements ProyectoService {
             });
 
             var savedProyecto = this.proyectoRepository.save(proyectoToSave);
-
-            return this.proyectoMapper.proyectoToProyectoDTO(savedProyecto, new CycleUtil());
+            var cache = new ArrayList<Requerimiento>();
+            savedProyecto.getProyectoEstudianteSet().forEach(proyectoEstudiante -> {
+                this.requerimientoRepository.findAllProjectedBy()
+                        .forEach(requerimientoIdView -> {
+                            var requerimiento = entityManager.getReference(Requerimiento.class, requerimientoIdView.getId());
+                            requerimiento.addEstadoRequerimiento(proyectoEstudiante, false);
+                            cache.add(requerimiento);
+                        });
+            });
+            this.requerimientoRepository.saveAll(cache);
+            return this.proyectoMapper.proyectoToProyectoDTO(savedProyecto, new CycleUtil<>());
         } catch (Exception e) {
             e.printStackTrace();
             throw new InternalErrorException("Something went wrong saving the data");

@@ -10,17 +10,24 @@ import ues.occ.proyeccion.social.ws.app.dao.Estudiante;
 import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
 import ues.occ.proyeccion.social.ws.app.dao.Status;
 
+import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
 @Profile("test")
 class ProyectoRepositoryIT {
 
+    @Autowired DocumentoRepository documentoRepository;
+    @Autowired RequerimientoRepository requerimientoRepository;
     @Autowired StatusRepository statusRepository;
     @Autowired EstudianteRepository estudianteRepository;
     @Autowired ProyectoRepository proyectoRepository;
+    @Autowired DepartamentoRepository departamentoRepository;
+    @Autowired PersonalRepository personalRepository;
+    @Autowired TipoPersonalRepository tipoPersonalRepository;
+    @Autowired EntityManager entityManager;
 
     @BeforeEach
     void setUp() {

@@ -22,6 +22,8 @@ import ues.occ.proyeccion.social.ws.app.model.StatusDTO;
 import ues.occ.proyeccion.social.ws.app.repository.DocumentoRepository;
 import ues.occ.proyeccion.social.ws.app.repository.EstudianteRepository;
 import ues.occ.proyeccion.social.ws.app.repository.ProyectoRepository;
+import ues.occ.proyeccion.social.ws.app.repository.RequerimientoRepository;
+import ues.occ.proyeccion.social.ws.app.repository.projections.RequerimientoIdView;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
@@ -42,6 +44,9 @@ class ProyectoServiceImplTest {
 
     @Mock
     private ProyectoRepository proyectoRepository;
+
+    @Mock
+    private RequerimientoRepository requerimientoRepository;
 
     @Mock
     private DocumentoRepository documentoRepository;
@@ -97,7 +102,7 @@ class ProyectoServiceImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        proyectoService = new ProyectoServiceImpl(proyectoRepository, documentoRepository, proyectoMapper, estudianteRepository, entityManager);
+        proyectoService = new ProyectoServiceImpl(proyectoRepository, documentoRepository, proyectoMapper, estudianteRepository, requerimientoRepository, entityManager);
     }
 
     @Test
@@ -229,7 +234,7 @@ class ProyectoServiceImplTest {
         var requerimiento = new Requerimiento(1, true, 2, document);
         var student = new Estudiante("zh15002", 200, false);
         var projectStudent = new ProyectoEstudiante(student, proyecto1, true);
-        projectStudent.addRequerimiento(requerimiento, false);
+        requerimiento.addEstadoRequerimiento(projectStudent, false);
 
         var docs = List.of(document);
 
@@ -288,7 +293,7 @@ class ProyectoServiceImplTest {
         var requerimiento = new Requerimiento(1, true, 2, document);
         var student = new Estudiante("zh15002", 200, false);
         var projectStudent = new ProyectoEstudiante(student, proyecto1, true);
-        projectStudent.addRequerimiento(requerimiento, false);
+        requerimiento.addEstadoRequerimiento(projectStudent, false);
 
         var docs = List.of(document);
 
@@ -344,7 +349,7 @@ class ProyectoServiceImplTest {
         var requerimiento = new Requerimiento(1, true, 2, document);
         var student = new Estudiante("zh15002", 200, false);
         var projectStudent = new ProyectoEstudiante(student, proyecto1, true);
-        projectStudent.addRequerimiento(requerimiento, false);
+        requerimiento.addEstadoRequerimiento(projectStudent, false);
         var docs = List.of(document);
 
         var carnetCapture = ArgumentCaptor.forClass(String.class);
@@ -395,23 +400,31 @@ class ProyectoServiceImplTest {
         resultProject.setId(1);
         resultProject.setFechaCreacion(LocalDateTime.now());
 
+        RequerimientoIdView requerimiento = () -> 11;
+        var doc = new Documento("doc", "", LocalDateTime.now());
+        var requerimientoObj = new Requerimiento(1, true, 2, doc);
 
         ArgumentCaptor<String> carnetCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<Integer> personalIdCaptor = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Proyecto> proyectoCaptor = ArgumentCaptor.forClass(Proyecto.class);
         ArgumentCaptor<Integer> statusCaptor = ArgumentCaptor.forClass(Integer.class);
+        ArgumentCaptor<Integer> requerimientoCaptor = ArgumentCaptor.forClass(Integer.class);
 
         Mockito.when(this.entityManager.getReference(ArgumentMatchers.<Class<Estudiante>>any(), Mockito.anyString())).thenReturn(estudiante);
         Mockito.when(this.entityManager.getReference(Personal.class, 1)).thenReturn(personal);
         Mockito.when(this.entityManager.getReference(Status.class, 1)).thenReturn(status);
+        Mockito.when(this.entityManager.getReference(Requerimiento.class, 11)).thenReturn(requerimientoObj);
         Mockito.when(this.proyectoRepository.save(Mockito.any(Proyecto.class))).thenReturn(resultProject);
+        Mockito.when(this.requerimientoRepository.findAllProjectedBy()).thenReturn(List.of(requerimiento));
 
         var result = this.proyectoService.save(proyectoCreationDTO);
 
         Mockito.verify(this.entityManager, Mockito.times(1)).getReference(ArgumentMatchers.eq(Estudiante.class), carnetCaptor.capture());
         Mockito.verify(this.entityManager, Mockito.times(1)).getReference(ArgumentMatchers.eq(Personal.class), personalIdCaptor.capture());
         Mockito.verify(this.entityManager, Mockito.times(1)).getReference(ArgumentMatchers.eq(Status.class), statusCaptor.capture());
+        Mockito.verify(this.entityManager, Mockito.times(1)).getReference(ArgumentMatchers.eq(Requerimiento.class), requerimientoCaptor.capture());
         Mockito.verify(this.proyectoRepository, Mockito.times(1)).save(proyectoCaptor.capture());
+        Mockito.verify(this.requerimientoRepository, Mockito.times(1)).findAllProjectedBy();
 
         var expectedDto = new ProyectoCreationDTO.ProyectoDTO(1, "Project", 150,
                 true, "Steve", Set.of(new EstudianteDTO("ZH15002", 250, false)),
@@ -424,6 +437,7 @@ class ProyectoServiceImplTest {
         assertEquals(carnet, carnetCaptor.getValue());
         assertEquals(1, personalIdCaptor.getValue());
         assertEquals(statusCaptor.getValue(), status.getId());
+        assertEquals(requerimientoCaptor.getValue(), requerimiento.getId());
 
     }
 

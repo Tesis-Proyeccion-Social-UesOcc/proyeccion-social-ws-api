@@ -1,12 +1,10 @@
 package ues.occ.proyeccion.social.ws.app.dao;
 
+import javax.persistence.*;
 import java.io.Serializable;
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import javax.persistence.*;
 
 @Entity
 @Table(name = "proyecto_estudiante"
@@ -28,7 +26,7 @@ public class ProyectoEstudiante implements Serializable {
     @JoinColumn(name = "carnet")
     private Estudiante estudiante;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name = "id_proyecto")
     private Proyecto proyecto;
 
@@ -79,13 +77,6 @@ public class ProyectoEstudiante implements Serializable {
 
     public Integer getId() {
         return id;
-    }
-
-    public void addRequerimiento(Requerimiento requerimiento, boolean aprobado){
-        var requerimientoEstudiante = new EstadoRequerimientoEstudiante(this, requerimiento, true,
-                aprobado, new Date(System.currentTimeMillis()), null);
-        this.estadoRequerimientoEstudiantes.add(requerimientoEstudiante);
-        requerimiento.getEstadoRequerimientoEstudiantes().add(requerimientoEstudiante);
     }
 
     public List<EstadoRequerimientoEstudiante> getEstadoRequerimientoEstudiantes() {
