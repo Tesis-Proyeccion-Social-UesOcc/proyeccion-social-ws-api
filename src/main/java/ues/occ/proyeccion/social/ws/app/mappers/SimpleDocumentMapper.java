@@ -43,7 +43,14 @@ public interface SimpleDocumentMapper {
         return requerimientoEstudiante.getFechaAprobacion();
     }
 
-    @Named("id")
+    @Named("idProyectoEstudiante")
+    default int getReqEstudiante(Set<Requerimiento> requerimientos){
+        var requerimiento = requerimientos.iterator().next();
+        var requerimientoEstudiante = requerimiento.getEstadoRequerimientoEstudiantes().iterator().next();
+        return requerimientoEstudiante.getId().getIdProyectoEstudiante();
+    }
+
+    @Named("idRequerimiento")
     default int getId(Set<Requerimiento> requerimientos){
         var requerimiento = requerimientos.iterator().next();
         return requerimiento.getId();
@@ -53,7 +60,8 @@ public interface SimpleDocumentMapper {
     @Mapping(source = "requerimientos", target = "entregado", qualifiedByName = "isEntregado")
     @Mapping(source = "requerimientos", target = "fechaAprobacion", qualifiedByName = "fechaAprobado")
     @Mapping(source = "requerimientos", target = "fechaEntrega", qualifiedByName = "fechaEntregado")
-    @Mapping(source = "requerimientos", target = "idRequerimiento", qualifiedByName = "id")
+    @Mapping(source = "requerimientos", target = "idRequerimiento", qualifiedByName = "idRequerimiento")
+    @Mapping(source = "requerimientos", target = "proyectoEstudianteId", qualifiedByName = "idProyectoEstudiante")
     SimpleDocumentDTO documentoToDTO(Documento documento, @Context CycleUtil cycleUtil);
 
     Set<SimpleDocumentDTO> toSimpleDocumentDTO(List<Documento> documentos, @Context CycleUtil cycleUtil);

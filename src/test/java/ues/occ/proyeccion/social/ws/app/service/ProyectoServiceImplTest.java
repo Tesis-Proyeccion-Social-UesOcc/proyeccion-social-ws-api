@@ -1,6 +1,5 @@
 package ues.occ.proyeccion.social.ws.app.service;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,6 +26,7 @@ import ues.occ.proyeccion.social.ws.app.repository.projections.RequerimientoIdVi
 
 import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -59,11 +59,14 @@ class ProyectoServiceImplTest {
 
     private ProyectoServiceImpl proyectoService;
 
-    static Proyecto proyecto1;
-    static Proyecto proyecto2;
+    Proyecto proyecto1;
+    Proyecto proyecto2;
 
-    @BeforeAll
-    static void setUpForClass(){
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        proyectoService = new ProyectoServiceImpl(proyectoRepository, documentoRepository, proyectoMapper, estudianteRepository, requerimientoRepository, entityManager);
+
         proyecto1 = new Proyecto();
         var status = new Status(2, "statusName", "desc");
         proyecto1.setStatus(status);
@@ -71,6 +74,7 @@ class ProyectoServiceImplTest {
         proyecto1.setInterno(false);
         PersonalExterno personalExterno = new PersonalExterno();
         personalExterno.setNombre("text");
+
         var estudiante1 = new Estudiante();
         var estudiante2 = new Estudiante();
 
@@ -87,7 +91,7 @@ class ProyectoServiceImplTest {
         proyectoEstudiante2.setEstudiante(estudiante2);
         proyectoEstudiante1.setProyecto(proyecto1);
         proyectoEstudiante2.setProyecto(proyecto2);
-        Set<ProyectoEstudiante> proyectoEstudiantes = Set.of(proyectoEstudiante1, proyectoEstudiante2);
+        var proyectoEstudiantes = new HashSet<ProyectoEstudiante>(Set.of(proyectoEstudiante1, proyectoEstudiante2));
         proyecto1.setEncargadoExterno(personalExterno);
         proyecto1.setTutor(new Personal());
         proyecto1.setProyectoEstudianteSet(proyectoEstudiantes);
@@ -96,13 +100,6 @@ class ProyectoServiceImplTest {
         proyecto2.setInterno(true);
         proyecto2.setTutor(new Personal());
         proyecto2.setProyectoEstudianteSet(proyectoEstudiantes);
-
-    }
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        proyectoService = new ProyectoServiceImpl(proyectoRepository, documentoRepository, proyectoMapper, estudianteRepository, requerimientoRepository, entityManager);
     }
 
     @Test
@@ -232,9 +229,11 @@ class ProyectoServiceImplTest {
 
         var document = new Documento("doc", "my doc", LocalDateTime.now());
         var requerimiento = new Requerimiento(1, true, 2, document);
-        var student = new Estudiante("zh15002", 200, false);
-        var projectStudent = new ProyectoEstudiante(student, proyecto1, true);
-        requerimiento.addEstadoRequerimiento(projectStudent, false);
+        var student1 = new Estudiante("ab12345", 200, false);
+        var student2 = new Estudiante("zh15002", 200, false);
+        var projectStudent1 = proyecto1.registerStudent(student1);
+        projectStudent1.setId(1);
+        requerimiento.addEstadoRequerimiento(projectStudent1, false);
 
         var docs = List.of(document);
 
@@ -285,15 +284,22 @@ class ProyectoServiceImplTest {
 
     @Test
     void findProyectosPendientesByEstudiante(){
-        List<Proyecto> data = List.of(proyecto1, proyecto2);
-        Pageable pageable = PageRequest.of(5, 10);
-        Page<Proyecto> page = new PageImpl<>(data, pageable, data.size());
 
         var document = new Documento("doc", "my doc", LocalDateTime.now());
         var requerimiento = new Requerimiento(1, true, 2, document);
-        var student = new Estudiante("zh15002", 200, false);
-        var projectStudent = new ProyectoEstudiante(student, proyecto1, true);
-        requerimiento.addEstadoRequerimiento(projectStudent, false);
+        var student1 = new Estudiante("ab12345", 200, false);
+        var student2 = new Estudiante("zh15002", 200, false);
+        var projectStudent1 = proyecto1.registerStudent(student1);
+        projectStudent1.setId(1);
+        var projectStudent2 = proyecto2.registerStudent(student2);
+        projectStudent2.setId(2);
+        requerimiento.addEstadoRequerimiento(projectStudent1, false);
+        requerimiento.addEstadoRequerimiento(projectStudent2, false);
+
+
+        var data = List.of(proyecto1, proyecto2);
+        Pageable pageable = PageRequest.of(5, 10);
+        Page<Proyecto> page = new PageImpl<>(data, pageable, data.size());
 
         var docs = List.of(document);
 
@@ -349,6 +355,7 @@ class ProyectoServiceImplTest {
         var requerimiento = new Requerimiento(1, true, 2, document);
         var student = new Estudiante("zh15002", 200, false);
         var projectStudent = new ProyectoEstudiante(student, proyecto1, true);
+        projectStudent.setId(1);
         requerimiento.addEstadoRequerimiento(projectStudent, false);
         var docs = List.of(document);
 
