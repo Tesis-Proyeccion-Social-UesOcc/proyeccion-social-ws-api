@@ -19,7 +19,7 @@ public class EstadoRequerimientoEstudiante implements Serializable {
 	@EmbeddedId
     private EstadoRequerimientoEstudiantePK id;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @MapsId("idRequerimiento")
     @JoinColumn(name = "id_requerimiento")
     private Requerimiento requerimiento;

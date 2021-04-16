@@ -31,7 +31,7 @@ public class ProyectoEstudiante implements Serializable {
     private Proyecto proyecto;
 
     @OneToMany(mappedBy = "proyectoEstudiante", fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL,
+            cascade = CascadeType.MERGE,
             orphanRemoval = true)
     private List<EstadoRequerimientoEstudiante> estadoRequerimientoEstudiantes = new ArrayList<>();
 

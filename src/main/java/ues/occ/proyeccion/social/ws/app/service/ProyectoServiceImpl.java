@@ -135,6 +135,7 @@ public class ProyectoServiceImpl implements ProyectoService {
     }
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public ProyectoCreationDTO.ProyectoDTO save(ProyectoCreationDTO proyecto) {
         try {
 
