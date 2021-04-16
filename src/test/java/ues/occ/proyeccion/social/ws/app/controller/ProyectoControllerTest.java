@@ -180,7 +180,7 @@ class ProyectoControllerTest {
     void createTestWithInvalidBody() throws Exception{
         var proyecto = "Test";
         var estudiantes = List.of("zhd0022");
-        var body = new ProyectoCreationDTO(proyecto, null, true, 10, estudiantes, new StatusDTO());
+        var body = new ProyectoCreationDTO(proyecto, null, true, 10, estudiantes);
 
         var estudiantesResponse = Set.of(new EstudianteDTO("zh15002", 300, false));
 
@@ -240,7 +240,7 @@ class ProyectoControllerTest {
     void UpdateTestWithInvalidBody() throws Exception{
         var proyecto = "Test";
         var estudiantes = List.of("zhd0022");
-        var body = new ProyectoCreationDTO(proyecto, null, true, 10, estudiantes, new StatusDTO());
+        var body = new ProyectoCreationDTO(proyecto, null, true, 10, estudiantes);
 
         var estudiantesResponse = Set.of(new EstudianteDTO("zh15002", 300, false));
 

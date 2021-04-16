@@ -47,13 +47,13 @@ public interface ProyectoMapper {
     @Mapping(source = "documentos", target ="documentos")
     PendingProjectDTO mapToPendingProject(Proyecto proyecto, List<Documento> documentos, @Context CycleUtil cycleUtil);
 
-    @Mapping(source = "proyecto", target = "personal", qualifiedByName = "idChecker")
-    ProyectoCreationDTO proyectoToProyectoCreationDTO(Proyecto proyecto);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "proyectoEstudianteSet", ignore = true)
     @Mapping(target = "encargadoExterno", ignore = true)
     @Mapping(target = "tutor", ignore = true)
     @Mapping(target = "status", ignore = true)
+    @Mapping(target = "fechaCreacion", ignore = true)
+    @Mapping(target = "fechaModificacion", ignore = true)
     Proyecto proyectoCreationDTOToProyecto(ProyectoCreationDTO proyectoCreationDTO);
 }

@@ -65,9 +65,7 @@ public class ProyectoServiceIT {
 
         assertEquals(0, proyectoRepository.count());
 
-        var statusDto = new StatusDTO(1, "", "");
-
-        var proyecto = new ProyectoCreationDTO("proyecto", 250, true, 1, List.of(carnet), statusDto);
+        var proyecto = new ProyectoCreationDTO("proyecto", 250, true, 1, List.of(carnet));
 
         service.save(proyecto);
         assertEquals(1, proyectoRepository.count());

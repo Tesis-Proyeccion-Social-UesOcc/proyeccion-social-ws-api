@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
-import ues.occ.proyeccion.social.ws.app.dto.ProyectoChangeStatusDto;
+import ues.occ.proyeccion.social.ws.app.model.ProyectoChangeStatusDto;
 import ues.occ.proyeccion.social.ws.app.events.PaginatedResultsRetrievedEvent;
 import ues.occ.proyeccion.social.ws.app.model.PageDTO;
 import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO;
@@ -49,7 +49,7 @@ public class ProyectoController {
     
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
-    public ProyectoCreationDTO.ProyectoDTO changeStatus(ProyectoChangeStatusDto proyecto){
+    public ProyectoCreationDTO.ProyectoDTO changeStatus(@Valid @RequestBody ProyectoChangeStatusDto proyecto){
         return this.service.changeStatus(proyecto);
     }
 

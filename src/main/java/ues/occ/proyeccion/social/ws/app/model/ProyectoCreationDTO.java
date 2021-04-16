@@ -47,8 +47,6 @@ public class ProyectoCreationDTO implements Serializable {
     @NotEmpty(message = "Estudiantes list cannot be empty")
     private List<@CarnetValidator String> estudiantes;
 
-    private StatusDTO status;
-
     @Data
     @Accessors(chain = true)
     @Builder
