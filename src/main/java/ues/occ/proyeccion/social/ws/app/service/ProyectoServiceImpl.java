@@ -6,8 +6,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ues.occ.proyeccion.social.ws.app.dao.*;
-import ues.occ.proyeccion.social.ws.app.dto.ProyectoChangeStatusDto;
-import ues.occ.proyeccion.social.ws.app.dto.StatusEnum;
+import ues.occ.proyeccion.social.ws.app.model.ProyectoChangeStatusDto;
+import ues.occ.proyeccion.social.ws.app.model.StatusEnum;
 import ues.occ.proyeccion.social.ws.app.exceptions.ChangeStatusProjectException;
 import ues.occ.proyeccion.social.ws.app.exceptions.InternalErrorException;
 import ues.occ.proyeccion.social.ws.app.exceptions.ResourceNotFoundException;
@@ -180,7 +180,7 @@ public class ProyectoServiceImpl implements ProyectoService {
                     }).orElseThrow(() -> new ResourceNotFoundException(String.format("Project with id %d does not exist", idProyecto)));
             this.setEncargado(proyectoDB, proyecto.getPersonal());
             var savedProyecto = this.proyectoRepository.save(proyectoDB);
-            return this.proyectoMapper.proyectoToProyectoDTO(savedProyecto, new CycleUtil());
+            return this.proyectoMapper.proyectoToProyectoDTO(savedProyecto, new CycleUtil<>());
         }
         catch (Exception e){
             log.error(e.getMessage());
@@ -240,23 +240,23 @@ public class ProyectoServiceImpl implements ProyectoService {
 				.orElseThrow(() -> new ChangeStatusProjectException(
 						"No se encontro el proyecto con id: " + proyectoDto.getIdProyecto()));
 
-		var proyectoStatus = this.proyectoMapper.proyectoToProyectoDTO(proyecto, new CycleUtil());
+		var proyectoStatus = this.proyectoMapper.proyectoToProyectoDTO(proyecto, new CycleUtil<>());
 
 		if (proyecto.getStatus().getStatus().equalsIgnoreCase("Pendiente")) {
-			if (proyectoDto.getStatus() == StatusEnum.Pendiente) {
+			if (proyectoDto.getStatus() == StatusEnum.PENDIENTE) {
 				throw new ChangeStatusProjectException(
 						"El proyecto ya esta en estado pendiente. Podria  asignar estado rechazado o en proceso");
-			} else if (proyectoDto.getStatus() == StatusEnum.Completado) {
+			} else if (proyectoDto.getStatus() == StatusEnum.COMPLETADO) {
 				throw new ChangeStatusProjectException(
 						"No se puede asignar el estado completado, porque el proyecto esta pendiente. Podria asignar estado rechazado o en proceso porfavor");
 			}
 		}
 
 		if (proyecto.getStatus().getStatus().equalsIgnoreCase("En proceso")) {
-			if (proyectoDto.getStatus() == StatusEnum.Pendiente) {
+			if (proyectoDto.getStatus() == StatusEnum.PENDIENTE) {
 				throw new ChangeStatusProjectException(
 						"El proyecto ya esta en proceso, no se puede asginar el estado pendiente. Podria asignar estado completado o retiro porfavor");
-			} else if (proyectoDto.getStatus() == StatusEnum.Rechazado) {
+			} else if (proyectoDto.getStatus() == StatusEnum.RECHAZADO) {
 				throw new ChangeStatusProjectException(
 						"El proyecto ya esta en proceso, no se puede rechazar, solamente retirar");
 			}
@@ -271,7 +271,7 @@ public class ProyectoServiceImpl implements ProyectoService {
 
 		int horaProyectoActual = proyecto.getDuracion();
 
-		if(proyecto.getStatus().getStatus().equalsIgnoreCase("En proceso") && proyectoDto.getStatus() == StatusEnum.Completado) {
+		if(proyecto.getStatus().getStatus().equalsIgnoreCase("En proceso") && proyectoDto.getStatus() == StatusEnum.COMPLETADO) {
 			proyecto.getProyectoEstudianteSet().forEach(estudianteProyecto -> {
 				int horasEstudiante = estudianteProyecto.getEstudiante().getHorasProgreso();
 				int totalHorasEstudiante = horaProyectoActual + horasEstudiante;

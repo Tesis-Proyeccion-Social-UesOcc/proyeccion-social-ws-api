@@ -1,7 +1,7 @@
 package ues.occ.proyeccion.social.ws.app.service;
 
 import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
-import ues.occ.proyeccion.social.ws.app.dto.ProyectoChangeStatusDto;
+import ues.occ.proyeccion.social.ws.app.model.ProyectoChangeStatusDto;
 import ues.occ.proyeccion.social.ws.app.model.PendingProjectDTO;
 import ues.occ.proyeccion.social.ws.app.model.ProjectMarker;
 import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO;

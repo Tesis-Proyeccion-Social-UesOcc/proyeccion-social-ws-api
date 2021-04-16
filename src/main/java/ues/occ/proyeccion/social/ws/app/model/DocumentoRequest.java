@@ -1,4 +1,4 @@
-package ues.occ.proyeccion.social.ws.app.dto;
+package ues.occ.proyeccion.social.ws.app.model;
 
 import java.io.Serializable;
 

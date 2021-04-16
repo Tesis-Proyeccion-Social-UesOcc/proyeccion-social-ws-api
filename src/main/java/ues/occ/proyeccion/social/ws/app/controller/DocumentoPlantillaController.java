@@ -3,7 +3,7 @@ package ues.occ.proyeccion.social.ws.app.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ues.occ.proyeccion.social.ws.app.dao.ServiceResponse;
-import ues.occ.proyeccion.social.ws.app.dto.DocumentoRequest;
+import ues.occ.proyeccion.social.ws.app.model.DocumentoRequest;
 import ues.occ.proyeccion.social.ws.app.service.DocumentoService;
 
 import java.net.URLDecoder;

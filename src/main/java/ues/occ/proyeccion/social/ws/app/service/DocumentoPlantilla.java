@@ -20,7 +20,7 @@ import com.google.cloud.storage.Storage;
 
 import ues.occ.proyeccion.social.ws.app.dao.Plantilla;
 import ues.occ.proyeccion.social.ws.app.dao.ServiceResponse;
-import ues.occ.proyeccion.social.ws.app.dto.DocumentoRequest;
+import ues.occ.proyeccion.social.ws.app.model.DocumentoRequest;
 import ues.occ.proyeccion.social.ws.app.exceptions.ResourceNotFoundException;
 import ues.occ.proyeccion.social.ws.app.repository.PlantillaRepository;
 

@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import ues.occ.proyeccion.social.ws.app.dao.ServiceResponse;
-import ues.occ.proyeccion.social.ws.app.dto.PersonalExternoDto;
+import ues.occ.proyeccion.social.ws.app.model.PersonalExternoDto;
 import ues.occ.proyeccion.social.ws.app.exceptions.ResourceNotFoundException;
 import ues.occ.proyeccion.social.ws.app.mappers.PersonalEncargadoMapper;
 import ues.occ.proyeccion.social.ws.app.model.PersonalEncargadoDTO;
