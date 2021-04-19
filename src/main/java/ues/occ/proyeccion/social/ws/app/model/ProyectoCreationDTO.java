@@ -62,7 +62,7 @@ public class ProyectoCreationDTO implements Serializable {
         private Integer duracion;
         private boolean interno;
         private String personal;
-        private Set<EstudianteDTO> estudiantes;
+        private Set<EmbeddedStudentDTO> estudiantes;
         private LocalDateTime fechaCreacion;
         private LocalDateTime fechaModificacion;
         private String status;

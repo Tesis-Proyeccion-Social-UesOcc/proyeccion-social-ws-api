@@ -8,7 +8,7 @@ import org.mapstruct.factory.Mappers;
 import ues.occ.proyeccion.social.ws.app.dao.Documento;
 import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
 import ues.occ.proyeccion.social.ws.app.dao.ProyectoEstudiante;
-import ues.occ.proyeccion.social.ws.app.model.EstudianteDTO;
+import ues.occ.proyeccion.social.ws.app.model.EmbeddedStudentDTO;
 import ues.occ.proyeccion.social.ws.app.model.PendingProjectDTO;
 import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO;
 
@@ -31,9 +31,10 @@ public interface ProyectoMapper {
     }
 
     @Named("estudiantesBuilder")
-    default Set<EstudianteDTO> getEstudiantes(Set<ProyectoEstudiante> proyectoEstudiantes){
-        return MAPPER.ToEstudianteList(proyectoEstudiantes, new CycleUtil());
+    default Set<EmbeddedStudentDTO> getEstudiantes(Set<ProyectoEstudiante> proyectoEstudiantes){
+        return MAPPER.toEmbeddedStudentList(proyectoEstudiantes, new CycleUtil<>());
     }
+
 
     @Mapping(source = "proyecto", target = "personal", qualifiedByName = "nombreChecker")
     @Mapping(source = "proyecto.proyectoEstudianteSet", target = "estudiantes", qualifiedByName = "estudiantesBuilder")
