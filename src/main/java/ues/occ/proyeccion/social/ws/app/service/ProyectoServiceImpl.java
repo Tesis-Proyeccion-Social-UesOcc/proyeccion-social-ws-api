@@ -32,6 +32,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -60,7 +61,7 @@ public class ProyectoServiceImpl implements ProyectoService {
     @Override
     public ProyectoDTO findById(int id) {
         return this.proyectoRepository.findById(id)
-                .map(proyecto -> this.proyectoMapper.proyectoToProyectoDTO(proyecto, new CycleUtil()))
+                .map(proyecto -> this.proyectoMapper.proyectoToProyectoDTO(proyecto, new CycleUtil<>()))
                 .orElseThrow(ResourceNotFoundException::new);
     }
 
@@ -172,11 +173,29 @@ public class ProyectoServiceImpl implements ProyectoService {
     @Override
     public ProyectoDTO update(ProyectoCreationDTO proyecto, int idProyecto) {
         try{
+            // required or get a compile error, atomic variables are thread-safe variables
+            AtomicBoolean toInactive = new AtomicBoolean(false);
             var proyectoDB = this.proyectoRepository.findById(idProyecto)
                     .map(obj -> {
                         obj.setDuracion(proyecto.getDuracion());
                         obj.setInterno(proyecto.isInterno());
                         obj.setNombre(proyecto.getNombre());
+                        obj.getProyectoEstudianteSet().forEach(proyectoEstudiante -> {
+
+                            for(var carnet: proyecto.getEstudiantes()){
+                                if(!proyectoEstudiante.getEstudiante().getCarnet().equals(carnet)) {
+                                    // if this statement is reached means that this student exist in the db but was not found in the body of the PUT request , which means it will be set as inactive
+                                    toInactive.set(true);
+                                }
+                                else{
+                                        toInactive.set(false);
+                                        break;
+                                }
+                            }
+                            var exists = toInactive.getAndSet(false);
+                            proyectoEstudiante.setActive(!exists);
+                        });
+
                         return obj;
                     }).orElseThrow(() -> new ResourceNotFoundException(String.format("Project with id %d does not exist", idProyecto)));
             this.setEncargado(proyectoDB, proyecto.getPersonal());

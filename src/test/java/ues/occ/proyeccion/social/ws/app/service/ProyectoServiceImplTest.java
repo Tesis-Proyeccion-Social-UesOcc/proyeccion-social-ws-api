@@ -14,10 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ues.occ.proyeccion.social.ws.app.dao.*;
 import ues.occ.proyeccion.social.ws.app.exceptions.ResourceNotFoundException;
 import ues.occ.proyeccion.social.ws.app.mappers.ProyectoMapper;
-import ues.occ.proyeccion.social.ws.app.model.EstudianteDTO;
-import ues.occ.proyeccion.social.ws.app.model.PendingProjectDTO;
-import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO;
-import ues.occ.proyeccion.social.ws.app.model.StatusDTO;
+import ues.occ.proyeccion.social.ws.app.model.*;
 import ues.occ.proyeccion.social.ws.app.repository.DocumentoRepository;
 import ues.occ.proyeccion.social.ws.app.repository.EstudianteRepository;
 import ues.occ.proyeccion.social.ws.app.repository.ProyectoRepository;
@@ -130,6 +127,7 @@ class ProyectoServiceImplTest {
 
     @Test
     void testFindAll() {
+        var estudianteD = new EmbeddedStudentDTO("ZH15002", 500, true, false);
         List<Proyecto> data = List.of(proyecto1, proyecto2);
         Pageable pageable = PageRequest.of(5, 10);
         Page<Proyecto> page = new PageImpl<>(data, pageable, data.size());
@@ -142,8 +140,8 @@ class ProyectoServiceImplTest {
         ).findAll(captor.capture());
         Pageable captured = captor.getValue();
 
-        var estudianteDTO1 = new EstudianteDTO("ZH15002", 500, true);
-        var estudianteDTO2 = new EstudianteDTO("AB15002", 200, false);
+        var estudianteDTO1 = new EmbeddedStudentDTO("ZH15002", 500, true, false);
+        var estudianteDTO2 = new EmbeddedStudentDTO("AB15002", 200, false, false);
         var expected = Set.of(estudianteDTO1, estudianteDTO2);
 
         assertEquals(5, captured.getPageNumber());
@@ -434,7 +432,7 @@ class ProyectoServiceImplTest {
         Mockito.verify(this.requerimientoRepository, Mockito.times(1)).findAllProjectedBy();
 
         var expectedDto = new ProyectoCreationDTO.ProyectoDTO(1, "Project", 150,
-                true, "Steve", Set.of(new EstudianteDTO("ZH15002", 250, false)),
+                true, "Steve", Set.of(new EmbeddedStudentDTO("ZH15002", 250, false, false)),
                 LocalDateTime.now(), null, "DummyStatus");
 
         assertNotNull(result);
@@ -480,7 +478,7 @@ class ProyectoServiceImplTest {
         ArgumentCaptor<Integer> idPersonal = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Proyecto> proyectoCaptor = ArgumentCaptor.forClass(Proyecto.class);
 
-        var expected = new ProyectoCreationDTO.ProyectoDTO(2, "Test2", 350, true, "Mario", Set.of(new EstudianteDTO("ab12345", 250, false)), LocalDateTime.now(), LocalDateTime.now(), "dummyValue");
+        var expected = new ProyectoCreationDTO.ProyectoDTO(2, "Test2", 350, true, "Mario", Set.of(new EmbeddedStudentDTO("ab12345", 250, false, true)), LocalDateTime.now(), LocalDateTime.now(), "dummyValue");
 
         Mockito.when(this.proyectoRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(proyecto));
         Mockito.when(this.proyectoRepository.save(Mockito.any(Proyecto.class))).thenReturn(proyecto);

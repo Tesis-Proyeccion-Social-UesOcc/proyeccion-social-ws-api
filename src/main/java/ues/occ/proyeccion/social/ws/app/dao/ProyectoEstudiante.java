@@ -83,6 +83,14 @@ public class ProyectoEstudiante implements Serializable {
         return estadoRequerimientoEstudiantes;
     }
 
+    public Boolean isActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
