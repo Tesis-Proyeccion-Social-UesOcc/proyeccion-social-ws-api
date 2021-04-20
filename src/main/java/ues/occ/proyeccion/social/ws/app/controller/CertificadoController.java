@@ -9,6 +9,7 @@ import ues.occ.proyeccion.social.ws.app.dao.Certificado;
 import ues.occ.proyeccion.social.ws.app.events.PaginatedResultsRetrievedEvent;
 import ues.occ.proyeccion.social.ws.app.exceptions.InternalErrorException;
 import ues.occ.proyeccion.social.ws.app.model.CertificadoCreationDTO;
+import ues.occ.proyeccion.social.ws.app.model.CertificadoCreationDTOUpload;
 import ues.occ.proyeccion.social.ws.app.model.PageDTO;
 import ues.occ.proyeccion.social.ws.app.service.CertificadoService;
 
@@ -34,6 +35,14 @@ public class CertificadoController {
     @ResponseStatus(HttpStatus.CREATED)
     public CertificadoCreationDTO.CertificadoDTO createCertificate(@Valid @RequestBody CertificadoCreationDTO dto){
         return this.certificadoService.save(dto).orElseThrow(
+                () -> new InternalErrorException("Certificate creation failed")
+        );
+    }
+    
+    @PostMapping("/upload")
+    @ResponseStatus(HttpStatus.CREATED)
+    public CertificadoCreationDTO.CertificadoDTO createUploadCertificate(@ModelAttribute CertificadoCreationDTOUpload dto){
+        return this.certificadoService.uploadCertificate(dto).orElseThrow(
                 () -> new InternalErrorException("Certificate creation failed")
         );
     }

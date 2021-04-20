@@ -10,6 +10,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ues.occ.proyeccion.social.ws.app.dao.Certificado;
 import ues.occ.proyeccion.social.ws.app.dao.ServiceResponse;
 import ues.occ.proyeccion.social.ws.app.model.CertificadoCreationDTO;
+import ues.occ.proyeccion.social.ws.app.model.CertificadoCreationDTO.CertificadoDTO;
+import ues.occ.proyeccion.social.ws.app.model.CertificadoCreationDTOUpload;
 import ues.occ.proyeccion.social.ws.app.utils.PageDtoWrapper;
 
 public interface CertificadoService {
@@ -20,5 +22,6 @@ public interface CertificadoService {
 
     ResponseEntity<ServiceResponse> crearCertificado(int id, MultipartFile file,
                                                      RedirectAttributes redirectAttributes);
+    Optional<CertificadoCreationDTO.CertificadoDTO> uploadCertificate(CertificadoCreationDTOUpload dto);
 
 }

@@ -7,6 +7,8 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.function.Function;
 
+import javax.transaction.Transactional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,22 +21,28 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.cloud.storage.Acl;
+import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 
 import ues.occ.proyeccion.social.ws.app.dao.Certificado;
+import ues.occ.proyeccion.social.ws.app.dao.Plantilla;
 import ues.occ.proyeccion.social.ws.app.dao.ServiceResponse;
 import ues.occ.proyeccion.social.ws.app.exceptions.ResourceNotFoundException;
 import ues.occ.proyeccion.social.ws.app.mappers.CertificadoMapper;
 import ues.occ.proyeccion.social.ws.app.model.CertificadoCreationDTO;
+import ues.occ.proyeccion.social.ws.app.model.CertificadoCreationDTOUpload;
+import ues.occ.proyeccion.social.ws.app.model.CertificadoCreationDTOUpload.CertificadoDTO;
 import ues.occ.proyeccion.social.ws.app.repository.CertificadoRepository;
 import ues.occ.proyeccion.social.ws.app.repository.ProyectoEstudianteRepository;
 import ues.occ.proyeccion.social.ws.app.utils.PageDtoWrapper;
 import ues.occ.proyeccion.social.ws.app.utils.PageableResource;
 
 @Service
-public class CertificadoServiceImpl extends PageableResource<Certificado, CertificadoCreationDTO.CertificadoDTO> implements CertificadoService {
+@Transactional(rollbackOn = Exception.class)
+public class CertificadoServiceImpl extends PageableResource<Certificado, CertificadoCreationDTO.CertificadoDTO>
+		implements CertificadoService {
 
 	private static final Logger log = LoggerFactory.getLogger(CertificadoServiceImpl.class);
 
@@ -42,12 +50,11 @@ public class CertificadoServiceImpl extends PageableResource<Certificado, Certif
 	private String bucketName;
 	private final Storage storage;
 	private final CertificadoRepository certificadoRepository;
-    private final ProyectoEstudianteRepository proyectoEstudianteRepository;
-    private final CertificadoMapper certificadoMapper;
+	private final ProyectoEstudianteRepository proyectoEstudianteRepository;
+	private final CertificadoMapper certificadoMapper;
 
 	public CertificadoServiceImpl(Storage storage, CertificadoRepository certificadoRepository,
-								  ProyectoEstudianteRepository proyectoEstudianteRepository,
-								  CertificadoMapper certificadoMapper) {
+			ProyectoEstudianteRepository proyectoEstudianteRepository, CertificadoMapper certificadoMapper) {
 		this.storage = storage;
 		this.certificadoRepository = certificadoRepository;
 		this.proyectoEstudianteRepository = proyectoEstudianteRepository;
@@ -55,60 +62,96 @@ public class CertificadoServiceImpl extends PageableResource<Certificado, Certif
 	}
 
 	@Override
-    public Optional<CertificadoCreationDTO.CertificadoDTO> save(CertificadoCreationDTO dto) {
-        var proyectoEstudiante =
-                this.proyectoEstudianteRepository.findById(dto.getProyectoEstudianteId())
-                .orElseThrow(() -> new ResourceNotFoundException("Project does not exists or is not assigned yet"));
-        try{
-            URL url = new URL(dto.getUri());
-            Certificado certificado = new Certificado(proyectoEstudiante.getId(), url.toString(), LocalDateTime.now(), proyectoEstudiante);
-            Certificado result = this.certificadoRepository.save(certificado);
-            return Optional.of(this.certificadoMapper.certificadoToCertificadoDTO(result));
-        }
-        catch (MalformedURLException e){
-            log.warn(e.getMessage());
-            throw new IllegalArgumentException("There was a mistake in the url format");
-        }
-        catch (Exception e){
-            log.warn(e.getMessage());
-            return Optional.empty();
-        }
-    }
+	public Optional<CertificadoCreationDTO.CertificadoDTO> save(CertificadoCreationDTO dto) {
+		var proyectoEstudiante = this.proyectoEstudianteRepository.findById(dto.getProyectoEstudianteId())
+				.orElseThrow(() -> new ResourceNotFoundException("Project does not exists or is not assigned yet"));
+		try {
+			URL url = new URL(dto.getUri());
+			Certificado certificado = new Certificado(proyectoEstudiante.getId(), url.toString(), LocalDateTime.now(),
+					proyectoEstudiante);
+			Certificado result = this.certificadoRepository.save(certificado);
+			return Optional.of(this.certificadoMapper.certificadoToCertificadoDTO(result));
+		} catch (MalformedURLException e) {
+			log.warn(e.getMessage());
+			throw new IllegalArgumentException("There was a mistake in the url format");
+		} catch (Exception e) {
+			log.warn(e.getMessage());
+			return Optional.empty();
+		}
+	}
+
+	@Override
+	public Optional<CertificadoCreationDTO.CertificadoDTO> uploadCertificate(CertificadoCreationDTOUpload model) {
+		var proyectoEstudiante = this.proyectoEstudianteRepository.findById(model.getProyectoEstudianteId())
+				.orElseThrow(() -> new ResourceNotFoundException("Project does not exists or is not assigned yet"));
+
+		LocalDateTime time = LocalDateTime.now();
+
+		BlobId blobId = BlobId.of(bucketName, time + "_" + model.getFile().getOriginalFilename());
+		BlobInfo blobInfo = BlobInfo.newBuilder(blobId).build();
+		log.info(model.getFile().getOriginalFilename());
+		String uri;
+
+		try {
+
+			Blob blob = storage.create(blobInfo, model.getFile().getBytes());
+			uri = blob.getMediaLink();
+			// blob.
+			storage.createAcl(blobId, Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER));
+			log.info("uri " + uri);
+
+			Certificado certificado = new Certificado(proyectoEstudiante.getId(), uri, LocalDateTime.now(),
+					proyectoEstudiante);
+			certificado = this.certificadoRepository.save(certificado);
+			return Optional.of(this.certificadoMapper.certificadoToCertificadoDTO(certificado));
+
+		} catch (MalformedURLException e) {
+			log.warn(e.getMessage());
+			throw new IllegalArgumentException("There was a mistake in the url format");
+		} catch (Exception e) {
+			log.warn(e.getMessage());
+			return Optional.empty();
+		}
+	}
 
 	@Override
 	public CertificadoCreationDTO.CertificadoDTO getCertificate(String carnet, String projectName) {
 		return this.certificadoRepository
-				.findByProyectoEstudiante_Estudiante_CarnetIgnoreCaseAndProyectoEstudiante_Proyecto_NombreIgnoreCase(carnet, projectName)
+				.findByProyectoEstudiante_Estudiante_CarnetIgnoreCaseAndProyectoEstudiante_Proyecto_NombreIgnoreCase(
+						carnet, projectName)
 				.map(this.certificadoMapper::certificadoToCertificadoDTO)
-				.orElseThrow(() -> new ResourceNotFoundException("Certificado no encontrado, asegúrese de escribir el nombre completo de su proyecto"));
+				.orElseThrow(() -> new ResourceNotFoundException(
+						"Certificado no encontrado, asegúrese de escribir el nombre completo de su proyecto"));
 	}
 
 	@Override
-    public PageDtoWrapper<Certificado, CertificadoCreationDTO.CertificadoDTO> findAll(int page, int size) {
-        Pageable pageable = this.getPageable(page, size);
-        Page<Certificado> certificadoPage = this.certificadoRepository.findAll(pageable);
-        return this.getPagedData(certificadoPage);
+	public PageDtoWrapper<Certificado, CertificadoCreationDTO.CertificadoDTO> findAll(int page, int size) {
+		Pageable pageable = this.getPageable(page, size);
+		Page<Certificado> certificadoPage = this.certificadoRepository.findAll(pageable);
+		return this.getPagedData(certificadoPage);
 
-    }
+	}
 
-    @Override
-    public PageDtoWrapper<Certificado, CertificadoCreationDTO.CertificadoDTO> findAllByCarnet(int page, int size, String carnet) {
-        Pageable pageable = this.getPageable(page, size);
-        Page<Certificado> certificadoPage = this.certificadoRepository.findAllByProyectoEstudiante_Estudiante_Carnet(carnet, pageable);
-        return this.getPagedData(certificadoPage);
-    }
+	@Override
+	public PageDtoWrapper<Certificado, CertificadoCreationDTO.CertificadoDTO> findAllByCarnet(int page, int size,
+			String carnet) {
+		Pageable pageable = this.getPageable(page, size);
+		Page<Certificado> certificadoPage = this.certificadoRepository
+				.findAllByProyectoEstudiante_Estudiante_Carnet(carnet, pageable);
+		return this.getPagedData(certificadoPage);
+	}
 
-    @Override
-    protected Function<Certificado, CertificadoCreationDTO.CertificadoDTO> getMapperFunction() {
-        return this.certificadoMapper::certificadoToCertificadoDTO;
-    }
+	@Override
+	protected Function<Certificado, CertificadoCreationDTO.CertificadoDTO> getMapperFunction() {
+		return this.certificadoMapper::certificadoToCertificadoDTO;
+	}
 
 	@Override
 	public ResponseEntity<ServiceResponse> crearCertificado(int id, MultipartFile file,
-															RedirectAttributes redirectAttributes) {
+			RedirectAttributes redirectAttributes) {
 		try {
-			//validate.validator.validate(certificado);
-			Certificado certificado =  new Certificado();
+			// validate.validator.validate(certificado);
+			Certificado certificado = new Certificado();
 			store(file);
 			redirectAttributes.addFlashAttribute("message",
 					"You successfully uploaded " + file.getOriginalFilename() + "!");
@@ -119,24 +162,25 @@ public class CertificadoServiceImpl extends PageableResource<Certificado, Certif
 			 * "Registro de Proyecto no encontrado, no se guardo el certificado"),
 			 * HttpStatus.CREATED); }
 			 */
-			BlobId blobId = BlobId.of(bucketName, file.getOriginalFilename()+"-"+LocalDateTime.now());
+			BlobId blobId = BlobId.of(bucketName, file.getOriginalFilename() + "-" + LocalDateTime.now());
 			BlobInfo blobInfo = BlobInfo.newBuilder(blobId).build();
 			String url;
 			try {
 
 				url = storage.create(blobInfo, file.getBytes()).getMediaLink();
 				storage.createAcl(blobId, Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER));
-				log.info("uri "+url);
+				log.info("uri " + url);
 
 			} catch (IOException e) {
 				e.printStackTrace();
 				log.error("No se logro guardar el documento en el bucket", e);
 				return new ResponseEntity<>(
 						new ServiceResponse(ServiceResponse.CODE_FAIL_STORAGE_DOCUMENT_BUCKET,
-								ServiceResponse.MESSAGE_FAIL_STORAGE_DOCUMENT_BUCKET, e.getMessage()),HttpStatus.INTERNAL_SERVER_ERROR);
+								ServiceResponse.MESSAGE_FAIL_STORAGE_DOCUMENT_BUCKET, e.getMessage()),
+						HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 
-			if(url != null && id > 0) {
+			if (url != null && id > 0) {
 				certificado.setId(id);
 				certificado.setFechaExpedicion(LocalDateTime.now());
 				log.info("Se creo un certificado " + certificado.toString());
@@ -146,9 +190,8 @@ public class CertificadoServiceImpl extends PageableResource<Certificado, Certif
 						new ServiceResponse(ServiceResponse.CODE_OK, ServiceResponse.MESSAGE_OK, result),
 						HttpStatus.CREATED);
 			} else {
-				return new ResponseEntity<>(
-						new ServiceResponse(ServiceResponse.CODE_OK, ServiceResponse.MESSAGE_OK, "Registro no creado por falta de la creacion de la URI"),
-						HttpStatus.CREATED);
+				return new ResponseEntity<>(new ServiceResponse(ServiceResponse.CODE_OK, ServiceResponse.MESSAGE_OK,
+						"Registro no creado por falta de la creacion de la URI"), HttpStatus.CREATED);
 
 			}
 
@@ -165,6 +208,5 @@ public class CertificadoServiceImpl extends PageableResource<Certificado, Certif
 		// TODO Auto-generated method stub
 
 	}
-
 
 }
