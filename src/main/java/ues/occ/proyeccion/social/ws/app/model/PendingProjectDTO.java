@@ -17,7 +17,7 @@ public class PendingProjectDTO implements Serializable, ProjectMarker {
     private Integer duracion;
     private boolean interno;
     private String personal;
-    private Set<EstudianteDTO> estudiantes;
+    private Set<EmbeddedStudentDTO> estudiantes;
     private Set<SimpleDocumentDTO> documentos;
     private LocalDateTime fechaCreacion;
     private LocalDateTime fechaModificacion;
