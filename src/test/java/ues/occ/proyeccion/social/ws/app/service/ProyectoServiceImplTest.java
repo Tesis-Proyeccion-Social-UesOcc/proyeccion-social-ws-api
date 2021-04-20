@@ -14,12 +14,14 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ues.occ.proyeccion.social.ws.app.dao.*;
 import ues.occ.proyeccion.social.ws.app.exceptions.ResourceNotFoundException;
 import ues.occ.proyeccion.social.ws.app.mappers.ProyectoMapper;
-import ues.occ.proyeccion.social.ws.app.model.*;
-import ues.occ.proyeccion.social.ws.app.repository.DocumentoRepository;
+import ues.occ.proyeccion.social.ws.app.model.EmbeddedStudentDTO;
+import ues.occ.proyeccion.social.ws.app.model.PendingProjectDTO;
+import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO;
 import ues.occ.proyeccion.social.ws.app.repository.EstudianteRepository;
 import ues.occ.proyeccion.social.ws.app.repository.ProyectoRepository;
 import ues.occ.proyeccion.social.ws.app.repository.RequerimientoRepository;
 import ues.occ.proyeccion.social.ws.app.repository.projections.RequerimientoIdView;
+import ues.occ.proyeccion.social.ws.app.utils.StatusOption;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
@@ -45,8 +47,6 @@ class ProyectoServiceImplTest {
     @Mock
     private RequerimientoRepository requerimientoRepository;
 
-    @Mock
-    private DocumentoRepository documentoRepository;
 
     @Mock
     private EstudianteRepository estudianteRepository;
@@ -62,7 +62,7 @@ class ProyectoServiceImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        proyectoService = new ProyectoServiceImpl(proyectoRepository, documentoRepository, proyectoMapper, estudianteRepository, requerimientoRepository, entityManager);
+        proyectoService = new ProyectoServiceImpl(proyectoRepository, proyectoMapper, estudianteRepository, requerimientoRepository, entityManager);
 
         proyecto1 = new Proyecto();
         var status = new Status(2, "statusName", "desc");
@@ -213,7 +213,6 @@ class ProyectoServiceImplTest {
 
         var result = (ProyectoCreationDTO.ProyectoDTO) this.proyectoService.findByCarnetAndProjectName("ab12345", "test");
 
-        Mockito.verify(this.documentoRepository, Mockito.never()).findProjectRelatedDocuments(Mockito.anyString(), Mockito.anyString());
         assertNotNull(result);
         assertEquals(result.getDuracion(), proyecto1.getDuracion());
         assertEquals(result.getId(), proyecto1.getId());
@@ -222,28 +221,29 @@ class ProyectoServiceImplTest {
 
     @Test
     void testFindByCarnetAndProjectNameWhenIsPending(){
-        proyecto1.getStatus().setId(1);
-        var toReturn = Optional.of(proyecto1);
+        var proyecto = buildProyect("test");
+        var status =  new Status(StatusOption.PENDIENTE,"pendiente", "");
+        proyecto.setStatus(status);
+        proyecto.setId(1);
+        var toReturn = Optional.of(proyecto);
 
         var document = new Documento("doc", "my doc", LocalDateTime.now());
         var requerimiento = new Requerimiento(1, true, 2, document);
         var student1 = new Estudiante("ab12345", 200, false);
-        var student2 = new Estudiante("zh15002", 200, false);
-        var projectStudent1 = proyecto1.registerStudent(student1);
+        var projectStudent1 = proyecto.registerStudent(student1);
         projectStudent1.setId(1);
         requerimiento.addEstadoRequerimiento(projectStudent1, false);
 
         var docs = List.of(document);
 
         Mockito.when(this.proyectoRepository.findByProyectoEstudianteSet_Estudiante_CarnetIgnoreCaseAndNombreIgnoreCase(Mockito.anyString(), Mockito.anyString())).thenReturn(toReturn);
-        Mockito.when(this.documentoRepository.findProjectRelatedDocuments(Mockito.anyString(), Mockito.anyString())).thenReturn(docs);
 
         var result = (PendingProjectDTO) this.proyectoService.findByCarnetAndProjectName("ab12345", "test");
 
         assertNotNull(result);
-        assertEquals(result.getDuracion(), proyecto1.getDuracion());
-        assertEquals(result.getId(), proyecto1.getId());
-        assertEquals(result.getNombre(), proyecto1.getNombre());
+        assertEquals(result.getDuracion(), proyecto.getDuracion());
+        assertEquals(result.getId(), proyecto.getId());
+        assertEquals(result.getNombre(), proyecto.getNombre());
         assertEquals(result.getDocumentos().iterator().next().getNombre(), docs.get(0).getNombre());
     }
 
@@ -280,17 +280,33 @@ class ProyectoServiceImplTest {
 
     }
 
+    private Proyecto buildProyect(String nombre){
+        var proyecto = new Proyecto();
+        var status = new Status(2, "statusName", "desc");
+        proyecto.setStatus(status);
+        proyecto.setNombre(nombre);
+        proyecto.setInterno(false);
+        PersonalExterno personalExterno = new PersonalExterno();
+        personalExterno.setNombre("text");
+        proyecto.setEncargadoExterno(personalExterno);
+        return proyecto;
+    }
+
     @Test
     void findProyectosPendientesByEstudiante(){
+        var proyecto1 = buildProyect("test1");
+        proyecto1.setId(1);
+        var proyecto2 = buildProyect("test2");
+        proyecto2.setId(2);
 
         var document = new Documento("doc", "my doc", LocalDateTime.now());
         var requerimiento = new Requerimiento(1, true, 2, document);
         var student1 = new Estudiante("ab12345", 200, false);
-        var student2 = new Estudiante("zh15002", 200, false);
         var projectStudent1 = proyecto1.registerStudent(student1);
         projectStudent1.setId(1);
-        var projectStudent2 = proyecto2.registerStudent(student2);
+        var projectStudent2 = proyecto2.registerStudent(student1);
         projectStudent2.setId(2);
+
         requerimiento.addEstadoRequerimiento(projectStudent1, false);
         requerimiento.addEstadoRequerimiento(projectStudent2, false);
 
@@ -299,8 +315,6 @@ class ProyectoServiceImplTest {
         Pageable pageable = PageRequest.of(5, 10);
         Page<Proyecto> page = new PageImpl<>(data, pageable, data.size());
 
-        var docs = List.of(document);
-
         ArgumentCaptor<Pageable> pageableArgumentCaptor = ArgumentCaptor.forClass(Pageable.class);
         ArgumentCaptor<Integer> statusArgumentCaptor = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<String> carnetArgumentCaptor = ArgumentCaptor.forClass(String.class);
@@ -308,19 +322,12 @@ class ProyectoServiceImplTest {
         Mockito.when(this.proyectoRepository.findAllByStatus_IdAndProyectoEstudianteSet_Estudiante_CarnetIgnoreCase(
                 Mockito.anyInt(), Mockito.anyString(), Mockito.any(Pageable.class))).thenReturn(page);
 
-        Mockito.when(this.documentoRepository
-                .findProjectRelatedDocuments(Mockito.anyString(), Mockito.anyString()))
-                .thenReturn(docs);
-
-        var result = this.proyectoService.findProyectosPendientesByEstudiante(5, 10, "zh", 3);
+        var result = this.proyectoService.findProyectosPendientesByEstudiante(5, 10, "ab12345", 3);
 
         Mockito.verify(this.proyectoRepository, Mockito.times(1))
                 .findAllByStatus_IdAndProyectoEstudianteSet_Estudiante_CarnetIgnoreCase(
                         statusArgumentCaptor.capture(), carnetArgumentCaptor.capture(), pageableArgumentCaptor.capture()
                 );
-
-        Mockito.verify(this.documentoRepository, Mockito.times(2))
-                .findProjectRelatedDocuments(ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
 
         assertNotNull(result);
         assertEquals(PAGE, pageableArgumentCaptor.getValue().getPageNumber());
@@ -329,44 +336,43 @@ class ProyectoServiceImplTest {
         assertEquals(2, result.getContent().size());
         assertFalse(result.getContent().get(0).isInterno());
         assertEquals(result.getContent().get(0).getPersonal(), "text");
-        assertTrue(result.getContent().get(1).isInterno());
+        assertFalse(result.getContent().get(1).isInterno());
         assertEquals("doc", result.getContent().get(1).getDocumentos().iterator().next().getNombre());
-        assertEquals("zh", carnetArgumentCaptor.getValue());
+        assertEquals("ab12345", carnetArgumentCaptor.getValue());
         assertEquals(3, statusArgumentCaptor.getValue());
     }
 
     @Test
     void testGetRequirementsData(){
         String projectName1 = "test1", projectName2 = "test2", carnet = "ab12345";
+
         var pendiente = new Status(1, "pendiente", "");
         var activo = new Status(2, "en proceso", "");
+
         var project1 = new Proyecto(1, projectName1, true, null);
         project1.setStatus(pendiente);
         project1.setTutor(new Personal(1, "tutor1", ""));
+
         var project2 = new Proyecto(2, projectName2, true, null);
         project2.setStatus(activo);
         project2.setTutor(new Personal(2, "tutor2", ""));
+
         var projects = List.of(project1, project2);
 
 
         var document = new Documento("doc", "my doc", LocalDateTime.now());
         var requerimiento = new Requerimiento(1, true, 2, document);
-        var student = new Estudiante("zh15002", 200, false);
-        var projectStudent = new ProyectoEstudiante(student, proyecto1, true);
-        projectStudent.setId(1);
-        requerimiento.addEstadoRequerimiento(projectStudent, false);
-        var docs = List.of(document);
-
-        var carnetCapture = ArgumentCaptor.forClass(String.class);
-        var projectNameCapture = ArgumentCaptor.forClass(String.class);
+        var student = new Estudiante(carnet, 200, false);
+        var ps1 = project1.registerStudent(student);
+        var ps2 = project2.registerStudent(student);
+        ps1.setId(1);
+        ps2.setId(2);
+        requerimiento.addEstadoRequerimiento(ps1, false);
+        requerimiento.addEstadoRequerimiento(ps2, false);
 
         Mockito.when(this.proyectoRepository.findAllByProyectoEstudianteSet_Estudiante_CarnetIgnoreCase(Mockito.anyString())).thenReturn(projects);
-        Mockito.when(this.documentoRepository.findProjectRelatedDocuments(Mockito.anyString(), Mockito.anyString())).thenReturn(docs);
 
         var result = this.proyectoService.getRequirementsData(carnet);
-
-        Mockito.verify(this.documentoRepository, Mockito.times(1))
-                .findProjectRelatedDocuments(carnetCapture.capture(), projectNameCapture.capture());
 
         assertNotNull(result);
         assertEquals(2, result.size());
@@ -374,8 +380,6 @@ class ProyectoServiceImplTest {
         assertEquals(((PendingProjectDTO) result.get(0)).getNombre(), projectName1);
         assertTrue(result.get(1) instanceof ProyectoCreationDTO.ProyectoDTO);
         assertEquals(((ProyectoCreationDTO.ProyectoDTO) result.get(1)).getNombre(), projectName2);
-        assertEquals(carnet, carnetCapture.getValue());
-        assertEquals(projectName1, projectNameCapture.getValue());
 
     }
 

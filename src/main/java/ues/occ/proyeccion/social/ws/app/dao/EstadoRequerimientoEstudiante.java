@@ -1,6 +1,9 @@
 package ues.occ.proyeccion.social.ws.app.dao;
 
 
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.ParamDef;
+
 import java.io.Serializable;
 import java.sql.Date;
 import java.util.Objects;
@@ -9,6 +12,8 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "estado_requerimiento_estudiante")
+@FilterDef(name = "studentRequirement", parameters = {@ParamDef(name = "project", type = "String"), @ParamDef(name = "carnet", type = "String")})
+@FilterDef(name = "studentRequirement2")
 public class EstadoRequerimientoEstudiante implements Serializable {
 
     /**
@@ -127,5 +132,12 @@ public class EstadoRequerimientoEstudiante implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(id, entregado, aprobado, fechaEntrega, fechaAprobacion);
+    }
+
+    @Override
+    public String toString() {
+        return "EstadoRequerimientoEstudiante{" +
+                "proyectoEstudiante=" + proyectoEstudiante +
+                '}';
     }
 }

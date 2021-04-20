@@ -43,7 +43,7 @@ public class ProyectoServiceIT {
 
     @Test
     void serviceSave() {
-        var service = new ProyectoServiceImpl(proyectoRepository, documentoRepository, proyectoMapper,
+        var service = new ProyectoServiceImpl(proyectoRepository, proyectoMapper,
                 estudianteRepository, requerimientoRepository, entityManager);
         var carnet = "zh15002";
         var status = new Status(1, "Pendiente", "desc");

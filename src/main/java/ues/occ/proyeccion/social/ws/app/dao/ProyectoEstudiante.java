@@ -109,9 +109,7 @@ public class ProyectoEstudiante implements Serializable {
     public String toString() {
         return "ProyectoEstudiante{" +
                 "id=" + id +
-                ", estudiante=" + estudiante +
-                ", estadoRequerimientoEstudiantes=" + estadoRequerimientoEstudiantes +
-                ", certificado=" + certificado +
+                ", estudiante=" + estudiante.getCarnet() +
                 ", active=" + active +
                 '}';
     }

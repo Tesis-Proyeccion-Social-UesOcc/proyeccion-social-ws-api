@@ -6,18 +6,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ues.occ.proyeccion.social.ws.app.dao.*;
-import ues.occ.proyeccion.social.ws.app.model.ProyectoChangeStatusDto;
-import ues.occ.proyeccion.social.ws.app.model.StatusEnum;
 import ues.occ.proyeccion.social.ws.app.exceptions.ChangeStatusProjectException;
 import ues.occ.proyeccion.social.ws.app.exceptions.InternalErrorException;
 import ues.occ.proyeccion.social.ws.app.exceptions.ResourceNotFoundException;
 import ues.occ.proyeccion.social.ws.app.mappers.CycleUtil;
 import ues.occ.proyeccion.social.ws.app.mappers.ProyectoMapper;
-import ues.occ.proyeccion.social.ws.app.model.PendingProjectDTO;
-import ues.occ.proyeccion.social.ws.app.model.ProjectMarker;
-import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO;
+import ues.occ.proyeccion.social.ws.app.model.*;
 import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO.ProyectoDTO;
-import ues.occ.proyeccion.social.ws.app.repository.DocumentoRepository;
 import ues.occ.proyeccion.social.ws.app.repository.EstudianteRepository;
 import ues.occ.proyeccion.social.ws.app.repository.ProyectoRepository;
 import ues.occ.proyeccion.social.ws.app.repository.RequerimientoRepository;
@@ -40,7 +35,6 @@ import java.util.stream.Collectors;
 public class ProyectoServiceImpl implements ProyectoService {
 
     private final ProyectoRepository proyectoRepository;
-    private final DocumentoRepository documentoRepository;
     private final ProyectoMapper proyectoMapper;
     private final EstudianteRepository estudianteRepository;
     private final RequerimientoRepository requerimientoRepository;
@@ -48,10 +42,10 @@ public class ProyectoServiceImpl implements ProyectoService {
     @PersistenceContext
     private final EntityManager entityManager;
 
-    public ProyectoServiceImpl(ProyectoRepository proyectoRepository, DocumentoRepository documentoRepository, ProyectoMapper proyectoMapper,
-                               EstudianteRepository estudianteRepository, RequerimientoRepository requerimientoRepository, EntityManager entityManager) {
+    public ProyectoServiceImpl(ProyectoRepository proyectoRepository, ProyectoMapper proyectoMapper,
+                               EstudianteRepository estudianteRepository, RequerimientoRepository requerimientoRepository,
+                               EntityManager entityManager) {
         this.proyectoRepository = proyectoRepository;
-        this.documentoRepository = documentoRepository;
         this.proyectoMapper = proyectoMapper;
         this.estudianteRepository = estudianteRepository;
         this.requerimientoRepository = requerimientoRepository;
@@ -70,8 +64,17 @@ public class ProyectoServiceImpl implements ProyectoService {
         return this.proyectoRepository.findByProyectoEstudianteSet_Estudiante_CarnetIgnoreCaseAndNombreIgnoreCase(carnet, projectName)
                 .map(proyecto -> {
                     if(proyecto.getStatus().getId() == StatusOption.PENDIENTE){
-                        var docs = this.documentoRepository.findProjectRelatedDocuments(carnet, proyecto.getNombre());
-                        return proyectoMapper.mapToPendingProject(proyecto, docs, new CycleUtil<>());
+                        PendingProjectDTO dto = null;
+                        for(var proyectoEstudiante: proyecto.getProyectoEstudianteSet()){
+                            if(proyectoEstudiante.getEstudiante().getCarnet().equalsIgnoreCase(carnet)){
+                                dto = proyectoMapper.mapToPendingProject(proyectoEstudiante, new CycleUtil<>());
+                            }
+                        }
+//                        var session = entityManager.unwrap(Session.class);
+//                        session.enableFilter("studentRequirement2");
+//                        var docs = this.documentoRepository.findProjectRelatedDocuments(carnet, proyecto.getNombre());
+//                        session.disableFilter("studentRequirement2");
+                        return dto;
                     }
                     else {
                         return proyectoMapper.proyectoToProyectoDTO(proyecto, new CycleUtil<>());
@@ -125,8 +128,13 @@ public class ProyectoServiceImpl implements ProyectoService {
         return this.proyectoRepository.findAllByProyectoEstudianteSet_Estudiante_CarnetIgnoreCase(carnet)
                 .stream().map(proyecto -> {
                     if(proyecto.getStatus().getId() == StatusOption.PENDIENTE){
-                        var docs = this.documentoRepository.findProjectRelatedDocuments(carnet, proyecto.getNombre());
-                        return this.proyectoMapper.mapToPendingProject(proyecto, docs, new CycleUtil<>());
+                        PendingProjectDTO dto = null;
+                        for(var proyectoEstudiante: proyecto.getProyectoEstudianteSet()){
+                            if(proyectoEstudiante.getEstudiante().getCarnet().equalsIgnoreCase(carnet)){
+                                dto = proyectoMapper.mapToPendingProject(proyectoEstudiante, new CycleUtil<>());
+                            }
+                        }
+                        return dto;
                     }
                     else {
                         return this.proyectoMapper.proyectoToProyectoDTO(proyecto, new CycleUtil<>());
@@ -183,7 +191,7 @@ public class ProyectoServiceImpl implements ProyectoService {
                         obj.getProyectoEstudianteSet().forEach(proyectoEstudiante -> {
 
                             for(var carnet: proyecto.getEstudiantes()){
-                                if(!proyectoEstudiante.getEstudiante().getCarnet().equals(carnet)) {
+                                if(!proyectoEstudiante.getEstudiante().getCarnet().equalsIgnoreCase(carnet)) {
                                     // if this statement is reached means that this student exist in the db but was not found in the body of the PUT request , which means it will be set as inactive
                                     toInactive.set(true);
                                 }
@@ -225,8 +233,12 @@ public class ProyectoServiceImpl implements ProyectoService {
         if (data.hasContent()) {
             content = data.getContent().stream()
                     .map(proyecto -> {
-                        var docs = this.documentoRepository.findProjectRelatedDocuments(carnet, proyecto.getNombre());
-                        return this.proyectoMapper.mapToPendingProject(proyecto, docs, new CycleUtil<>());
+                        for(var proyectoEstudiante: proyecto.getProyectoEstudianteSet()){
+                            if(proyectoEstudiante.getEstudiante().getCarnet().equalsIgnoreCase(carnet)){
+                                return proyectoMapper.mapToPendingProject(proyectoEstudiante, new CycleUtil<>());
+                            }
+                        }
+                        return null;
                     })
                     .collect(Collectors.toList());
         } else {
