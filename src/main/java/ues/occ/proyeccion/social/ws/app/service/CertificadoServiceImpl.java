@@ -1,14 +1,6 @@
 package ues.occ.proyeccion.social.ws.app.service;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.function.Function;
-
-import javax.transaction.Transactional;
-
+import com.google.cloud.storage.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,25 +11,23 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import com.google.cloud.storage.Acl;
-import com.google.cloud.storage.Blob;
-import com.google.cloud.storage.BlobId;
-import com.google.cloud.storage.BlobInfo;
-import com.google.cloud.storage.Storage;
-
 import ues.occ.proyeccion.social.ws.app.dao.Certificado;
-import ues.occ.proyeccion.social.ws.app.dao.Plantilla;
 import ues.occ.proyeccion.social.ws.app.dao.ServiceResponse;
 import ues.occ.proyeccion.social.ws.app.exceptions.ResourceNotFoundException;
 import ues.occ.proyeccion.social.ws.app.mappers.CertificadoMapper;
 import ues.occ.proyeccion.social.ws.app.model.CertificadoCreationDTO;
-import ues.occ.proyeccion.social.ws.app.model.CertificadoCreationDTOUpload;
-import ues.occ.proyeccion.social.ws.app.model.CertificadoCreationDTOUpload.CertificadoDTO;
 import ues.occ.proyeccion.social.ws.app.repository.CertificadoRepository;
 import ues.occ.proyeccion.social.ws.app.repository.ProyectoEstudianteRepository;
 import ues.occ.proyeccion.social.ws.app.utils.PageDtoWrapper;
 import ues.occ.proyeccion.social.ws.app.utils.PageableResource;
+
+import javax.transaction.Transactional;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.function.Function;
 
 @Service
 @Transactional(rollbackOn = Exception.class)
@@ -81,27 +71,26 @@ public class CertificadoServiceImpl extends PageableResource<Certificado, Certif
 	}
 
 	@Override
-	public Optional<CertificadoCreationDTO.CertificadoDTO> uploadCertificate(CertificadoCreationDTOUpload model) {
-		var proyectoEstudiante = this.proyectoEstudianteRepository.findById(model.getProyectoEstudianteId())
+	public Optional<CertificadoCreationDTO.CertificadoDTO> uploadCertificate(int proyectoEstudianteId, MultipartFile file) {
+		var proyectoEstudiante = this.proyectoEstudianteRepository.findById(proyectoEstudianteId)
 				.orElseThrow(() -> new ResourceNotFoundException("Project does not exists or is not assigned yet"));
 
 		LocalDateTime time = LocalDateTime.now();
 
-		BlobId blobId = BlobId.of(bucketName, time + "_" + model.getFile().getOriginalFilename());
+		BlobId blobId = BlobId.of(bucketName, time + "_" + file.getOriginalFilename());
 		BlobInfo blobInfo = BlobInfo.newBuilder(blobId).build();
-		log.info(model.getFile().getOriginalFilename());
+		log.info(file.getOriginalFilename());
 		String uri;
 
 		try {
 
-			Blob blob = storage.create(blobInfo, model.getFile().getBytes());
+			Blob blob = storage.create(blobInfo, file.getBytes());
 			uri = blob.getMediaLink();
 			// blob.
 			storage.createAcl(blobId, Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER));
 			log.info("uri " + uri);
 
-			Certificado certificado = new Certificado(proyectoEstudiante.getId(), uri, LocalDateTime.now(),
-					proyectoEstudiante);
+			Certificado certificado = new Certificado(uri, LocalDateTime.now(), proyectoEstudiante);
 			certificado = this.certificadoRepository.save(certificado);
 			return Optional.of(this.certificadoMapper.certificadoToCertificadoDTO(certificado));
 

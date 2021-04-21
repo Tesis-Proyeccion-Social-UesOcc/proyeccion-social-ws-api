@@ -38,6 +38,14 @@ public class Certificado implements Serializable {
 		proyectoEstudiante.setCertificado(this);
 	}
 
+	public Certificado(String uri, LocalDateTime fechaExpedicion, ProyectoEstudiante proyectoEstudiante) {
+		this.id = proyectoEstudiante.getId();
+		this.uri = uri;
+		this.proyectoEstudiante = proyectoEstudiante;
+		this.fechaExpedicion = fechaExpedicion;
+		proyectoEstudiante.setCertificado(this);
+	}
+
 	public Integer getId() {
 		return id;
 	}

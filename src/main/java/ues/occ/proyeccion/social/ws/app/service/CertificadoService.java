@@ -22,6 +22,6 @@ public interface CertificadoService {
 
     ResponseEntity<ServiceResponse> crearCertificado(int id, MultipartFile file,
                                                      RedirectAttributes redirectAttributes);
-    Optional<CertificadoCreationDTO.CertificadoDTO> uploadCertificate(CertificadoCreationDTOUpload dto);
+    Optional<CertificadoCreationDTO.CertificadoDTO> uploadCertificate(int proyectoEstudianteId, MultipartFile file);
 
 }
