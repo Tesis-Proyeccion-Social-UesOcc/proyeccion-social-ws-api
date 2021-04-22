@@ -32,7 +32,7 @@ public interface ProyectoMapper {
 
     @Named("estudiantesBuilder")
     default Set<EstudianteDTO> getEstudiantes(Set<ProyectoEstudiante> proyectoEstudiantes){
-        return MAPPER.ToEstudianteList(proyectoEstudiantes, new CycleUtil());
+        return MAPPER.ToEstudianteList(proyectoEstudiantes, new CycleUtil<>());
     }
 
     @Mapping(source = "proyecto", target = "personal", qualifiedByName = "nombreChecker")

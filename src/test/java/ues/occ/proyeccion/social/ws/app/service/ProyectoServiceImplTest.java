@@ -17,7 +17,6 @@ import ues.occ.proyeccion.social.ws.app.mappers.ProyectoMapper;
 import ues.occ.proyeccion.social.ws.app.model.EstudianteDTO;
 import ues.occ.proyeccion.social.ws.app.model.PendingProjectDTO;
 import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO;
-import ues.occ.proyeccion.social.ws.app.model.StatusDTO;
 import ues.occ.proyeccion.social.ws.app.repository.DocumentoRepository;
 import ues.occ.proyeccion.social.ws.app.repository.EstudianteRepository;
 import ues.occ.proyeccion.social.ws.app.repository.ProyectoRepository;
@@ -91,6 +90,8 @@ class ProyectoServiceImplTest {
         proyectoEstudiante2.setEstudiante(estudiante2);
         proyectoEstudiante1.setProyecto(proyecto1);
         proyectoEstudiante2.setProyecto(proyecto2);
+        proyectoEstudiante1.setId(1);
+        proyectoEstudiante2.setId(2);
         var proyectoEstudiantes = new HashSet<ProyectoEstudiante>(Set.of(proyectoEstudiante1, proyectoEstudiante2));
         proyecto1.setEncargadoExterno(personalExterno);
         proyecto1.setTutor(new Personal());
@@ -142,8 +143,8 @@ class ProyectoServiceImplTest {
         ).findAll(captor.capture());
         Pageable captured = captor.getValue();
 
-        var estudianteDTO1 = new EstudianteDTO("ZH15002", 500, true);
-        var estudianteDTO2 = new EstudianteDTO("AB15002", 200, false);
+        var estudianteDTO1 = new EstudianteDTO(1, "ZH15002", 500, true);
+        var estudianteDTO2 = new EstudianteDTO(2, "AB15002", 200, false);
         var expected = Set.of(estudianteDTO1, estudianteDTO2);
 
         assertEquals(5, captured.getPageNumber());
@@ -403,6 +404,7 @@ class ProyectoServiceImplTest {
         estudiante.setHorasProgreso(250);
 
         var expectedProyectoEstudiante = new ProyectoEstudiante(estudiante, resultProject, false);
+        expectedProyectoEstudiante.setId(1);
         resultProject.setProyectoEstudianteSet(Set.of(expectedProyectoEstudiante));
         resultProject.setId(1);
         resultProject.setFechaCreacion(LocalDateTime.now());
@@ -434,7 +436,7 @@ class ProyectoServiceImplTest {
         Mockito.verify(this.requerimientoRepository, Mockito.times(1)).findAllProjectedBy();
 
         var expectedDto = new ProyectoCreationDTO.ProyectoDTO(1, "Project", 150,
-                true, "Steve", Set.of(new EstudianteDTO("ZH15002", 250, false)),
+                true, "Steve", Set.of(new EstudianteDTO(1, "ZH15002", 250, false)),
                 LocalDateTime.now(), null, "DummyStatus");
 
         assertNotNull(result);
@@ -468,6 +470,7 @@ class ProyectoServiceImplTest {
         estudiante.setServicioCompleto(false);
 
         var expectedProyectoEstudiante = new ProyectoEstudiante(estudiante, proyecto, false);
+        expectedProyectoEstudiante.setId(1);
 
         proyecto.setProyectoEstudianteSet(Set.of(expectedProyectoEstudiante));
         proyecto.setFechaCreacion(LocalDateTime.now());
@@ -480,7 +483,7 @@ class ProyectoServiceImplTest {
         ArgumentCaptor<Integer> idPersonal = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Proyecto> proyectoCaptor = ArgumentCaptor.forClass(Proyecto.class);
 
-        var expected = new ProyectoCreationDTO.ProyectoDTO(2, "Test2", 350, true, "Mario", Set.of(new EstudianteDTO("ab12345", 250, false)), LocalDateTime.now(), LocalDateTime.now(), "dummyValue");
+        var expected = new ProyectoCreationDTO.ProyectoDTO(2, "Test2", 350, true, "Mario", Set.of(new EstudianteDTO(1, "ab12345", 250, false)), LocalDateTime.now(), LocalDateTime.now(), "dummyValue");
 
         Mockito.when(this.proyectoRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(proyecto));
         Mockito.when(this.proyectoRepository.save(Mockito.any(Proyecto.class))).thenReturn(proyecto);

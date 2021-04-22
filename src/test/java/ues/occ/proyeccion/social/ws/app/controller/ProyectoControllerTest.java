@@ -153,7 +153,7 @@ class ProyectoControllerTest {
                 .builder().nombre(proyecto).duracion(200).interno(true)
                 .personal(10).estudiantes(estudiantes).build();
 
-        var estudiantesResponse = Set.of(new EstudianteDTO("zh15002", 300, false));
+        var estudiantesResponse = Set.of(new EstudianteDTO(1, "zh15002", 300, false));
 
         var responseObj = ProyectoCreationDTO.ProyectoDTO.builder()
                 .nombre(proyecto).duracion(200).interno(true)
@@ -182,7 +182,7 @@ class ProyectoControllerTest {
         var estudiantes = List.of("zhd0022");
         var body = new ProyectoCreationDTO(proyecto, null, true, 10, estudiantes);
 
-        var estudiantesResponse = Set.of(new EstudianteDTO("zh15002", 300, false));
+        var estudiantesResponse = Set.of(new EstudianteDTO(1, "zh15002", 300, false));
 
         var responseObj = ProyectoCreationDTO.ProyectoDTO.builder()
                 .nombre(proyecto).duracion(200).interno(true)
@@ -210,7 +210,7 @@ class ProyectoControllerTest {
                 .builder().nombre(proyecto).duracion(200).interno(true)
                 .personal(10).estudiantes(estudiantes).build();
 
-        var estudiantesResponse = Set.of(new EstudianteDTO("zh15002", 300, false));
+        var estudiantesResponse = Set.of(new EstudianteDTO(1, "zh15002", 300, false));
 
         var responseObj = ProyectoCreationDTO.ProyectoDTO.builder()
                 .nombre(proyecto).duracion(200).interno(true)
@@ -242,7 +242,7 @@ class ProyectoControllerTest {
         var estudiantes = List.of("zhd0022");
         var body = new ProyectoCreationDTO(proyecto, null, true, 10, estudiantes);
 
-        var estudiantesResponse = Set.of(new EstudianteDTO("zh15002", 300, false));
+        var estudiantesResponse = Set.of(new EstudianteDTO(1, "zh15002", 300, false));
 
         var responseObj = ProyectoCreationDTO.ProyectoDTO.builder()
                 .nombre(proyecto).duracion(200).interno(true)
