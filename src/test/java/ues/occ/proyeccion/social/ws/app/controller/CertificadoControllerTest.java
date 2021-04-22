@@ -13,10 +13,12 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.multipart.MultipartFile;
 import ues.occ.proyeccion.social.ws.app.dao.Certificado;
 import ues.occ.proyeccion.social.ws.app.model.CertificadoCreationDTO;
 import ues.occ.proyeccion.social.ws.app.service.CertificadoService;
@@ -115,6 +117,32 @@ class CertificadoControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.violations", IsCollectionWithSize.hasSize(2)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.violations[*].message",
                         Matchers.containsInAnyOrder("ID must be greater then 0","You must provide the certificate url")));
+    }
+
+    @Test
+    void testUploadCertificate() throws Exception {
+        var payload = "any text for bytes".getBytes();
+        var multipartFile = new MockMultipartFile("file", "any.txt", "text/plain", payload);
+
+        var dto = new CertificadoCreationDTO.CertificadoDTO(123, "any", "www.google.com", null);
+
+        var multipartCaptor = ArgumentCaptor.forClass(MultipartFile.class);
+        var proyectoEstudianteIdCaptor = ArgumentCaptor.forClass(Integer.class);
+
+        Mockito.when(certificadoService.uploadCertificate(Mockito.anyInt(), Mockito.any(MultipartFile.class))).thenReturn(Optional.of(dto));
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/certificados/123").file(multipartFile))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.proyectoEstudianteId", CoreMatchers.is(dto.getProyectoEstudianteId())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.proyecto", CoreMatchers.is(dto.getProyecto())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.uri", CoreMatchers.is(dto.getUri())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.fechaExpedicion", CoreMatchers.is(dto.getFechaExpedicion())));
+
+        Mockito.verify(certificadoService, Mockito.times(1)).uploadCertificate(proyectoEstudianteIdCaptor.capture(), multipartCaptor.capture());
+
+        assertEquals(123, proyectoEstudianteIdCaptor.getValue());
+        assertEquals(multipartFile.getBytes(), multipartCaptor.getValue().getBytes());
+
     }
 
     @Test
