@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ues.occ.proyeccion.social.ws.app.dao.Proyecto;
+import ues.occ.proyeccion.social.ws.app.model.EmbeddedStudentDTO;
 import ues.occ.proyeccion.social.ws.app.model.EstudianteDTO;
 import ues.occ.proyeccion.social.ws.app.model.ProyectoCreationDTO;
 import ues.occ.proyeccion.social.ws.app.model.StatusDTO;
@@ -153,7 +154,7 @@ class ProyectoControllerTest {
                 .builder().nombre(proyecto).duracion(200).interno(true)
                 .personal(10).estudiantes(estudiantes).build();
 
-        var estudiantesResponse = Set.of(new EstudianteDTO(1, "zh15002", 300, false));
+        var estudiantesResponse = Set.of(new EmbeddedStudentDTO(1, "zh15002", 300, false, true));
 
         var responseObj = ProyectoCreationDTO.ProyectoDTO.builder()
                 .nombre(proyecto).duracion(200).interno(true)
@@ -182,7 +183,7 @@ class ProyectoControllerTest {
         var estudiantes = List.of("zhd0022");
         var body = new ProyectoCreationDTO(proyecto, null, true, 10, estudiantes);
 
-        var estudiantesResponse = Set.of(new EstudianteDTO(1, "zh15002", 300, false));
+        var estudiantesResponse = Set.of(new EmbeddedStudentDTO(1, "zh15002", 300, false, true));
 
         var responseObj = ProyectoCreationDTO.ProyectoDTO.builder()
                 .nombre(proyecto).duracion(200).interno(true)
@@ -210,7 +211,7 @@ class ProyectoControllerTest {
                 .builder().nombre(proyecto).duracion(200).interno(true)
                 .personal(10).estudiantes(estudiantes).build();
 
-        var estudiantesResponse = Set.of(new EstudianteDTO(1, "zh15002", 300, false));
+        var estudiantesResponse = Set.of(new EmbeddedStudentDTO(1, "zh15002", 300, false, true));
 
         var responseObj = ProyectoCreationDTO.ProyectoDTO.builder()
                 .nombre(proyecto).duracion(200).interno(true)
@@ -242,7 +243,7 @@ class ProyectoControllerTest {
         var estudiantes = List.of("zhd0022");
         var body = new ProyectoCreationDTO(proyecto, null, true, 10, estudiantes);
 
-        var estudiantesResponse = Set.of(new EstudianteDTO(1, "zh15002", 300, false));
+        var estudiantesResponse = Set.of(new EmbeddedStudentDTO(1, "zh15002", 300, false, true));
 
         var responseObj = ProyectoCreationDTO.ProyectoDTO.builder()
                 .nombre(proyecto).duracion(200).interno(true)

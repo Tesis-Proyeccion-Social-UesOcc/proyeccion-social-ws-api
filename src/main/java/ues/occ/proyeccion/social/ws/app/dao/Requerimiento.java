@@ -1,12 +1,13 @@
 package ues.occ.proyeccion.social.ws.app.dao;
 
+import org.hibernate.annotations.Filter;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Date;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-
-import javax.persistence.*;
 
 @Entity
 @Table(name = "requerimiento")
@@ -33,6 +34,7 @@ public class Requerimiento implements Serializable {
     @JoinColumn(name = "id_documento")
     private Documento documento;
 
+    @Filter(name = "studentRequirement2", condition = "id_proyecto_estudiante = 84")
     @OneToMany(mappedBy = "requerimiento", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL,
             orphanRemoval = true)
@@ -132,5 +134,12 @@ public class Requerimiento implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(id, original, cantidadCopias);
+    }
+
+    @Override
+    public String toString() {
+        return "Requerimiento{" +
+                "estadoRequerimientoEstudiantes=" + estadoRequerimientoEstudiantes +
+                '}';
     }
 }
