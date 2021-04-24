@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EstudianteDTO {
+    private int proyectoEstudianteId;
     private String carnet;
     private int horasProgreso;
     private boolean servicioCompleto;

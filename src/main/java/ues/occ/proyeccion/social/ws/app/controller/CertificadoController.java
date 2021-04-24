@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 import ues.occ.proyeccion.social.ws.app.dao.Certificado;
 import ues.occ.proyeccion.social.ws.app.events.PaginatedResultsRetrievedEvent;
@@ -34,6 +35,14 @@ public class CertificadoController {
     @ResponseStatus(HttpStatus.CREATED)
     public CertificadoCreationDTO.CertificadoDTO createCertificate(@Valid @RequestBody CertificadoCreationDTO dto){
         return this.certificadoService.save(dto).orElseThrow(
+                () -> new InternalErrorException("Certificate creation failed")
+        );
+    }
+    
+    @PostMapping("/{proyectoEstudianteId}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public CertificadoCreationDTO.CertificadoDTO createUploadCertificate(@PathVariable int proyectoEstudianteId, @RequestParam MultipartFile file){
+        return this.certificadoService.uploadCertificate(proyectoEstudianteId, file).orElseThrow(
                 () -> new InternalErrorException("Certificate creation failed")
         );
     }

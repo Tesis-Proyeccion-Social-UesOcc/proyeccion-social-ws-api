@@ -25,10 +25,7 @@ import ues.occ.proyeccion.social.ws.app.utils.StatusOption;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -88,6 +85,8 @@ class ProyectoServiceImplTest {
         proyectoEstudiante2.setEstudiante(estudiante2);
         proyectoEstudiante1.setProyecto(proyecto1);
         proyectoEstudiante2.setProyecto(proyecto2);
+        proyectoEstudiante1.setId(1);
+        proyectoEstudiante2.setId(2);
         var proyectoEstudiantes = new HashSet<ProyectoEstudiante>(Set.of(proyectoEstudiante1, proyectoEstudiante2));
         proyecto1.setEncargadoExterno(personalExterno);
         proyecto1.setTutor(new Personal());
@@ -127,7 +126,20 @@ class ProyectoServiceImplTest {
 
     @Test
     void testFindAll() {
-        var estudianteD = new EmbeddedStudentDTO("ZH15002", 500, true, false);
+        var proyecto1 = buildProyect("test1");
+        var proyecto2 = buildProyect("test2");
+        var status =  new Status(StatusOption.PENDIENTE,"pendiente", "");
+        proyecto1.setStatus(status);
+        proyecto1.setId(1);
+        proyecto2.setStatus(status);
+        proyecto2.setId(2);
+        var student1 = new Estudiante("ZH15002", 500, true);
+        var student2 = new Estudiante("AB15002", 200, false);
+        var projectStudent1 = proyecto1.registerStudent(student1);
+        var projectStudent2 = proyecto1.registerStudent(student2);
+        projectStudent1.setId(1);
+        projectStudent2.setId(2);
+
         List<Proyecto> data = List.of(proyecto1, proyecto2);
         Pageable pageable = PageRequest.of(5, 10);
         Page<Proyecto> page = new PageImpl<>(data, pageable, data.size());
@@ -140,15 +152,15 @@ class ProyectoServiceImplTest {
         ).findAll(captor.capture());
         Pageable captured = captor.getValue();
 
-        var estudianteDTO1 = new EmbeddedStudentDTO("ZH15002", 500, true, false);
-        var estudianteDTO2 = new EmbeddedStudentDTO("AB15002", 200, false, false);
-        var expected = Set.of(estudianteDTO1, estudianteDTO2);
+        var estudianteDTO1 = new EmbeddedStudentDTO(1, "ZH15002", 500, true, true);
+        var estudianteDTO2 = new EmbeddedStudentDTO(2, "AB15002", 200, false, true);
+        var expected = List.of(estudianteDTO1, estudianteDTO2);
 
         assertEquals(5, captured.getPageNumber());
         assertEquals(10, captured.getPageSize());
         assertNotNull(result);
         assertEquals(2, result.getContent().size());
-        assertEquals(expected, result.getContent().get(0).getEstudiantes());
+        assertEquals(expected, new ArrayList<>(result.getContent().get(0).getEstudiantes()));
     }
 
     @Test
@@ -404,14 +416,17 @@ class ProyectoServiceImplTest {
         estudiante.setCarnet(carnet);
         estudiante.setHorasProgreso(250);
 
-        var expectedProyectoEstudiante = new ProyectoEstudiante(estudiante, resultProject, false);
-        resultProject.setProyectoEstudianteSet(Set.of(expectedProyectoEstudiante));
+        var estudianteForReference = new Estudiante();
+
+        var expectedProyectoEstudiante = resultProject.registerStudent(estudiante);
+        expectedProyectoEstudiante.setId(1);
         resultProject.setId(1);
         resultProject.setFechaCreacion(LocalDateTime.now());
 
         RequerimientoIdView requerimiento = () -> 11;
         var doc = new Documento("doc", "", LocalDateTime.now());
         var requerimientoObj = new Requerimiento(1, true, 2, doc);
+        requerimientoObj.addEstadoRequerimiento(expectedProyectoEstudiante, true);
 
         ArgumentCaptor<String> carnetCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<Integer> personalIdCaptor = ArgumentCaptor.forClass(Integer.class);
@@ -419,7 +434,7 @@ class ProyectoServiceImplTest {
         ArgumentCaptor<Integer> statusCaptor = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Integer> requerimientoCaptor = ArgumentCaptor.forClass(Integer.class);
 
-        Mockito.when(this.entityManager.getReference(ArgumentMatchers.<Class<Estudiante>>any(), Mockito.anyString())).thenReturn(estudiante);
+        Mockito.when(this.entityManager.getReference(ArgumentMatchers.<Class<Estudiante>>any(), Mockito.anyString())).thenReturn(estudianteForReference);
         Mockito.when(this.entityManager.getReference(Personal.class, 1)).thenReturn(personal);
         Mockito.when(this.entityManager.getReference(Status.class, 1)).thenReturn(status);
         Mockito.when(this.entityManager.getReference(Requerimiento.class, 11)).thenReturn(requerimientoObj);
@@ -434,13 +449,14 @@ class ProyectoServiceImplTest {
         Mockito.verify(this.entityManager, Mockito.times(1)).getReference(ArgumentMatchers.eq(Requerimiento.class), requerimientoCaptor.capture());
         Mockito.verify(this.proyectoRepository, Mockito.times(1)).save(proyectoCaptor.capture());
         Mockito.verify(this.requerimientoRepository, Mockito.times(1)).findAllProjectedBy();
+        Mockito.verify(this.requerimientoRepository, Mockito.times(1)).saveAll(ArgumentMatchers.anyCollection());
 
         var expectedDto = new ProyectoCreationDTO.ProyectoDTO(1, "Project", 150,
-                true, "Steve", Set.of(new EmbeddedStudentDTO("ZH15002", 250, false, false)),
+                true, "Steve", Set.of(new EmbeddedStudentDTO(1, carnet, 250, false, true)),
                 LocalDateTime.now(), null, "DummyStatus");
 
         assertNotNull(result);
-        assertEquals(result, expectedDto);
+        assertEquals(expectedDto, result);
         resultProject.setId(null);
         assertEquals(resultProject, proyectoCaptor.getValue());
         assertEquals(carnet, carnetCaptor.getValue());
@@ -457,24 +473,19 @@ class ProyectoServiceImplTest {
         personal.setNombre("Mario");
         personal.setId(10);
 
-        var proyecto = new Proyecto();
-        proyecto.setId(2);
-        proyecto.setDuracion(300);
-        proyecto.setNombre(nombre);
-        proyecto.setInterno(true);
+        var proyecto = new Proyecto(2, nombre, 300, true, null);
         proyecto.setTutor(personal);
-
-        var estudiante = new Estudiante();
-        estudiante.setCarnet("ab12345");
-        estudiante.setHorasProgreso(250);
-        estudiante.setServicioCompleto(false);
-
-        var expectedProyectoEstudiante = new ProyectoEstudiante(estudiante, proyecto, false);
-
-        proyecto.setProyectoEstudianteSet(Set.of(expectedProyectoEstudiante));
         proyecto.setFechaCreacion(LocalDateTime.now());
         proyecto.setFechaModificacion(LocalDateTime.now());
         proyecto.setStatus(new Status(1, "dummyValue", "dummyValue"));
+
+        var estudiante = new Estudiante("ab12345", 250, false);
+
+        var expectedProyectoEstudiante = proyecto.registerStudent(estudiante);
+        expectedProyectoEstudiante.setId(1);
+
+        proyecto.setProyectoEstudianteSet(Set.of(expectedProyectoEstudiante));
+
 
         var creationDto = new ProyectoCreationDTO("Test2", 350, true, 10, List.of("ab12345"));
 
@@ -482,7 +493,7 @@ class ProyectoServiceImplTest {
         ArgumentCaptor<Integer> idPersonal = ArgumentCaptor.forClass(Integer.class);
         ArgumentCaptor<Proyecto> proyectoCaptor = ArgumentCaptor.forClass(Proyecto.class);
 
-        var expected = new ProyectoCreationDTO.ProyectoDTO(2, "Test2", 350, true, "Mario", Set.of(new EmbeddedStudentDTO("ab12345", 250, false, true)), LocalDateTime.now(), LocalDateTime.now(), "dummyValue");
+        var expected = new ProyectoCreationDTO.ProyectoDTO(2, "Test2", 350, true, "Mario", Set.of(new EmbeddedStudentDTO(1,"ab12345", 250, false, true)), LocalDateTime.now(), LocalDateTime.now(), "dummyValue");
 
         Mockito.when(this.proyectoRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(proyecto));
         Mockito.when(this.proyectoRepository.save(Mockito.any(Proyecto.class))).thenReturn(proyecto);

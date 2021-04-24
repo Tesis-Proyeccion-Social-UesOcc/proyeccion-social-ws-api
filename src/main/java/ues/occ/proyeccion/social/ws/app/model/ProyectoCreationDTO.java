@@ -1,22 +1,19 @@
 package ues.occ.proyeccion.social.ws.app.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
+import ues.occ.proyeccion.social.ws.app.validators.CarnetValidator;
+
+import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
-import ues.occ.proyeccion.social.ws.app.dao.Status;
-import ues.occ.proyeccion.social.ws.app.validators.CarnetValidator;
-
-import javax.validation.constraints.*;
 
 @Data
 @Builder
